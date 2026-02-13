@@ -50,7 +50,7 @@ function startWorkout() {
   startGetReady();
 }
 
-// --- Новый этап: Приготовьтесь ---
+// --- Этап: Приготовьтесь ---
 function startGetReady() {
   currentMode = 'getready';
   
@@ -59,59 +59,75 @@ function startGetReady() {
   document.getElementById('current-exercise-name').innerText = ex.name;
   document.getElementById('current-exercise-meta').innerText = `${ex.sets} × ${ex.reps}`;
   
-  document.getElementById('timer-container').classList.remove('rest-mode');
-  document.getElementById('timer-container').classList.add('ready-mode'); // Синий цвет
+  // Стили таймера
+  const container = document.getElementById('timer-container');
+  container.classList.remove('rest-mode');
+  container.classList.add('ready-mode');
   document.getElementById('timer-label').innerText = "Приготовьтесь";
   
+  // Кнопки
   const actionBtn = document.getElementById('btn-action');
-  actionBtn.innerText = "Пропустить";
+  actionBtn.innerText = "Начать"; // Правая кнопка
   actionBtn.onclick = () => { clearInterval(timerInterval); startExercise(); };
 
-  startTimer(GET_READY_TIME, startExercise, true);
+  const skipBtn = document.querySelector('.btn-skip');
+  skipBtn.onclick = skipStep; // Левая кнопка - пропуск упражнения
+
+  startTimer(GET_READY_TIME, startExercise);
 }
 
 function startExercise() {
   currentMode = 'exercise';
-  playSound('start'); // Звук старта
+  playSound('start');
   
   const ex = exercisesList[currentExerciseIndex];
   document.getElementById('progress-text').innerText = `Упражнение: ${currentExerciseIndex + 1} из ${exercisesList.length}`;
   document.getElementById('current-exercise-name').innerText = ex.name;
   document.getElementById('current-exercise-meta').innerText = `${ex.sets} × ${ex.reps}`;
   
-  document.getElementById('timer-container').classList.remove('rest-mode');
-  document.getElementById('timer-container').classList.remove('ready-mode');
+  const container = document.getElementById('timer-container');
+  container.classList.remove('rest-mode');
+  container.classList.remove('ready-mode');
   document.getElementById('timer-label').innerText = "Осталось";
   
+  // Кнопки
   const actionBtn = document.getElementById('btn-action');
-  actionBtn.innerText = "Готово";
+  actionBtn.innerText = "Готово"; // Правая кнопка
   actionBtn.onclick = completeStep;
+
+  const skipBtn = document.querySelector('.btn-skip');
+  skipBtn.onclick = skipStep; // Левая кнопка - пропуск
 
   startTimer(EXERCISE_TIME, onExerciseEnd);
 }
 
 function startRest() {
   currentMode = 'rest';
-  playSound('rest'); // Звук отдыха
+  playSound('rest');
   
   document.getElementById('progress-text').innerText = `Отдых`;
   document.getElementById('current-exercise-name').innerText = "Перерыв";
   
-  // Показываем следующее упражнение
   const nextEx = exercisesList[currentExerciseIndex + 1];
   document.getElementById('current-exercise-meta').innerText = `Далее: ${nextEx.name}`;
   
-  document.getElementById('timer-container').classList.add('rest-mode'); // Зеленый цвет
+  const container = document.getElementById('timer-container');
+  container.classList.remove('ready-mode');
+  container.classList.add('rest-mode');
   document.getElementById('timer-label').innerText = "Отдых";
   
   const actionBtn = document.getElementById('btn-action');
-  actionBtn.innerText = "Пропустить";
-  actionBtn.onclick = skipStep;
+  actionBtn.innerText = "Пропустить"; // Правая кнопка (пропуск отдыха)
+  actionBtn.onclick = () => { clearInterval(timerInterval); onRestEnd(); };
+
+  const skipBtn = document.querySelector('.btn-skip');
+  skipBtn.onclick = skipStep; // Левая кнопка (пропуск упражнения)
 
   startTimer(REST_TIME, onRestEnd);
 }
 
-function startTimer(seconds, callback, isGetReady = false) {
+// Универсальный таймер
+function startTimer(seconds, callback) {
   clearInterval(timerInterval);
   
   const circle = document.getElementById('timer-circle');
@@ -121,26 +137,45 @@ function startTimer(seconds, callback, isGetReady = false) {
   const radius = 90;
   const circumference = 2 * Math.PI * radius;
   
+  // Начальное состояние
   circle.style.strokeDasharray = circumference;
   circle.style.strokeDashoffset = 0;
   secondsEl.innerText = timeLeft;
 
+  // Расчет смещения для круга
+  const updateCircle = () => {
+      const progress = timeLeft / seconds;
+      const offset = circumference * (1 - progress);
+      circle.style.strokeDashoffset = offset;
+  };
+  
+  updateCircle(); // Сразу обновляем круг
+
   timerInterval = setInterval(() => {
     timeLeft--;
-    secondsEl.innerText = timeLeft;
     
-    // Тикающий звук для подготовки и отдыха (каждую секунду)
+    // Звуки
     if (currentMode === 'getready' || currentMode === 'rest') {
         playSound('tick');
     }
+    if (timeLeft <= 3 && currentMode === 'exercise') {
+        playSound('tick');
+    }
 
-    const progress = timeLeft / seconds;
-    const offset = circumference * (1 - progress);
-    circle.style.strokeDashoffset = offset;
+    if (timeLeft < 0) { // Защита от минуса
+        clearInterval(timerInterval);
+        return;
+    }
 
-    if (timeLeft <= 0) {
+    secondsEl.innerText = timeLeft;
+    updateCircle();
+
+    if (timeLeft === 0) {
       clearInterval(timerInterval);
-      callback();
+      // Небольшая задержка, чтобы пользователь увидел 0
+      setTimeout(() => {
+          if (currentMode !== 'finish') callback();
+      }, 300);
     }
   }, 1000);
 }
@@ -155,32 +190,40 @@ function onExerciseEnd() {
 
 function onRestEnd() {
   currentExerciseIndex++;
-  startGetReady(); // Вместо startExercise идем к подготовке
+  startGetReady();
 }
 
 function completeStep() {
+  if (currentMode !== 'exercise') return;
   clearInterval(timerInterval);
-  if (currentMode === 'exercise') {
-    if (currentExerciseIndex === exercisesList.length - 1) {
-        finishWorkout();
-    } else {
-        startRest();
-    }
+  if (currentExerciseIndex === exercisesList.length - 1) {
+      finishWorkout();
+  } else {
+      startRest();
   }
 }
 
 function skipStep() {
   clearInterval(timerInterval);
+  // Если пропускаем во время отдыха, переходим к след. упражнению
   if (currentMode === 'rest') {
     currentExerciseIndex++;
     startGetReady();
-  } else if (currentMode === 'getready') {
-    startExercise();
+  } 
+  // Если пропускаем во время упражнения или подготовки, пропускаем упражнение
+  else if (currentMode === 'exercise' || currentMode === 'getready') {
+    if (currentExerciseIndex < exercisesList.length - 1) {
+        currentExerciseIndex++; // Увеличиваем индекс
+        startGetReady();
+    } else {
+        finishWorkout(); // Если это было последнее
+    }
   }
 }
 
 function finishWorkout() {
   clearInterval(timerInterval);
+  currentMode = 'finish';
   saveToHistory(currentTrainingData.id, currentTrainingData.name);
   if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
     window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
