@@ -10,13 +10,11 @@
 <body>
   <div class="container">
     
-    <!-- Кнопка Назад (показывается только на интро и финише) -->
     <button id="btn-back-main" class="btn-back" onclick="window.location.href='index.html'" style="display:none;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       На главную
     </button>
 
-    <!-- Экран 1: Информация перед стартом -->
     <div id="screen-intro" class="intro-screen">
       <h2 id="training-name-intro" style="margin-bottom: 10px;">Загрузка...</h2>
       <p id="training-desc-intro" style="margin-bottom: 30px;"></p>
@@ -29,17 +27,14 @@
       </div>
     </div>
 
-    <!-- Экран 2: Процесс тренировки -->
     <div id="screen-workout" class="workout-screen" style="display: none;">
       
-      <!-- Верхняя часть: Название -->
       <div>
         <p id="progress-text" style="margin-bottom: 5px; color: var(--text-secondary);">Упражнение 1 из 5</p>
         <h2 id="current-exercise-name" class="current-exercise-name">Название</h2>
         <div id="current-exercise-meta" class="current-exercise-meta">3 × 12</div>
       </div>
 
-      <!-- Таймер -->
       <div id="timer-container" class="timer-circle-container">
         <svg class="timer-svg" viewBox="0 0 200 200">
           <circle class="timer-bg" cx="100" cy="100" r="90"></circle>
@@ -51,16 +46,14 @@
         </div>
       </div>
 
-      <!-- Кнопки -->
       <div class="control-buttons">
         <button class="btn-control btn-skip" onclick="skipStep()">Пропустить</button>
         <button id="btn-action" class="btn-control btn-action" onclick="completeStep()">Готово</button>
       </div>
     </div>
 
-    <!-- Экран 3: Финиш -->
     <div id="screen-finish" style="display: none; text-align: center; padding-top: 20vh;">
-      <div class="completed-badge">🏆 Отлично!</div>
+      <div style="font-size: 3rem; margin-bottom: 20px;">🏆</div>
       <h2>Тренировка завершена</h2>
       <p style="margin: 20px 0 40px;">Вы большие молодцы. Результат сохранен.</p>
       <button class="btn-main" onclick="goHome()">Завершить</button>
