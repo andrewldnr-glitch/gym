@@ -10,11 +10,13 @@
 <body>
   <div class="container">
     
+    <!-- Кнопка Назад -->
     <button id="btn-back-main" class="btn-back" onclick="window.location.href='index.html'" style="display:none;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       На главную
     </button>
 
+    <!-- Экран 1: Интро -->
     <div id="screen-intro" class="intro-screen">
       <h2 id="training-name-intro" style="margin-bottom: 10px;">Загрузка...</h2>
       <p id="training-desc-intro" style="margin-bottom: 30px;"></p>
@@ -27,6 +29,7 @@
       </div>
     </div>
 
+    <!-- Экран 2: Процесс тренировки -->
     <div id="screen-workout" class="workout-screen" style="display: none;">
       
       <div>
@@ -46,15 +49,18 @@
         </div>
       </div>
 
-       <div class="control-buttons">
+      <!-- Кнопки без onclick в HTML, управление через JS -->
+      <div class="control-buttons">
         <button class="btn-control btn-skip">Пропустить</button>
         <button id="btn-action" class="btn-control btn-action">Начать</button>
       </div>
+    </div>
 
+    <!-- Экран 3: Финиш (ВОССТАНОВЛЕН) -->
     <div id="screen-finish" style="display: none; text-align: center; padding-top: 20vh;">
       <div style="font-size: 3rem; margin-bottom: 20px;">🏆</div>
       <h2>Тренировка завершена</h2>
-      <p style="margin: 20px 0 40px;">Вы большие молодцы. Результат сохранен.</p>
+      <p style="margin: 20px 0 40px; color: var(--text-secondary);">Вы большие молодцы. Результат сохранен.</p>
       <button class="btn-main" onclick="goHome()">Завершить</button>
     </div>
 
