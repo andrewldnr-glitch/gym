@@ -50,7 +50,6 @@ function startWorkout() {
   startGetReady();
 }
 
-// --- Этап: Приготовьтесь ---
 function startGetReady() {
   currentMode = 'getready';
   
@@ -59,19 +58,25 @@ function startGetReady() {
   document.getElementById('current-exercise-name').innerText = ex.name;
   document.getElementById('current-exercise-meta').innerText = `${ex.sets} × ${ex.reps}`;
   
-  // Стили таймера
   const container = document.getElementById('timer-container');
   container.classList.remove('rest-mode');
   container.classList.add('ready-mode');
   document.getElementById('timer-label').innerText = "Приготовьтесь";
   
-  // Кнопки
+  // УПРАВЛЕНИЕ КНОПКАМИ
   const actionBtn = document.getElementById('btn-action');
-  actionBtn.innerText = "Начать"; // Правая кнопка
-  actionBtn.onclick = () => { clearInterval(timerInterval); startExercise(); };
-
   const skipBtn = document.querySelector('.btn-skip');
-  skipBtn.onclick = skipStep; // Левая кнопка - пропуск упражнения
+  
+  actionBtn.innerText = "Начать";
+  actionBtn.style.display = 'block'; // Показываем кнопку
+  actionBtn.onclick = function() {
+      clearInterval(timerInterval);
+      startExercise();
+  };
+
+  skipBtn.onclick = function() {
+      skipStep();
+  };
 
   startTimer(GET_READY_TIME, startExercise);
 }
@@ -90,13 +95,14 @@ function startExercise() {
   container.classList.remove('ready-mode');
   document.getElementById('timer-label').innerText = "Осталось";
   
-  // Кнопки
+  // УПРАВЛЕНИЕ КНОПКАМИ
   const actionBtn = document.getElementById('btn-action');
-  actionBtn.innerText = "Готово"; // Правая кнопка
+  const skipBtn = document.querySelector('.btn-skip');
+  
+  actionBtn.innerText = "Готово";
   actionBtn.onclick = completeStep;
 
-  const skipBtn = document.querySelector('.btn-skip');
-  skipBtn.onclick = skipStep; // Левая кнопка - пропуск
+  skipBtn.onclick = skipStep;
 
   startTimer(EXERCISE_TIME, onExerciseEnd);
 }
@@ -116,17 +122,26 @@ function startRest() {
   container.classList.add('rest-mode');
   document.getElementById('timer-label').innerText = "Отдых";
   
+  // УПРАВЛЕНИЕ КНОПКАМИ
   const actionBtn = document.getElementById('btn-action');
-  actionBtn.innerText = "Пропустить"; // Правая кнопка (пропуск отдыха)
-  actionBtn.onclick = () => { clearInterval(timerInterval); onRestEnd(); };
-
   const skipBtn = document.querySelector('.btn-skip');
-  skipBtn.onclick = skipStep; // Левая кнопка (пропуск упражнения)
+  
+  actionBtn.innerText = "Пропустить отдых";
+  actionBtn.onclick = function() { 
+      clearInterval(timerInterval); 
+      onRestEnd(); 
+  };
+  
+  skipBtn.onclick = function() {
+      // В отдыхе пропуск работает как "пропустить следующее упражнение"
+      // Но для простоты сделаем так же как кнопку справа
+      clearInterval(timerInterval); 
+      onRestEnd();
+  };
 
   startTimer(REST_TIME, onRestEnd);
 }
 
-// Универсальный таймер
 function startTimer(seconds, callback) {
   clearInterval(timerInterval);
   
@@ -137,24 +152,22 @@ function startTimer(seconds, callback) {
   const radius = 90;
   const circumference = 2 * Math.PI * radius;
   
-  // Начальное состояние
   circle.style.strokeDasharray = circumference;
-  circle.style.strokeDashoffset = 0;
   secondsEl.innerText = timeLeft;
-
-  // Расчет смещения для круга
-  const updateCircle = () => {
+  
+  // Функция отрисовки круга
+  function updateVisual() {
       const progress = timeLeft / seconds;
       const offset = circumference * (1 - progress);
       circle.style.strokeDashoffset = offset;
-  };
+  }
   
-  updateCircle(); // Сразу обновляем круг
+  updateVisual(); // Начальная отрисовка
 
   timerInterval = setInterval(() => {
     timeLeft--;
     
-    // Звуки
+    // Звуки (безопасный вызов)
     if (currentMode === 'getready' || currentMode === 'rest') {
         playSound('tick');
     }
@@ -162,17 +175,17 @@ function startTimer(seconds, callback) {
         playSound('tick');
     }
 
-    if (timeLeft < 0) { // Защита от минуса
+    if (timeLeft < 0) {
         clearInterval(timerInterval);
         return;
     }
 
     secondsEl.innerText = timeLeft;
-    updateCircle();
+    updateVisual();
 
     if (timeLeft === 0) {
       clearInterval(timerInterval);
-      // Небольшая задержка, чтобы пользователь увидел 0
+      // Задержка для визуала
       setTimeout(() => {
           if (currentMode !== 'finish') callback();
       }, 300);
@@ -205,18 +218,16 @@ function completeStep() {
 
 function skipStep() {
   clearInterval(timerInterval);
-  // Если пропускаем во время отдыха, переходим к след. упражнению
+  
   if (currentMode === 'rest') {
     currentExerciseIndex++;
     startGetReady();
-  } 
-  // Если пропускаем во время упражнения или подготовки, пропускаем упражнение
-  else if (currentMode === 'exercise' || currentMode === 'getready') {
+  } else if (currentMode === 'exercise' || currentMode === 'getready') {
     if (currentExerciseIndex < exercisesList.length - 1) {
-        currentExerciseIndex++; // Увеличиваем индекс
+        currentExerciseIndex++;
         startGetReady();
     } else {
-        finishWorkout(); // Если это было последнее
+        finishWorkout();
     }
   }
 }
