@@ -22,13 +22,13 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  /* Убрал padding-bottom, чтобы не было пустого места там, где нет меню */
 }
 
 .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; }
 
 h1 { font-size: 2rem; margin: 10px 0; font-weight: 700; letter-spacing: -0.5px; }
 h2 { font-size: 1.5rem; margin: 10px 0 20px; font-weight: 700; }
+h3 { font-size: 1.2rem; margin: 10px 0 15px; font-weight: 600; }
 p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 
 .card {
@@ -41,10 +41,11 @@ p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 .card-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 .card-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; }
 
-.card-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+.card-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
 .badge-easy { background: rgba(49, 196, 141, 0.15); color: var(--accent-secondary); }
 .badge-medium { background: rgba(59, 130, 246, 0.15); color: var(--accent-tertiary); }
 .badge-hard { background: rgba(255, 107, 53, 0.15); color: var(--accent-primary); }
+.badge-group { background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
 
 .levels-grid { display: grid; gap: 15px; margin-top: 20px; }
 .level-card {
@@ -52,65 +53,43 @@ p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
   border-radius: var(--card-radius); padding: 24px 20px; text-align: left; font-weight: 600; font-size: 1.2rem;
   cursor: pointer; transition: all 0.2s; border: 1px solid transparent; display: flex; align-items: center; gap: 15px;
   text-decoration: none; color: var(--text-primary);
-  /* Важно: обеспечиваем, что карточка выше других слоев */
-  position: relative;
-  z-index: 1;
+  position: relative; z-index: 1;
 }
 .level-card:hover { border-color: var(--accent-primary); box-shadow: 0 0 15px rgba(255, 107, 53, 0.2); }
 .level-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: rgba(255, 255, 255, 0.05); }
 .level-info span { display: block; font-size: 0.85rem; font-weight: 400; color: var(--text-secondary); margin-top: 4px; }
 
-/* Кнопки */
 .btn-main { width: 100%; padding: 16px; background: linear-gradient(90deg, var(--accent-primary), #FF8F5A); color: #fff; border: none; border-radius: 16px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
 .btn-main:active { transform: scale(0.98); }
 
 .btn-back { background: none; border: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; padding: 5px 0; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s; }
 .btn-back:hover { color: var(--text-primary); }
 
-/* Нижняя навигация (Tab Bar) */
+/* Tab Bar */
 .tab-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 75px;
-  background: rgba(20, 20, 22, 0.95);
-  backdrop-filter: blur(20px);
+  position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
+  background: rgba(20, 20, 22, 0.95); backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-light);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding-bottom: 10px;
-  z-index: 100;
-  
-  /* FIX: Позволяет кликать сквозь пустые места панели навигации */
-  pointer-events: none; 
+  display: flex; justify-content: space-around; align-items: center;
+  padding-bottom: 10px; z-index: 100;
+  pointer-events: none;
 }
-
 .tab-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.75rem;
-  font-weight: 500;
-  gap: 4px;
-  transition: color 0.2s;
-  width: 60px;
-  /* FIX: Возвращаем клики только для самих кнопок */
-  pointer-events: auto; 
+  display: flex; flex-direction: column; align-items: center;
+  color: var(--text-secondary); text-decoration: none;
+  font-size: 0.75rem; font-weight: 500; gap: 4px;
+  transition: color 0.2s; width: 60px;
+  pointer-events: auto;
 }
-
 .tab-item.active { color: var(--accent-primary); }
 .tab-icon { width: 24px; height: 24px; margin-bottom: 2px; }
 
-/* Статистика */
+/* Stats */
 .stat-item { background: var(--bg-card); padding: 20px; border-radius: var(--card-radius); margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.05); }
 .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--accent-primary); margin: 5px 0; }
 .stat-label { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
 
-/* --- Таймеры и Экран тренировки --- */
+/* Training Screens */
 .workout-screen { display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 70vh; text-align: center; padding-top: 20px; }
 .intro-screen { text-align: left; padding: 10px 0; }
 .intro-title { font-size: 1rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
@@ -125,6 +104,8 @@ p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 .timer-bg { fill: none; stroke: var(--border-light); stroke-width: 8; }
 .timer-progress { fill: none; stroke: var(--accent-primary); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 0; transition: stroke-dashoffset 0.1s linear; }
 .rest-mode .timer-progress { stroke: var(--accent-secondary); }
+.ready-mode .timer-progress { stroke: var(--accent-tertiary); } /* Синий для подготовки */
+
 .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
 .timer-seconds { font-size: 4rem; font-weight: 700; color: var(--text-primary); line-height: 1; display: block; }
 .timer-label { font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; margin-top: 5px; display: block; }
@@ -137,76 +118,41 @@ p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 .btn-skip { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
 .btn-action { background: var(--accent-primary); color: white; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
 
-/* Добавляем отступ снизу для страниц с таб-баром, чтобы контент не прятался */
-body.has-tab-bar .container {
-  padding-bottom: 100px;
+body.has-tab-bar .container { padding-bottom: 100px; }
+
+/* Info Page */
+.info-card {
+  background: var(--bg-card); border-radius: var(--card-radius); padding: 20px; margin-bottom: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
-/* --- Экран загрузки (Splash Screen) --- */
+.info-card h3 { margin-top: 0; margin-bottom: 10px; font-size: 1.1rem; color: var(--text-primary); }
+.info-card p { font-size: 0.95rem; line-height: 1.6; }
+.info-list { list-style: none; padding: 0; margin: 0; }
+.info-list li { margin-bottom: 12px; padding-left: 10px; position: relative; }
+.info-list li::before { content: "•"; position: absolute; left: -5px; color: var(--accent-primary); }
+.accent-text { font-weight: 600; }
+
+/* Splash Screen */
 .splash-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background-color: var(--bg-primary);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
   z-index: 9999;
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
-
-.splash-screen.hidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
+.splash-screen.hidden { opacity: 0; visibility: hidden; }
 .splash-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 20px;
+  width: 80px; height: 80px; border-radius: 20px;
   background: linear-gradient(135deg, var(--accent-primary), #FF8F5A);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex; justify-content: center; align-items: center;
   margin-bottom: 24px;
   box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
 }
-
-.splash-logo svg {
-  width: 48px;
-  height: 48px;
-  color: white;
-}
-
-.splash-title {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.5px;
-  margin-bottom: 30px;
-}
-
-/* Анимация загрузчика (Loader) */
-.loader {
-  display: flex;
-  gap: 6px;
-}
-
-.loader-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: var(--text-secondary);
-  animation: bounce 1.4s infinite ease-in-out both;
-}
-
+.splash-logo svg { width: 48px; height: 48px; color: white; }
+.splash-title { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 30px; }
+.loader { display: flex; gap: 6px; }
+.loader-dot { width: 10px; height: 10px; border-radius: 50%; background-color: var(--text-secondary); animation: bounce 1.4s infinite ease-in-out both; }
 .loader-dot:nth-child(1) { animation-delay: -0.32s; background-color: var(--accent-primary); }
 .loader-dot:nth-child(2) { animation-delay: -0.16s; background-color: var(--accent-secondary); }
 .loader-dot:nth-child(3) { background-color: var(--accent-tertiary); }
-
-@keyframes bounce {
-  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-  40% { transform: scale(1); opacity: 1; }
-}
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
