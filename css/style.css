@@ -18,7 +18,18 @@
 body {
   margin: 0; padding: 0;
   font-family: var(--font-family);
-  background-color: var(--bg-primary);
+  
+  /* Настройки фона */
+  background-color: var(--bg-primary); /* Фоновый цвет, если картинка не загрузилась */
+  background-image: 
+    linear-gradient(rgba(10, 10, 12, 0.85), rgba(10, 10, 12, 0.85)), /* Затемнение 85% */
+    url('../assets/images/background.png'); /* Путь к вашей картинке */
+  
+  background-size: cover; /* Растянуть на весь экран */
+  background-position: center; /* Центрировать */
+  background-attachment: fixed; /* Фиксировать при прокрутке */
+  background-repeat: no-repeat;
+
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
