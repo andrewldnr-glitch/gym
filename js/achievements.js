@@ -2,7 +2,6 @@
 
 const ACHIEVEMENTS_KEY = 'user_achievements';
 
-// Список всех возможных достижений
 const BADGES_LIST = [
     { id: 'first_workout', name: 'Первый шаг', icon: '👟', check: (stats) => stats.totalWorkouts >= 1 },
     { id: 'five_workouts', name: 'Разгон', icon: '🔥', check: (stats) => stats.totalWorkouts >= 5 },
@@ -12,56 +11,52 @@ const BADGES_LIST = [
     { id: 'night_owl', name: 'Сова', icon: '🦉', check: (stats) => stats.nightWorkouts >= 1 }
 ];
 
-// Получить текущие достижения
 function getAchievements() {
     const data = localStorage.getItem(ACHIEVEMENTS_KEY);
     return data ? JSON.parse(data) : [];
 }
 
-// Сохранить достижение
 function saveAchievement(id) {
     const current = getAchievements();
     if (!current.includes(id)) {
         current.push(id);
         localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(current));
         
-        // Показать уведомление в Telegram
         if (window.Telegram && window.Telegram.WebApp) {
             const badge = BADGES_LIST.find(b => b.id === id);
-            window.Telegram.WebApp.showPopup({
-                title: 'Достижение разблокировано! 🏆',
-                message: `Вы получили: "${badge.name}"`,
-                buttons: [{type: 'ok'}]
-            });
+            // Используем alert если showPopup не сработает
+            if (window.Telegram.WebApp.showPopup) {
+                window.Telegram.WebApp.showPopup({
+                    title: 'Достижение разблокировано! 🏆',
+                    message: `Вы получили: "${badge.name}"`,
+                    buttons: [{type: 'ok'}]
+                });
+            } else {
+                alert(`🏆 Достижение: "${badge.name}"`);
+            }
         }
     }
 }
 
-// Проверить все достижения (вызывать при обновлении статистики)
 function checkAllAchievements() {
-    const history = getHistory();
-    const weightHist = getWeightHistory();
+    // Безопасное получение истории
+    const history = (typeof getHistory === 'function') ? getHistory() : [];
     
-    // Собираем статистику
+    // Безопасное получение веса
+    const weightHist = (typeof getWeightHistory === 'function') ? getWeightHistory() : [];
+    
     const stats = {
         totalWorkouts: history.length,
         weightEntries: weightHist.length,
-        nightWorkouts: history.filter(h => {
-            const hour = new Date(h.date).getHours(); // Используем текущее время записи, если дата - это день
-            // Для простоты считаем, что если дата "сегодня" и сейчас ночь, то это ночная тренировка.
-            // Но т.к. мы сохраняем только дату, проверим реальное время сейчас при вызове функции? 
-            // Или добавим время в историю? Давайте упростим: проверяем время прямо сейчас при вызове check.
-            return false; // Заглушка, ночь проверим отдельно
-        }).length
+        nightWorkouts: 0
     };
 
-    // Проверка ночной тренировки (если сейчас ночь и мы вызвали check)
+    // Проверка ночной тренировки (23:00 - 06:00)
     const hourNow = new Date().getHours();
     if (hourNow >= 23 || hourNow < 6) {
         stats.nightWorkouts = 1; 
     }
 
-    // Проверяем каждый бейдж
     BADGES_LIST.forEach(badge => {
         if (badge.check(stats)) {
             saveAchievement(badge.id);
@@ -69,7 +64,6 @@ function checkAllAchievements() {
     });
 }
 
-// Отрисовка достижений в профиле
 function renderAchievements() {
     const container = document.getElementById('achievements-container');
     if (!container) return;
