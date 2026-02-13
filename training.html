@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Тренировка</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <button class="btn-back" onclick="window.location.href='index.html'">← На главную</button>
+    
+    <h2 id="training-name">Загрузка...</h2>
+    <p id="training-desc"></p>
+
+    <div id="exercise-list" style="margin-top: 20px;"></div>
+
+    <div style="margin-top: 30px;">
+      <button id="complete-btn" class="btn-main" disabled onclick="completeTraining()">
+        Завершить тренировку
+      </button>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/training.js"></script>
+</body>
+</html>
