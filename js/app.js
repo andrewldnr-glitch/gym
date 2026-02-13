@@ -1,103 +1,135 @@
-// js/app.js
-function initApp() {
-  if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-  }
-}
+// --- ЛОГИКА ВЕСА И ГРАФИКА ---
 
-async function loadTrainingsData() {
-  try {
-    const response = await fetch('data/trainings.json');
-    if (!response.ok) throw new Error('Network response was not ok');
-    return await response.json();
-  } catch (error) {
-    console.error('Error loading trainings:', error);
-    return null;
-  }
-}
+// 1. Ключ для хранения
+const WEIGHT_KEY = 'weightHistory';
 
-const STORAGE_KEY = 'trainingsHistory';
-function getHistory() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
-}
-function saveToHistory(trainingId, trainingName) {
-  const history = getHistory();
-  history.push({ id: trainingId, name: trainingName, date: new Date().toISOString().split('T')[0] });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-}
-function clearHistory() {
-  localStorage.removeItem(STORAGE_KEY);
-}
-
-// --- Безопасный звуковой движок ---
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
-
-function unlockAudio() {
-    if (!audioCtx && AudioContext) {
-        audioCtx = new AudioContext();
+// 2. Получить данные из памяти (безопасная функция)
+function getWeightHistory() {
+    const data = localStorage.getItem(WEIGHT_KEY);
+    if (data) {
+        try {
+            return JSON.parse(data);
+        } catch (e) {
+            return [];
+        }
     }
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
+    return [];
+}
+
+// 3. Сохранить данные
+function saveWeightHistory(history) {
+    localStorage.setItem(WEIGHT_KEY, JSON.stringify(history));
+}
+
+// 4. Инициализация при старте (Вставьте это в ваш DOMContentLoaded или в начало файла)
+function initWeightModule() {
+    // Загружаем сохраненную историю
+    const history = getWeightHistory();
+    
+    // Если есть данные, обновляем график
+    if (history.length > 0) {
+        updateWeightChart(history);
+        updateDashboardStats(history);
     }
 }
 
-// Разблокируем аудио при первом клике на странице
-document.addEventListener('click', unlockAudio, { once: true });
-document.addEventListener('touchstart', unlockAudio, { once: true });
+// 5. Добавление нового веса (вызывается из модального окна)
+function addWeight() {
+    const input = document.getElementById('weight-input');
+    const value = parseFloat(input.value);
 
-function playSound(type) {
-  // Если аудио не поддерживается или контекст не создан - просто выходим
-  if (!AudioContext) return;
-  if (!audioCtx) {
-      // Пытаемся создать контекст, если его нет (например, клик был раньше)
-      try { audioCtx = new AudioContext(); } catch(e) { return; }
-  }
-  
-  // Если контекст "спит", будим. Если не выходит - уходим.
-  if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-  }
+    if (!value || isNaN(value)) {
+        alert('Введите корректное значение веса');
+        return;
+    }
 
-  try {
-      const osc = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      osc.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    let history = getWeightHistory();
 
-      const now = audioCtx.currentTime;
-      
-      if (type === 'tick') { 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, now);
-        gainNode.gain.setValueAtTime(0.05, now); // Тише
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-        osc.start(now);
-        osc.stop(now + 0.1);
-      } 
-      else if (type === 'start') { 
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(600, now);
-        osc.frequency.setValueAtTime(800, now + 0.1);
-        osc.frequency.setValueAtTime(1000, now + 0.2);
-        gainNode.gain.setValueAtTime(0.1, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-        osc.start(now);
-        osc.stop(now + 0.3);
-      }
-      else if (type === 'rest') { 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(600, now);
-        osc.frequency.setValueAtTime(500, now + 0.2);
-        gainNode.gain.setValueAtTime(0.1, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-        osc.start(now);
-        osc.stop(now + 0.4);
-      }
-  } catch (e) {
-      console.log("Sound error ignored");
-  }
+    // Проверяем, есть ли уже запись за сегодня
+    const existingIndex = history.findIndex(item => item.date === today);
+
+    if (existingIndex >= 0) {
+        // Обновляем вес за сегодня
+        history[existingIndex].weight = value;
+    } else {
+        // Добавляем новую запись
+        history.push({ date: today, weight: value });
+    }
+
+    // Сортируем по дате (на всякий случай)
+    history.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Сохраняем
+    saveWeightHistory(history);
+
+    // Обновляем интерфейс
+    updateWeightChart(history);
+    updateDashboardStats(history);
+
+    // Закрываем модалку
+    closeModal('weight-modal');
+    
+    // Вибрация
+    if (window.Telegram && window.Telegram.WebApp) {
+        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+    }
 }
+
+// 6. Функция отрисовки графика (Пример, адаптируйте под свою библиотеку Chart.js)
+function updateWeightChart(history) {
+    const ctx = document.getElementById('weightChart');
+    if (!ctx) return;
+
+    const labels = history.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+    });
+    const data = history.map(item => item.weight);
+
+    // Если график уже создан, обновляем данные
+    if (window.myWeightChart) {
+        window.myWeightChart.data.labels = labels;
+        window.myWeightChart.data.datasets[0].data = data;
+        window.myWeightChart.update();
+    } else {
+        // Если нет, создаем новый
+        window.myWeightChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Вес (кг)',
+                    data: data,
+                    borderColor: '#00E676',
+                    backgroundColor: 'rgba(0, 230, 118, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { 
+                        grid: { color: 'rgba(255,255,255,0.1)' },
+                        ticks: { color: '#aaa' }
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { color: '#aaa' }
+                    }
+                }
+            }
+        });
+    }
+}
+
+// ОБЯЗАТЕЛЬНО: Вызовите initWeightModule() при загрузке страницы
+// Добавьте это в ваш основной слушатель DOMContentLoaded или просто вызовите в конце файла:
+document.addEventListener('DOMContentLoaded', () => {
+    // ... ваш другой код ...
+    initWeightModule(); // <--- Это важно!
+});
