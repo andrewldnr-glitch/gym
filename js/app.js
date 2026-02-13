@@ -1,9 +1,9 @@
-// --- ЛОГИКА ВЕСА И ГРАФИКА ---
+// --- ПОЛНАЯ ЛОГИКА ВЕСА И ГРАФИКА ---
 
 // 1. Ключ для хранения
 const WEIGHT_KEY = 'weightHistory';
 
-// 2. Получить данные из памяти (безопасная функция)
+// 2. Получить данные из памяти
 function getWeightHistory() {
     const data = localStorage.getItem(WEIGHT_KEY);
     if (data) {
@@ -21,19 +21,34 @@ function saveWeightHistory(history) {
     localStorage.setItem(WEIGHT_KEY, JSON.stringify(history));
 }
 
-// 4. Инициализация при старте (Вставьте это в ваш DOMContentLoaded или в начало файла)
-function initWeightModule() {
-    // Загружаем сохраненную историю
-    const history = getWeightHistory();
+// 4. Функция обновления цифры в заголовке (Её не хватало в вашем куске)
+function updateDashboardStats(history) {
+    const weightDisplayEl = document.getElementById('current-weight-display');
     
-    // Если есть данные, обновляем график
-    if (history.length > 0) {
-        updateWeightChart(history);
-        updateDashboardStats(history);
+    // Если элемент найден на странице (в профиле)
+    if (weightDisplayEl) {
+        if (history && history.length > 0) {
+            // Берем последний вес
+            const lastWeight = history[history.length - 1].weight;
+            weightDisplayEl.textContent = lastWeight;
+        } else {
+            weightDisplayEl.textContent = '--';
+        }
     }
 }
 
-// 5. Добавление нового веса (вызывается из модального окна)
+// 5. Инициализация при старте
+function initWeightModule() {
+    const history = getWeightHistory();
+    
+    // Если есть данные, обновляем график и цифру
+    if (history.length > 0) {
+        updateWeightChart(history);
+        updateDashboardStats(history); // Вызываем обновление цифры
+    }
+}
+
+// 6. Добавление нового веса
 function addWeight() {
     const input = document.getElementById('weight-input');
     const value = parseFloat(input.value);
@@ -46,40 +61,32 @@ function addWeight() {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     let history = getWeightHistory();
 
-    // Проверяем, есть ли уже запись за сегодня
     const existingIndex = history.findIndex(item => item.date === today);
 
     if (existingIndex >= 0) {
-        // Обновляем вес за сегодня
         history[existingIndex].weight = value;
     } else {
-        // Добавляем новую запись
         history.push({ date: today, weight: value });
     }
 
-    // Сортируем по дате (на всякий случай)
     history.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    // Сохраняем
     saveWeightHistory(history);
 
-    // Обновляем интерфейс
     updateWeightChart(history);
-    updateDashboardStats(history);
+    updateDashboardStats(history); // И здесь тоже обновляем цифру
 
-    // Закрываем модалку
     closeModal('weight-modal');
     
-    // Вибрация
     if (window.Telegram && window.Telegram.WebApp) {
         Telegram.WebApp.HapticFeedback.notificationOccurred('success');
     }
 }
 
-// 6. Функция отрисовки графика (Пример, адаптируйте под свою библиотеку Chart.js)
+// 7. Функция отрисовки графика
 function updateWeightChart(history) {
     const ctx = document.getElementById('weightChart');
-    if (!ctx) return;
+    // Если элемента нет (мы не на странице профиля), просто выходим
+    if (!ctx) return; 
 
     const labels = history.map(item => {
         const date = new Date(item.date);
@@ -87,13 +94,11 @@ function updateWeightChart(history) {
     });
     const data = history.map(item => item.weight);
 
-    // Если график уже создан, обновляем данные
     if (window.myWeightChart) {
         window.myWeightChart.data.labels = labels;
         window.myWeightChart.data.datasets[0].data = data;
         window.myWeightChart.update();
     } else {
-        // Если нет, создаем новый
         window.myWeightChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -127,9 +132,10 @@ function updateWeightChart(history) {
     }
 }
 
-// ОБЯЗАТЕЛЬНО: Вызовите initWeightModule() при загрузке страницы
-// Добавьте это в ваш основной слушатель DOMContentLoaded или просто вызовите в конце файла:
+// 8. Запуск при загрузке страницы
+// ВАЖНО: Если у вас УЖЕ есть document.addEventListener('DOMContentLoaded') в файле,
+// то НЕ копируйте эти строки целиком, а просто добавьте вызов initWeightModule(); ВНУТРЬ существующего блока.
 document.addEventListener('DOMContentLoaded', () => {
-    // ... ваш другой код ...
-    initWeightModule(); // <--- Это важно!
+    // ... возможный другой ваш код ...
+    initWeightModule(); 
 });
