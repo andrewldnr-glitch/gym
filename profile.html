@@ -3,40 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Профиль</title>
+  <title>Тренировка</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body class="has-tab-bar">
+<body>
   <div class="container">
-    <h2>📊 Моя статистика</h2>
-    <div class="stat-item">
-      <div class="stat-label">Всего тренировок</div>
-      <div class="stat-value" id="total-count">0</div>
+    
+    <button id="btn-back-main" class="btn-back" onclick="window.location.href='index.html'" style="display:none;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      На главную
+    </button>
+
+    <div id="screen-intro" class="intro-screen">
+      <h2 id="training-name-intro" style="margin-bottom: 10px;">Загрузка...</h2>
+      <p id="training-desc-intro" style="margin-bottom: 30px;"></p>
+      
+      <div class="intro-title">Список упражнений</div>
+      <div id="intro-list"></div>
+
+      <div style="margin-top: 40px;">
+        <button class="btn-main" onclick="startWorkout()">Начать тренировку</button>
+      </div>
     </div>
-    <h3 style="margin-top: 20px; margin-bottom: 15px;">История</h3>
-    <div id="history-list"><p>Вы еще не завершили ни одной тренировки.</p></div>
-    <div style="margin-top: 30px;">
-      <button class="btn-main" style="background: #333; box-shadow: none;" onclick="resetStats()">Сбросить статистику</button>
+
+    <div id="screen-workout" class="workout-screen" style="display: none;">
+      
+      <div>
+        <p id="progress-text" style="margin-bottom: 5px; color: var(--text-secondary);">Упражнение 1 из 5</p>
+        <h2 id="current-exercise-name" class="current-exercise-name">Название</h2>
+        <div id="current-exercise-meta" class="current-exercise-meta">3 × 12</div>
+      </div>
+
+      <div id="timer-container" class="timer-circle-container">
+        <svg class="timer-svg" viewBox="0 0 200 200">
+          <circle class="timer-bg" cx="100" cy="100" r="90"></circle>
+          <circle id="timer-circle" class="timer-progress" cx="100" cy="100" r="90"></circle>
+        </svg>
+        <div class="timer-text">
+          <span id="timer-seconds" class="timer-seconds">30</span>
+          <span id="timer-label" class="timer-label">Секунд</span>
+        </div>
+      </div>
+
+      <div class="control-buttons">
+        <button class="btn-control btn-skip" onclick="skipStep()">Пропустить</button>
+        <button id="btn-action" class="btn-control btn-action" onclick="completeStep()">Готово</button>
+      </div>
     </div>
+
+    <div id="screen-finish" style="display: none; text-align: center; padding-top: 20vh;">
+      <div style="font-size: 3rem; margin-bottom: 20px;">🏆</div>
+      <h2>Тренировка завершена</h2>
+      <p style="margin: 20px 0 40px;">Вы большие молодцы. Результат сохранен.</p>
+      <button class="btn-main" onclick="goHome()">Завершить</button>
+    </div>
+
   </div>
-  
-  <nav class="tab-bar">
-    <a href="index.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Home</span>
-    </a>
-    <a href="profile.html" class="tab-item active">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span>Stats</span>
-    </a>
-    <a href="profile.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span>Profile</span>
-    </a>
-  </nav>
 
   <script src="js/app.js"></script>
-  <script src="js/profile.js"></script>
+  <script src="js/training.js"></script>
 </body>
 </html>
