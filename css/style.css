@@ -301,3 +301,50 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   color: var(--text-primary);
   font-weight: 600;
 }
+/* --- Стили для кнопки "Поделиться" --- */
+
+.btn-share-result {
+    width: 100%;
+    padding: 16px 20px;
+    margin-top: 10px;
+    
+    /* Яркий градиент (под цвет акцентов на скриншотах) */
+    background: linear-gradient(135deg, #00E676 0%, #00F260 100%);
+    
+    /* Цвет текста - темно-серый/черный, так как фон яркий */
+    color: #121212; 
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    
+    border: none;
+    border-radius: 12px; /* Скругление как у карточек */
+    
+    /* Эффект свечения (неон) */
+    box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
+    
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Эффект при нажатии */
+.btn-share-result:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3);
+}
+
+/* Если вы хотите, чтобы кнопка была темно-зеленой с белым текстом (альтернатива)
+   раскомментируйте блок ниже и закомментируйте верхний */
+/*
+.btn-share-result {
+    background: rgba(0, 230, 118, 0.15);
+    color: #00E676;
+    border: 1px solid rgba(0, 230, 118, 0.3);
+    box-shadow: none;
+}
+*/
