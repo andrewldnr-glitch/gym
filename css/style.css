@@ -387,3 +387,178 @@ p {
     border-radius: 20px 20px 0 0;
   }
 }
+/* --- Таймеры и Экран тренировки --- */
+
+/* Скрыть старый список упражнений, если он есть */
+#exercise-list {
+  display: none;
+}
+
+/* Контейнер для активного упражнения */
+.workout-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 70vh;
+  text-align: center;
+  padding-top: 20px;
+}
+
+/* Информационный экран перед стартом */
+.intro-screen {
+  text-align: left;
+  padding: 10px 0;
+}
+
+.intro-title {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+.intro-exercise-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.intro-exercise-item:last-child {
+  border-bottom: none;
+}
+
+.intro-number {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  width: 30px;
+}
+
+.intro-name {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.intro-meta {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Круговой таймер */
+.timer-circle-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 20px auto;
+}
+
+.timer-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.timer-bg {
+  fill: none;
+  stroke: var(--border-light);
+  stroke-width: 8;
+}
+
+.timer-progress {
+  fill: none;
+  stroke: var(--accent-primary);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 628; /* 2 * PI * 100 (радиус) */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+/* Для отдыха цвет меняется на зеленый */
+.rest-mode .timer-progress {
+  stroke: var(--accent-secondary);
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.timer-seconds {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  display: block;
+}
+
+.timer-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-top: 5px;
+  display: block;
+}
+
+/* Текущее упражнение */
+.current-exercise-name {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.current-exercise-meta {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* Кнопки управления */
+.control-buttons {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  margin-top: auto;
+}
+
+.btn-control {
+  flex: 1;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-skip {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.btn-skip:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-action {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+/* Завершено */
+.completed-badge {
+  color: var(--accent-secondary);
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
