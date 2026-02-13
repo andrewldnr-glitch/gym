@@ -63,12 +63,11 @@ function startGetReady() {
   container.classList.add('ready-mode');
   document.getElementById('timer-label').innerText = "Приготовьтесь";
   
-  // УПРАВЛЕНИЕ КНОПКАМИ
   const actionBtn = document.getElementById('btn-action');
   const skipBtn = document.querySelector('.btn-skip');
   
   actionBtn.innerText = "Начать";
-  actionBtn.style.display = 'block'; // Показываем кнопку
+  actionBtn.style.display = 'block';
   actionBtn.onclick = function() {
       clearInterval(timerInterval);
       startExercise();
@@ -95,7 +94,6 @@ function startExercise() {
   container.classList.remove('ready-mode');
   document.getElementById('timer-label').innerText = "Осталось";
   
-  // УПРАВЛЕНИЕ КНОПКАМИ
   const actionBtn = document.getElementById('btn-action');
   const skipBtn = document.querySelector('.btn-skip');
   
@@ -122,7 +120,6 @@ function startRest() {
   container.classList.add('rest-mode');
   document.getElementById('timer-label').innerText = "Отдых";
   
-  // УПРАВЛЕНИЕ КНОПКАМИ
   const actionBtn = document.getElementById('btn-action');
   const skipBtn = document.querySelector('.btn-skip');
   
@@ -133,8 +130,6 @@ function startRest() {
   };
   
   skipBtn.onclick = function() {
-      // В отдыхе пропуск работает как "пропустить следующее упражнение"
-      // Но для простоты сделаем так же как кнопку справа
       clearInterval(timerInterval); 
       onRestEnd();
   };
@@ -155,19 +150,17 @@ function startTimer(seconds, callback) {
   circle.style.strokeDasharray = circumference;
   secondsEl.innerText = timeLeft;
   
-  // Функция отрисовки круга
   function updateVisual() {
       const progress = timeLeft / seconds;
       const offset = circumference * (1 - progress);
       circle.style.strokeDashoffset = offset;
   }
   
-  updateVisual(); // Начальная отрисовка
+  updateVisual();
 
   timerInterval = setInterval(() => {
     timeLeft--;
     
-    // Звуки (безопасный вызов)
     if (currentMode === 'getready' || currentMode === 'rest') {
         playSound('tick');
     }
@@ -185,7 +178,6 @@ function startTimer(seconds, callback) {
 
     if (timeLeft === 0) {
       clearInterval(timerInterval);
-      // Задержка для визуала
       setTimeout(() => {
           if (currentMode !== 'finish') callback();
       }, 300);
@@ -235,7 +227,16 @@ function skipStep() {
 function finishWorkout() {
   clearInterval(timerInterval);
   currentMode = 'finish';
+  
+  // Сохраняем тренировку
   saveToHistory(currentTrainingData.id, currentTrainingData.name);
+  
+  // ПРОВЕРЯЕМ ДОСТИЖЕНИЯ
+  // Функция checkAllAchievements находится в js/achievements.js
+  if (typeof checkAllAchievements === 'function') {
+      checkAllAchievements();
+  }
+
   if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
     window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
   }
@@ -247,6 +248,8 @@ function goHome() { window.location.href = 'index.html'; }
 
 function switchScreen(screenName) {
   Object.keys(screens).forEach(key => {
-    screens[key].style.display = (key === screenName) ? 'block' : 'none';
+    if (screens[key]) {
+        screens[key].style.display = (key === screenName) ? 'block' : 'none';
+    }
   });
 }
