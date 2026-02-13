@@ -348,3 +348,72 @@ body.has-tab-bar .container { padding-bottom: 100px; }
     box-shadow: none;
 }
 */
+
+/* --- Стили для модальных окон --- */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex; /* Показываем при активации */
+}
+
+.modal-content {
+    background: var(--card-bg, #1c1c1e);
+    padding: 25px;
+    border-radius: 20px;
+    width: 85%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-input {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0 20px 0;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1.2rem;
+    text-align: center;
+    outline: none;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.btn-ok {
+    background: #00E676; /* Яркий зеленый */
+    color: #000;
+}
+
+.btn-cancel:active, .btn-ok:active {
+    opacity: 0.8;
+}
