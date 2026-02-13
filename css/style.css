@@ -1,28 +1,41 @@
 /* css/style.css */
 :root {
-  --bg-color: var(--tg-theme-bg-color, #ffffff);
-  --text-color: var(--tg-theme-text-color, #000000);
-  --hint-color: var(--tg-theme-hint-color, #999999);
-  --link-color: var(--tg-theme-link-color, #2481cc);
-  --button-color: var(--tg-theme-button-color, #2481cc);
-  --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-  --secondary-bg-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+  /* Цветовая палитра Dark Mode */
+  --bg-primary: #0A0A0C;          /* Основной фон */
+  --bg-secondary: #141416;        /* Фон панелей */
+  --bg-card: rgba(28, 28, 30, 0.6); /* Полупрозрачный фон карточек */
   
-  /* Defaults if not in Telegram environment */
+  /* Акценты */
+  --accent-primary: #FF6B35;      /* Оранжевый - главный акцент */
+  --accent-secondary: #31C48D;    /* Зеленый - успех/легкий уровень */
+  --accent-tertiary: #3B82F6;     /* Синий - средний уровень */
+  
+  /* Текст */
+  --text-primary: #FFFFFF;
+  --text-secondary: #8E8E93;
+  
+  /* Прочее */
+  --border-light: rgba(255, 255, 255, 0.1);
+  --card-radius: 20px;
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Сброс и базовые стили */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
   padding: 0;
   font-family: var(--font-family);
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.5;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  transition: background-color 0.3s ease;
+  padding-bottom: 80px; /* Место для нижнего меню */
+  -webkit-font-smoothing: antialiased;
 }
 
 .container {
@@ -33,106 +46,158 @@ body {
   box-sizing: border-box;
 }
 
-header {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
+/* Заголовки */
 h1 {
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin: 10px 0;
   font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 h2 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   margin: 10px 0 20px;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.2rem;
+  margin: 10px 0;
+  font-weight: 600;
 }
 
 p {
-  color: var(--hint-color);
+  color: var(--text-secondary);
   font-size: 0.95rem;
+  margin: 0;
 }
 
-/* Cards */
+/* Карточки (Glassmorphism) */
 .card {
-  background-color: var(--secondary-bg-color);
-  border-radius: 12px;
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
   padding: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 
+              inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
   text-decoration: none;
   color: inherit;
   display: block;
+  position: relative;
+  overflow: hidden;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 
+              inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: rgba(35, 35, 40, 0.7);
 }
 
 .card-title {
   font-weight: 600;
   font-size: 1.1rem;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card-desc {
   font-size: 0.9rem;
-  color: var(--hint-color);
+  color: var(--text-secondary);
+  margin-bottom: 8px;
 }
 
+/* Бейджи (Уровни сложности) */
 .card-badge {
   display: inline-block;
-  padding: 4px 8px;
-  border-radius: 6px;
-  background-color: var(--link-color);
-  color: #fff;
-  font-size: 0.8rem;
-  margin-top: 8px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Level Selection */
+.badge-easy {
+  background: rgba(49, 196, 141, 0.15);
+  color: var(--accent-secondary);
+}
+
+.badge-medium {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--accent-tertiary);
+}
+
+.badge-hard {
+  background: rgba(255, 107, 53, 0.15);
+  color: var(--accent-primary);
+}
+
+/* Выбор уровня (Главная страница) */
 .levels-grid {
   display: grid;
-  gap: 12px;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .level-card {
-  background-color: var(--secondary-bg-color);
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
+  background: linear-gradient(145deg, rgba(35, 35, 40, 0.8), rgba(20, 20, 22, 0.9));
+  border-radius: var(--card-radius);
+  padding: 24px 20px;
+  text-align: left;
   font-weight: 600;
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.2s;
   border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  color: var(--text-primary);
 }
 
 .level-card:hover {
-  border-color: var(--link-color);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 15px rgba(255, 107, 53, 0.2);
 }
 
-.level-card span {
+.level-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.level-info span {
   display: block;
   font-size: 0.85rem;
   font-weight: 400;
-  color: var(--hint-color);
-  margin-top: 5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
 }
 
-/* Exercise List */
+/* Список упражнений */
 .exercise-item {
-  background-color: var(--secondary-bg-color);
-  padding: 12px 16px;
-  border-radius: 10px;
-  margin-bottom: 8px;
+  background: var(--bg-card);
+  padding: 16px;
+  border-radius: 16px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s;
 }
 
 .exercise-info {
@@ -141,20 +206,23 @@ p {
 
 .exercise-name {
   font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: 4px;
 }
 
 .exercise-stats {
-  color: var(--hint-color);
+  color: var(--text-secondary);
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
-/* Custom Checkbox */
+/* Кастомный чекбокс (современный вид) */
 .custom-checkbox {
   position: relative;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  margin-left: 10px;
+  margin-left: 15px;
 }
 
 .custom-checkbox input {
@@ -170,29 +238,29 @@ p {
   position: absolute;
   top: 0;
   left: 0;
-  width: 24px;
-  height: 24px;
-  background-color: #fff;
-  border: 2px solid var(--hint-color);
-  border-radius: 6px;
-  transition: all 0.2s;
+  width: 28px;
+  height: 28px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--text-secondary);
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .custom-checkbox input:checked ~ .checkmark {
-  background-color: var(--link-color);
-  border-color: var(--link-color);
+  background-color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
 }
 
 .checkmark:after {
   content: "";
   position: absolute;
   display: none;
-  left: 7px;
-  top: 3px;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
+  left: 9px;
+  top: 4px;
+  width: 6px;
+  height: 12px;
+  border: solid var(--bg-primary);
+  border-width: 0 2.5px 2.5px 0;
   transform: rotate(45deg);
 }
 
@@ -200,29 +268,37 @@ p {
   display: block;
 }
 
-/* Buttons */
+/* Кнопки */
 .btn-main {
   width: 100%;
-  padding: 14px;
-  background-color: var(--button-color);
-  color: var(--button-text-color);
+  padding: 16px;
+  background: linear-gradient(90deg, var(--accent-primary), #FF8F5A);
+  color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.1s;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+
+.btn-main:active {
+  transform: scale(0.98);
 }
 
 .btn-main:disabled {
-  opacity: 0.5;
+  background: #333;
+  box-shadow: none;
+  color: #555;
   cursor: default;
+  transform: none;
 }
 
 .btn-back {
   background: none;
   border: none;
-  color: var(--link-color);
+  color: var(--text-secondary);
   font-size: 1rem;
   cursor: pointer;
   padding: 5px 0;
@@ -230,17 +306,84 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  transition: color 0.2s;
 }
 
-/* Stats */
+.btn-back:hover {
+  color: var(--text-primary);
+}
+
+/* Нижняя навигация (Tab Bar) */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 75px;
+  background: rgba(20, 20, 22, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 10px; /* Safe area for iOS */
+  z-index: 100;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  gap: 4px;
+  transition: color 0.2s;
+  width: 60px;
+}
+
+.tab-item.active {
+  color: var(--accent-primary);
+}
+
+.tab-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 2px;
+}
+
+/* Профиль */
 .stat-item {
-  background: var(--secondary-bg-color);
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 10px;
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: var(--card-radius);
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 .stat-value {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: var(--link-color);
+  color: var(--accent-primary);
+  margin: 5px 0;
+}
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Адаптивность для Telegram Desktop */
+@media (min-width: 600px) {
+  body {
+    background-color: #000; /* Чище на десктопе */
+  }
+  .tab-bar {
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 20px 20px 0 0;
+  }
 }
