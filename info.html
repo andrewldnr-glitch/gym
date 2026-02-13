@@ -3,39 +3,157 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Справочник</title>
+  <title>Справочник и Инструменты</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Стили для калькуляторов внутри страницы -->
+  <style>
+    .calc-input { 
+        width: 100%; 
+        background: rgba(255,255,255,0.05); 
+        border: 1px solid var(--border-light); 
+        color: var(--text-primary); 
+        padding: 12px; 
+        border-radius: 10px; 
+        margin-bottom: 10px; 
+        font-size: 1rem;
+    }
+    .calc-row { display: flex; gap: 10px; }
+    .calc-row .calc-input { flex: 1; }
+    .calc-select {
+        width: 100%; 
+        background: rgba(255,255,255,0.05); 
+        border: 1px solid var(--border-light); 
+        color: var(--text-primary); 
+        padding: 12px; 
+        border-radius: 10px; 
+        margin-bottom: 10px;
+    }
+    .calc-btn {
+        width: 100%; padding: 14px; 
+        background: linear-gradient(90deg, var(--accent-tertiary), #2563eb);
+        color: white; border: none; border-radius: 12px; 
+        font-weight: 600; cursor: pointer; margin-top: 10px;
+    }
+    .result-box {
+        margin-top: 20px; background: rgba(255,255,255,0.05); 
+        padding: 15px; border-radius: 12px; display: none;
+    }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; margin-top: 10px; }
+    .result-item-value { font-size: 1.5rem; font-weight: 700; color: var(--accent-primary); }
+    .result-item-label { font-size: 0.8rem; color: var(--text-secondary); }
+    .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tab-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border: none; color: var(--text-secondary); border-radius: 10px; cursor: pointer; }
+    .tab-btn.active { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+    .section-group { margin-bottom: 30px; }
+  </style>
 </head>
 <body class="has-tab-bar">
   <div class="container">
-    <h2>📚 База знаний</h2>
-    
-    <div class="info-card">
-      <h3>О приложении</h3>
-      <p>FitGym — ваш персональный помощник для тренировок в зале. Приложение разработано для Telegram и помогает следить за прогрессом, времени упражнений и отдыха.</p>
+    <h2>🛠 Инструменты</h2>
+
+    <!-- Переключатель разделов -->
+    <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showCalc('tdee')">Калории</button>
+        <button class="tab-btn" onclick="showCalc('bmi')">ИМТ</button>
+        <button class="tab-btn" onclick="showCalc('info')">Справка</button>
     </div>
 
-    <div class="info-card">
-      <h3>Как выбрать уровень?</h3>
-      <ul class="info-list">
-        <li><span class="accent-text" style="color: var(--accent-secondary);">Новичок:</span> Для тех, кто только пришел в зал. Базовые движения, малые веса, акцент на технику.</li>
-        <li><span class="accent-text" style="color: var(--accent-tertiary);">Средний:</span> Вы занимаетесь 6+ месяцев. Вводятся сплит-тренировки и увеличение весов.</li>
-        <li><span class="accent-text" style="color: var(--accent-primary);">Продвинутый:</span> Опытные атлеты. Работа на силу, большие веса, малое количество повторений.</li>
-      </ul>
+    <!-- 1. Калькулятор Калорий -->
+    <div id="section-tdee" class="section-group">
+        <div class="info-card">
+            <h3>Калькулятор КБЖУ</h3>
+            <p style="margin-bottom: 15px;">Рассчитайте суточную норму калорий и нутриентов для вашей цели.</p>
+            
+            <select id="calc-gender" class="calc-select">
+                <option value="male">Мужчина</option>
+                <option value="female">Женщина</option>
+            </select>
+            
+            <div class="calc-row">
+                <input type="number" id="calc-age" class="calc-input" placeholder="Возраст">
+                <input type="number" id="calc-height" class="calc-input" placeholder="Рост (см)">
+            </div>
+            <input type="number" id="calc-weight" class="calc-input" placeholder="Вес (кг)">
+            
+            <select id="calc-activity" class="calc-select">
+                <option value="1.2">Малоподвижный образ жизни</option>
+                <option value="1.375">Легкие тренировки (1-3 раза)</option>
+                <option value="1.55" selected>Средняя активность (3-5 раз)</option>
+                <option value="1.725">Высокая активность (6-7 раз)</option>
+            </select>
+            
+            <select id="calc-goal" class="calc-select">
+                <option value="-500">Похудение (-500 ккал)</option>
+                <option value="0" selected>Поддержание веса</option>
+                <option value="300">Набор массы (+300 ккал)</option>
+            </select>
+            
+            <button class="calc-btn" onclick="calculateTDEE()">Рассчитать</button>
+            
+            <div id="calc-results" class="result-box">
+                <div style="text-align:center; margin-bottom:10px;">Ваша суточная норма:</div>
+                <div style="font-size: 2rem; text-align:center; color:var(--accent-secondary);">
+                    <span id="res-calories">0</span> <span style="font-size:1rem; color:var(--text-secondary);">ккал</span>
+                </div>
+                <div class="result-grid">
+                    <div>
+                        <div class="result-item-value" id="res-protein">0г</div>
+                        <div class="result-item-label">Белки</div>
+                    </div>
+                    <div>
+                        <div class="result-item-value" id="res-fats">0г</div>
+                        <div class="result-item-label">Жиры</div>
+                    </div>
+                    <div>
+                        <div class="result-item-value" id="res-carbs">0г</div>
+                        <div class="result-item-label">Углеводы</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="info-card">
-      <h3>Техника безопасности</h3>
-      <p>Всегда начинайте с разминки (5-10 минут). Если чувствуете острую боль — немедленно прекратите упражнение. Увеличивайте веса постепенно.</p>
+    <!-- 2. Калькулятор ИМТ -->
+    <div id="section-bmi" class="section-group" style="display:none;">
+        <div class="info-card">
+            <h3>Индекс Массы Тела (ИМТ)</h3>
+            <p style="margin-bottom: 15px;">Быстрая оценка соответствия веса и роста.</p>
+            
+            <input type="number" id="bmi-weight" class="calc-input" placeholder="Вес (кг)">
+            <input type="number" id="bmi-height" class="calc-input" placeholder="Рост (см)">
+            
+            <button class="calc-btn" onclick="calculateBMI()">Рассчитать</button>
+            
+            <div id="bmi-result" class="result-box">
+                <div style="text-align:center;">
+                    Ваш ИМТ: <span id="bmi-value" style="font-size: 2rem; font-weight:700;">0</span>
+                    <div id="bmi-category" style="font-size: 1.2rem; margin-top:5px;">Категория</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="info-card">
-      <h3>Советы</h3>
-      <p>Не забывайте про воду и сон. Мышцы растут не на тренировке, а во время отдыха. Питание — 70% вашего успеха.</p>
+    <!-- 3. Справка -->
+    <div id="section-info" class="section-group" style="display:none;">
+        <div class="info-card">
+            <h3>Как выбрать уровень?</h3>
+            <ul class="info-list">
+                <li><span class="accent-text" style="color: var(--accent-secondary);">Новичок:</span> Базовые движения, акцент на технику.</li>
+                <li><span class="accent-text" style="color: var(--accent-tertiary);">Средний:</span> Сплит-тренировки и увеличение весов.</li>
+                <li><span class="accent-text" style="color: var(--accent-primary);">Продвинутый:</span> Работа на силу, большие веса.</li>
+            </ul>
+        </div>
+        <div class="info-card">
+            <h3>Советы</h3>
+            <p>Не забывайте про воду и сон. Мышцы растут не на тренировке, а во время отдыха.</p>
+        </div>
     </div>
+
   </div>
-
+  
+  <!-- Навигация -->
   <nav class="tab-bar">
     <a href="index.html" class="tab-item">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -47,11 +165,29 @@
     </a>
     <a href="info.html" class="tab-item active">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      <span>Info</span>
+      <span>Tools</span>
     </a>
   </nav>
 
   <script src="js/app.js"></script>
-  <script>initApp();</script>
+  <script src="js/tools.js"></script>
+  <script>
+    initApp();
+    
+    function showCalc(id) {
+        // Скрываем все
+        document.getElementById('section-tdee').style.display = 'none';
+        document.getElementById('section-bmi').style.display = 'none';
+        document.getElementById('section-info').style.display = 'none';
+        
+        // Убираем активный класс со всех кнопок
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        
+        // Показываем нужный и красим кнопку
+        document.getElementById('section-' + id).style.display = 'block';
+        event.target.classList.add('active');
+    }
+  </script>
 </body>
 </html>
