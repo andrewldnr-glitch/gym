@@ -167,3 +167,87 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 .loader-dot:nth-child(2) { animation-delay: -0.16s; background-color: var(--accent-secondary); }
 .loader-dot:nth-child(3) { background-color: var(--accent-tertiary); }
 @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+/* --- Дневник веса --- */
+.weight-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+.weight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.weight-current {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.weight-current small {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* Контейнер графика */
+.chart-container {
+  position: relative;
+  height: 200px;
+  width: 100%;
+  margin-bottom: 20px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Поле ввода веса */
+.input-weight-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.input-weight {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.btn-add-weight {
+  padding: 0 25px;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.btn-add-weight:active {
+  transform: scale(0.95);
+}
+
+.weight-history-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.95rem;
+}
+.weight-history-item:last-child { border-bottom: none; }
+.weight-val { font-weight: 600; color: var(--text-primary); }
+.date-val { color: var(--text-secondary); }
+.diff-val { font-size: 0.8rem; margin-left: 5px; }
+.diff-plus { color: var(--accent-primary); }
+.diff-minus { color: var(--accent-secondary); }
