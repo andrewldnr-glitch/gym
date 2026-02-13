@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Твои тренировки</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Привет, <span id="user-name">Гость</span>!</h1>
+      <p>Выбери свой уровень подготовки, чтобы начать.</p>
+    </header>
+
+    <div class="levels-grid">
+      <a href="trainings.html?level=beginner" class="level-card">
+        Новичок
+        <span>Базовые упражнения, подготовка тела</span>
+      </a>
+      <a href="trainings.html?level=intermediate" class="level-card">
+        Средний
+        <span>Интенсивные тренировки, сплит-системы</span>
+      </a>
+      <a href="trainings.html?level=advanced" class="level-card">
+        Продвинутый
+        <span>Сложные комплексы, работа на силу</span>
+      </a>
+    </div>
+
+    <div style="margin-top: 30px;">
+      <a href="profile.html" class="card" style="text-align: center;">
+        <div class="card-title">📊 Моя статистика</div>
+      </a>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initApp();
+      
+      // Set username
+      if (window.Telegram && window.Telegram.WebApp.initDataUnsafe.user) {
+        document.getElementById('user-name').innerText = 
+          window.Telegram.WebApp.initDataUnsafe.user.first_name;
+      }
+    });
+  </script>
+</body>
+</html>
