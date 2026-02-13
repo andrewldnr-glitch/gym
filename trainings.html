@@ -22,13 +22,13 @@
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Home</span>
     </a>
-    <a href="profile.html" class="tab-item active">
+    <a href="profile.html" class="tab-item">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       <span>Stats</span>
     </a>
-    <a href="profile.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span>Profile</span>
+    <a href="info.html" class="tab-item">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>Info</span>
     </a>
   </nav>
 
@@ -39,25 +39,35 @@
       const params = new URLSearchParams(window.location.search);
       const level = params.get('level');
       if (!level) window.location.href = 'index.html';
+      
       const titles = { 'beginner': 'Новичок', 'intermediate': 'Средний уровень', 'advanced': 'Продвинутый' };
+      const badgeNames = { 'beginner': 'Easy', 'intermediate': 'Medium', 'advanced': 'Hard' };
+      const badgeClasses = { 'beginner': 'badge-easy', 'intermediate': 'badge-medium', 'advanced': 'badge-hard' };
+      
       document.getElementById('page-title').innerText = titles[level] || 'Тренировки';
       const data = await loadTrainingsData();
       if (!data || !data.levels[level]) { document.getElementById('training-list').innerHTML = '<p>Нет доступных тренировок.</p>'; return; }
+      
       const trainings = data.levels[level];
       const container = document.getElementById('training-list');
+      
       trainings.forEach(training => {
         const card = document.createElement('a');
         card.className = 'card';
         card.href = `training.html?id=${training.id}`;
-        let badgeClass = 'badge-easy'; let badgeText = 'Easy';
-        if(level === 'intermediate') { badgeClass = 'badge-medium'; badgeText = 'Medium'; }
-        if(level === 'advanced') { badgeClass = 'badge-hard'; badgeText = 'Hard'; }
+        
         card.innerHTML = `
-          <div class="card-title">${training.name}<span class="card-badge ${badgeClass}">${badgeText}</span></div>
+          <div class="card-title">
+            ${training.name}
+            <span class="card-badge ${badgeClasses[level]}">${badgeNames[level]}</span>
+          </div>
           <div class="card-desc">${training.description}</div>
-          <div style="margin-top: 10px; color: var(--text-secondary); font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
-             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-             ${training.exercises.length} упражнений
+          <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+             <div style="color: var(--text-secondary); font-size: 0.85rem; display: flex; align-items: center; gap: 5px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${training.exercises.length} упражнений
+             </div>
+             <span class="badge-group">${training.group}</span>
           </div>
         `;
         container.appendChild(card);
