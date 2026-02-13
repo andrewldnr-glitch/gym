@@ -22,7 +22,7 @@ body {
   /* Настройки фона */
   background-color: var(--bg-primary); /* Фоновый цвет, если картинка не загрузилась */
   background-image: 
-    linear-gradient(rgba(10, 10, 12, 0.75), rgba(10, 10, 12, 0.75)), /* Затемнение 85% */
+    linear-gradient(rgba(10, 10, 12, 0.55), rgba(10, 10, 12, 0.55)), /* Затемнение 85% */
     url('../assets/images/background.png'); /* Путь к вашей картинке */
   
   background-size: cover; /* Растянуть на весь экран */
