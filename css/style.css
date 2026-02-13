@@ -1,0 +1,246 @@
+/* css/style.css */
+:root {
+  --bg-color: var(--tg-theme-bg-color, #ffffff);
+  --text-color: var(--tg-theme-text-color, #000000);
+  --hint-color: var(--tg-theme-hint-color, #999999);
+  --link-color: var(--tg-theme-link-color, #2481cc);
+  --button-color: var(--tg-theme-button-color, #2481cc);
+  --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+  --secondary-bg-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+  
+  /* Defaults if not in Telegram environment */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin: 10px 0;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin: 10px 0 20px;
+}
+
+p {
+  color: var(--hint-color);
+  font-size: 0.95rem;
+}
+
+/* Cards */
+.card {
+  background-color: var(--secondary-bg-color);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.card-desc {
+  font-size: 0.9rem;
+  color: var(--hint-color);
+}
+
+.card-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background-color: var(--link-color);
+  color: #fff;
+  font-size: 0.8rem;
+  margin-top: 8px;
+}
+
+/* Level Selection */
+.levels-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.level-card {
+  background-color: var(--secondary-bg-color);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.level-card:hover {
+  border-color: var(--link-color);
+}
+
+.level-card span {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--hint-color);
+  margin-top: 5px;
+}
+
+/* Exercise List */
+.exercise-item {
+  background-color: var(--secondary-bg-color);
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.exercise-info {
+  flex-grow: 1;
+}
+
+.exercise-name {
+  font-weight: 500;
+}
+
+.exercise-stats {
+  color: var(--hint-color);
+  font-size: 0.9rem;
+}
+
+/* Custom Checkbox */
+.custom-checkbox {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.custom-checkbox input {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  background-color: #fff;
+  border: 2px solid var(--hint-color);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: var(--link-color);
+  border-color: var(--link-color);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Buttons */
+.btn-main {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--button-color);
+  color: var(--button-text-color);
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-main:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--link-color);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 5px 0;
+  margin-bottom: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Stats */
+.stat-item {
+  background: var(--secondary-bg-color);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--link-color);
+}
