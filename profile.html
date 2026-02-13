@@ -9,24 +9,38 @@
 </head>
 <body>
   <div class="container">
-    <button class="btn-back" onclick="history.back()">← Назад</button>
-    
-    <h2>📊 Твоя статистика</h2>
+    <h2>📊 Моя статистика</h2>
     
     <div class="stat-item">
-      <div>Всего тренировок</div>
+      <div class="stat-label">Всего тренировок</div>
       <div class="stat-value" id="total-count">0</div>
     </div>
 
-    <h3 style="margin-top: 20px; margin-bottom: 10px;">История</h3>
+    <h3 style="margin-top: 20px; margin-bottom: 15px;">История</h3>
     <div id="history-list">
       <p>Вы еще не завершили ни одной тренировки.</p>
     </div>
 
-    <div style="margin-top: 20px;">
-      <button class="btn-main" style="background-color: #ff3b30;" onclick="resetStats()">Сбросить статистику</button>
+    <div style="margin-top: 30px;">
+      <button class="btn-main" style="background: #333; box-shadow: none;" onclick="resetStats()">Сбросить статистику</button>
     </div>
   </div>
+
+  <!-- Навигация -->
+  <nav class="tab-bar">
+    <a href="index.html" class="tab-item">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="profile.html" class="tab-item active">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>Stats</span>
+    </a>
+    <a href="profile.html" class="tab-item">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
+    </a>
+  </nav>
 
   <script src="js/app.js"></script>
   <script src="js/profile.js"></script>
