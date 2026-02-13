@@ -1,317 +1,71 @@
 /* css/style.css */
 :root {
-  /* Цветовая палитра Dark Mode */
-  --bg-primary: #0A0A0C;          /* Основной фон */
-  --bg-secondary: #141416;        /* Фон панелей */
-  --bg-card: rgba(28, 28, 30, 0.6); /* Полупрозрачный фон карточек */
-  
-  /* Акценты */
-  --accent-primary: #FF6B35;      /* Оранжевый - главный акцент */
-  --accent-secondary: #31C48D;    /* Зеленый - успех/легкий уровень */
-  --accent-tertiary: #3B82F6;     /* Синий - средний уровень */
-  
-  /* Текст */
+  --bg-primary: #0A0A0C;
+  --bg-secondary: #141416;
+  --bg-card: rgba(28, 28, 30, 0.6);
+  --accent-primary: #FF6B35;
+  --accent-secondary: #31C48D;
+  --accent-tertiary: #3B82F6;
   --text-primary: #FFFFFF;
   --text-secondary: #8E8E93;
-  
-  /* Прочее */
   --border-light: rgba(255, 255, 255, 0.1);
   --card-radius: 20px;
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Сброс и базовые стили */
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   font-family: var(--font-family);
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.5;
-  min-height: 100vh;
-  padding-bottom: 80px; /* Место для нижнего меню */
   -webkit-font-smoothing: antialiased;
+  /* Убрал padding-bottom, чтобы не было пустого места там, где нет меню */
 }
 
-.container {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-}
+.container { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; }
 
-/* Заголовки */
-h1 {
-  font-size: 2rem;
-  margin: 10px 0;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
+h1 { font-size: 2rem; margin: 10px 0; font-weight: 700; letter-spacing: -0.5px; }
+h2 { font-size: 1.5rem; margin: 10px 0 20px; font-weight: 700; }
+p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 
-h2 {
-  font-size: 1.5rem;
-  margin: 10px 0 20px;
-  font-weight: 700;
-}
-
-h3 {
-  font-size: 1.2rem;
-  margin: 10px 0;
-  font-weight: 600;
-}
-
-p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  margin: 0;
-}
-
-/* Карточки (Glassmorphism) */
 .card {
-  background: var(--bg-card);
-  border-radius: var(--card-radius);
-  padding: 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 
-              inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  position: relative;
-  overflow: hidden;
+  background: var(--bg-card); border-radius: var(--card-radius); padding: 16px; margin-bottom: 12px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  cursor: pointer; transition: all 0.2s ease; text-decoration: none; color: inherit; display: block;
 }
+.card:hover { transform: translateY(-2px); background: rgba(35, 35, 40, 0.7); }
+.card-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.card-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 
-              inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-  background: rgba(35, 35, 40, 0.7);
-}
+.card-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+.badge-easy { background: rgba(49, 196, 141, 0.15); color: var(--accent-secondary); }
+.badge-medium { background: rgba(59, 130, 246, 0.15); color: var(--accent-tertiary); }
+.badge-hard { background: rgba(255, 107, 53, 0.15); color: var(--accent-primary); }
 
-.card-title {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-bottom: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-desc {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
-}
-
-/* Бейджи (Уровни сложности) */
-.card-badge {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.badge-easy {
-  background: rgba(49, 196, 141, 0.15);
-  color: var(--accent-secondary);
-}
-
-.badge-medium {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--accent-tertiary);
-}
-
-.badge-hard {
-  background: rgba(255, 107, 53, 0.15);
-  color: var(--accent-primary);
-}
-
-/* Выбор уровня (Главная страница) */
-.levels-grid {
-  display: grid;
-  gap: 15px;
-  margin-top: 20px;
-}
-
+.levels-grid { display: grid; gap: 15px; margin-top: 20px; }
 .level-card {
   background: linear-gradient(145deg, rgba(35, 35, 40, 0.8), rgba(20, 20, 22, 0.9));
-  border-radius: var(--card-radius);
-  padding: 24px 20px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid transparent;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  text-decoration: none;
-  color: var(--text-primary);
-}
-
-.level-card:hover {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 15px rgba(255, 107, 53, 0.2);
-}
-
-.level-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.level-info span {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 400;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-/* Список упражнений */
-.exercise-item {
-  background: var(--bg-card);
-  padding: 16px;
-  border-radius: 16px;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: background 0.2s;
-}
-
-.exercise-info {
-  flex-grow: 1;
-}
-
-.exercise-name {
-  font-weight: 500;
-  font-size: 1rem;
-  margin-bottom: 4px;
-}
-
-.exercise-stats {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* Кастомный чекбокс (современный вид) */
-.custom-checkbox {
+  border-radius: var(--card-radius); padding: 24px 20px; text-align: left; font-weight: 600; font-size: 1.2rem;
+  cursor: pointer; transition: all 0.2s; border: 1px solid transparent; display: flex; align-items: center; gap: 15px;
+  text-decoration: none; color: var(--text-primary);
+  /* Важно: обеспечиваем, что карточка выше других слоев */
   position: relative;
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
-  margin-left: 15px;
+  z-index: 1;
 }
-
-.custom-checkbox input {
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  z-index: 2;
-  cursor: pointer;
-}
-
-.checkmark {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 28px;
-  height: 28px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 2px solid var(--text-secondary);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.custom-checkbox input:checked ~ .checkmark {
-  background-color: var(--accent-secondary);
-  border-color: var(--accent-secondary);
-}
-
-.checkmark:after {
-  content: "";
-  position: absolute;
-  display: none;
-  left: 9px;
-  top: 4px;
-  width: 6px;
-  height: 12px;
-  border: solid var(--bg-primary);
-  border-width: 0 2.5px 2.5px 0;
-  transform: rotate(45deg);
-}
-
-.custom-checkbox input:checked ~ .checkmark:after {
-  display: block;
-}
+.level-card:hover { border-color: var(--accent-primary); box-shadow: 0 0 15px rgba(255, 107, 53, 0.2); }
+.level-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: rgba(255, 255, 255, 0.05); }
+.level-info span { display: block; font-size: 0.85rem; font-weight: 400; color: var(--text-secondary); margin-top: 4px; }
 
 /* Кнопки */
-.btn-main {
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(90deg, var(--accent-primary), #FF8F5A);
-  color: #fff;
-  border: none;
-  border-radius: 16px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-}
+.btn-main { width: 100%; padding: 16px; background: linear-gradient(90deg, var(--accent-primary), #FF8F5A); color: #fff; border: none; border-radius: 16px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
+.btn-main:active { transform: scale(0.98); }
 
-.btn-main:active {
-  transform: scale(0.98);
-}
-
-.btn-main:disabled {
-  background: #333;
-  box-shadow: none;
-  color: #555;
-  cursor: default;
-  transform: none;
-}
-
-.btn-back {
-  background: none;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 5px 0;
-  margin-bottom: 15px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  transition: color 0.2s;
-}
-
-.btn-back:hover {
-  color: var(--text-primary);
-}
+.btn-back { background: none; border: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; padding: 5px 0; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s; }
+.btn-back:hover { color: var(--text-primary); }
 
 /* Нижняя навигация (Tab Bar) */
 .tab-bar {
@@ -320,15 +74,17 @@ p {
   left: 0;
   width: 100%;
   height: 75px;
-  background: rgba(20, 20, 22, 0.9);
+  background: rgba(20, 20, 22, 0.95);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-light);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-bottom: 10px; /* Safe area for iOS */
+  padding-bottom: 10px;
   z-index: 100;
+  
+  /* FIX: Позволяет кликать сквозь пустые места панели навигации */
+  pointer-events: none; 
 }
 
 .tab-item {
@@ -342,223 +98,46 @@ p {
   gap: 4px;
   transition: color 0.2s;
   width: 60px;
+  /* FIX: Возвращаем клики только для самих кнопок */
+  pointer-events: auto; 
 }
 
-.tab-item.active {
-  color: var(--accent-primary);
-}
+.tab-item.active { color: var(--accent-primary); }
+.tab-icon { width: 24px; height: 24px; margin-bottom: 2px; }
 
-.tab-icon {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 2px;
-}
+/* Статистика */
+.stat-item { background: var(--bg-card); padding: 20px; border-radius: var(--card-radius); margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.05); }
+.stat-value { font-size: 2.5rem; font-weight: 700; color: var(--accent-primary); margin: 5px 0; }
+.stat-label { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Профиль */
-.stat-item {
-  background: var(--bg-card);
-  padding: 20px;
-  border-radius: var(--card-radius);
-  margin-bottom: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-.stat-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--accent-primary);
-  margin: 5px 0;
-}
-.stat-label {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Адаптивность для Telegram Desktop */
-@media (min-width: 600px) {
-  body {
-    background-color: #000; /* Чище на десктопе */
-  }
-  .tab-bar {
-    max-width: 600px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 20px 20px 0 0;
-  }
-}
 /* --- Таймеры и Экран тренировки --- */
+.workout-screen { display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 70vh; text-align: center; padding-top: 20px; }
+.intro-screen { text-align: left; padding: 10px 0; }
+.intro-title { font-size: 1rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+.intro-exercise-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+.intro-exercise-item:last-child { border-bottom: none; }
+.intro-number { font-size: 1.2rem; font-weight: 700; color: var(--accent-primary); width: 30px; }
+.intro-name { font-size: 1rem; color: var(--text-primary); }
+.intro-meta { margin-left: auto; font-size: 0.9rem; color: var(--text-secondary); }
 
-/* Скрыть старый список упражнений, если он есть */
-#exercise-list {
-  display: none;
-}
+.timer-circle-container { position: relative; width: 220px; height: 220px; margin: 20px auto; }
+.timer-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.timer-bg { fill: none; stroke: var(--border-light); stroke-width: 8; }
+.timer-progress { fill: none; stroke: var(--accent-primary); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 0; transition: stroke-dashoffset 0.1s linear; }
+.rest-mode .timer-progress { stroke: var(--accent-secondary); }
+.timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+.timer-seconds { font-size: 4rem; font-weight: 700; color: var(--text-primary); line-height: 1; display: block; }
+.timer-label { font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; margin-top: 5px; display: block; }
 
-/* Контейнер для активного упражнения */
-.workout-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: 70vh;
-  text-align: center;
-  padding-top: 20px;
-}
+.current-exercise-name { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; line-height: 1.2; }
+.current-exercise-meta { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 20px; }
 
-/* Информационный экран перед стартом */
-.intro-screen {
-  text-align: left;
-  padding: 10px 0;
-}
+.control-buttons { display: flex; gap: 15px; width: 100%; margin-top: auto; }
+.btn-control { flex: 1; padding: 16px; border-radius: 16px; font-size: 1rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+.btn-skip { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
+.btn-action { background: var(--accent-primary); color: white; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
 
-.intro-title {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 20px;
-}
-
-.intro-exercise-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.intro-exercise-item:last-child {
-  border-bottom: none;
-}
-
-.intro-number {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--accent-primary);
-  width: 30px;
-}
-
-.intro-name {
-  font-size: 1rem;
-  color: var(--text-primary);
-}
-
-.intro-meta {
-  margin-left: auto;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-/* Круговой таймер */
-.timer-circle-container {
-  position: relative;
-  width: 220px;
-  height: 220px;
-  margin: 20px auto;
-}
-
-.timer-svg {
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg);
-}
-
-.timer-bg {
-  fill: none;
-  stroke: var(--border-light);
-  stroke-width: 8;
-}
-
-.timer-progress {
-  fill: none;
-  stroke: var(--accent-primary);
-  stroke-width: 8;
-  stroke-linecap: round;
-  stroke-dasharray: 628; /* 2 * PI * 100 (радиус) */
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.1s linear;
-}
-
-/* Для отдыха цвет меняется на зеленый */
-.rest-mode .timer-progress {
-  stroke: var(--accent-secondary);
-}
-
-.timer-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.timer-seconds {
-  font-size: 4rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1;
-  display: block;
-}
-
-.timer-label {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  margin-top: 5px;
-  display: block;
-}
-
-/* Текущее упражнение */
-.current-exercise-name {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 10px;
-  line-height: 1.2;
-}
-
-.current-exercise-meta {
-  font-size: 1.2rem;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
-}
-
-/* Кнопки управления */
-.control-buttons {
-  display: flex;
-  gap: 15px;
-  width: 100%;
-  margin-top: auto;
-}
-
-.btn-control {
-  flex: 1;
-  padding: 16px;
-  border-radius: 16px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-}
-
-.btn-skip {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text-primary);
-}
-
-.btn-skip:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.btn-action {
-  background: var(--accent-primary);
-  color: white;
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-}
-
-/* Завершено */
-.completed-badge {
-  color: var(--accent-secondary);
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  font-weight: 600;
+/* Добавляем отступ снизу для страниц с таб-баром, чтобы контент не прятался */
+body.has-tab-bar .container {
+  padding-bottom: 100px;
 }
