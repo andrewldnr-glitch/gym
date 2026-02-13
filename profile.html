@@ -92,7 +92,7 @@
       checkAllAchievements(); 
     });
 
-    // ФУНКЦИЯ ШАРИНГА (Логика)
+    // ФУНКЦИЯ ШАРИНГА (Исправленная)
     function shareResults() {
         // 1. Собираем данные
         const weightHistory = typeof getWeightHistory === 'function' ? getWeightHistory() : [];
@@ -114,7 +114,7 @@
             }
         }
 
-        // Текст для отправки
+        // Формируем текст
         const message = 
 `🏃‍♂️ Мой прогресс в FitGym:
 
@@ -125,18 +125,20 @@
 
 Занимайся со мной! @kagym_bot`;
 
-        // 2. Отправляем через Telegram
+        // 2. Отправляем через Telegram (Надежный способ)
         if (window.Telegram && window.Telegram.WebApp) {
-            try {
-                Telegram.WebApp.switchInlineQuery(message, ['users', 'groups', 'channels']);
-                Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-            } catch (e) {
-                // Если не работает инлайн, копируем в буфер
-                navigator.clipboard.writeText(message);
-                alert('Результат скопирован!');
-            }
+            // Кодируем текст для URL
+            const encodedMsg = encodeURIComponent(message);
+            // Формируем ссылку для шаринга
+            const shareUrl = `https://t.me/share/url?url=&text=${encodedMsg}`;
+            
+            // Открываем нативное меню шаринга Телеграм
+            Telegram.WebApp.openTelegramLink(shareUrl);
+            
+            // Вибрация
+            Telegram.WebApp.HapticFeedback.impactOccurred('medium');
         } else {
-            // Если открыто не в Телеграм
+            // Фолбэк если не в Телеграм
             navigator.clipboard.writeText(message);
             alert('Результат скопирован в буфер обмена!');
         }
