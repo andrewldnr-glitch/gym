@@ -1,94 +1,212 @@
 // js/training.js
 
+// Конфигурация
+const EXERCISE_TIME = 30; // Время на упражнение (сек)
+const REST_TIME = 20;     // Время отдыха (сек)
+
 let currentTrainingData = null;
+let exercisesList = [];
+let currentExerciseIndex = 0;
+let timerInterval = null;
+let currentMode = 'intro'; // intro, exercise, rest, finish
+
+// Элементы DOM
+const screens = {
+    intro: document.getElementById('screen-intro'),
+    workout: document.getElementById('screen-workout'),
+    finish: document.getElementById('screen-finish')
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
   initApp();
 
+  // 1. Загрузка данных
   const params = new URLSearchParams(window.location.search);
   const trainingId = parseInt(params.get('id'));
-  const level = params.get('level'); // Нужно для потенциальной навигации назад, но берем по ID
-
-  if (!trainingId) {
-    window.location.href = 'index.html';
-    return;
-  }
+  
+  if (!trainingId) { window.location.href = 'index.html'; return; }
 
   const data = await loadTrainingsData();
   if (!data) return;
 
-  // Ищем тренировку по ID во всех уровнях (для надежности)
-  let foundTraining = null;
+  // Поиск тренировки
   for (let lvl in data.levels) {
     const found = data.levels[lvl].find(t => t.id === trainingId);
-    if (found) {
-      foundTraining = found;
-      break;
-    }
+    if (found) { currentTrainingData = found; break; }
   }
 
-  if (!foundTraining) {
-    document.getElementById('training-name').innerText = "Ошибка";
-    return;
+  if (!currentTrainingData) { 
+    document.getElementById('training-name-intro').innerText = "Ошибка"; 
+    return; 
   }
 
-  currentTrainingData = foundTraining;
-  document.getElementById('training-name').innerText = foundTraining.name;
-  document.getElementById('training-desc').innerText = foundTraining.description;
+  // 2. Рендер Интро-экрана
+  document.getElementById('training-name-intro').innerText = currentTrainingData.name;
+  document.getElementById('training-desc-intro').innerText = currentTrainingData.description;
+  
+  exercisesList = currentTrainingData.exercises;
+  const introList = document.getElementById('intro-list');
+  
+  exercisesList.forEach((ex, index) => {
+    const item = document.createElement('div');
+    item.className = 'intro-exercise-item';
+    item.innerHTML = `
+      <div class="intro-number">${index + 1}</div>
+      <div class="intro-name">${ex.name}</div>
+      <div class="intro-meta">${ex.sets} × ${ex.reps}</div>
+    `;
+    introList.appendChild(item);
+  });
 
-  renderExercises(foundTraining.exercises);
+  // Показываем кнопку "Назад"
+  document.getElementById('btn-back-main').style.display = 'inline-flex';
 });
 
-function renderExercises(exercises) {
-  const container = document.getElementById('exercise-list');
-  container.innerHTML = '';
-
-  exercises.forEach((ex, index) => {
-    const item = document.createElement('div');
-    item.className = 'exercise-item';
-    item.innerHTML = `
-      <div class="exercise-info">
-        <div class="exercise-name">${index + 1}. ${ex.name}</div>
-        <div class="exercise-stats">${ex.sets} × ${ex.reps}</div>
-      </div>
-      <label class="custom-checkbox">
-        <input type="checkbox" onchange="checkProgress()">
-        <span class="checkmark"></span>
-      </label>
-    `;
-    container.appendChild(item);
-  });
+// 3. Старт тренировки
+function startWorkout() {
+  currentExerciseIndex = 0;
+  switchScreen('workout');
+  document.getElementById('btn-back-main').style.display = 'none'; // Скрываем кнопку назад во время тренировки
+  startExercise();
 }
 
-function checkProgress() {
-  const checkboxes = document.querySelectorAll('.custom-checkbox input');
-  const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+// 4. Логика упражнения
+function startExercise() {
+  currentMode = 'exercise';
   
-  const btn = document.getElementById('complete-btn');
-  btn.disabled = !allChecked;
+  // Обновляем UI под упражнение
+  const ex = exercisesList[currentExerciseIndex];
+  document.getElementById('progress-text').innerText = `Упражнение ${currentExerciseIndex + 1} из ${exercisesList.length}`;
+  document.getElementById('current-exercise-name').innerText = ex.name;
+  document.getElementById('current-exercise-meta').innerText = `${ex.sets} × ${ex.reps}`;
   
-  // Если все выполнены, можно включить MainButton в Telegram
-  if (allChecked && window.Telegram && window.Telegram.WebApp.MainButton) {
-     // Можно использовать Telegram MainButton для завершения
-  }
+  // Меняем цвет таймера на оранжевый
+  document.getElementById('timer-container').classList.remove('rest-mode');
+  document.getElementById('timer-label').innerText = "Секунд";
+  
+  // Меняем кнопку на "Готово"
+  const actionBtn = document.getElementById('btn-action');
+  actionBtn.innerText = "Готово";
+  actionBtn.onclick = completeStep; // Сбрасываем привязку
+
+  startTimer(EXERCISE_TIME, onExerciseEnd);
 }
 
-function completeTraining() {
-  if (!currentTrainingData) return;
+// 5. Логика отдыха
+function startRest() {
+  currentMode = 'rest';
+  
+  document.getElementById('current-exercise-name').innerText = "Отдых";
+  document.getElementById('current-exercise-meta').innerText = "Приготовьтесь к следующему";
+  
+  // Меняем цвет таймера на зеленый
+  document.getElementById('timer-container').classList.add('rest-mode');
+  document.getElementById('timer-label').innerText = "Отдых";
+  
+  // Меняем кнопку на "Пропустить отдых"
+  const actionBtn = document.getElementById('btn-action');
+  actionBtn.innerText = "Пропустить";
+  actionBtn.onclick = skipStep;
 
-  saveToHistory(currentTrainingData.id, currentTrainingData.name);
+  startTimer(REST_TIME, onRestEnd);
+}
 
-  // Уведомление
-  if (window.Telegram && window.Telegram.WebApp.showPopup) {
-    window.Telegram.WebApp.showPopup({
-      title: 'Отлично!',
-      message: 'Тренировка успешно завершена и сохранена в статистику.',
-      buttons: [{type: 'ok'}]
-    }, () => {
-      window.location.href = 'index.html';
-    });
+// 6. Таймер (Круговой)
+function startTimer(seconds, callback) {
+  clearInterval(timerInterval);
+  
+  const circle = document.getElementById('timer-circle');
+  const secondsEl = document.getElementById('timer-seconds');
+  
+  let timeLeft = seconds;
+  const radius = 90; // Радиус круга из SVG (r=90)
+  const circumference = 2 * Math.PI * radius;
+  
+  // Инициализация
+  circle.style.strokeDasharray = circumference;
+  circle.style.strokeDashoffset = 0;
+  secondsEl.innerText = timeLeft;
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    secondsEl.innerText = timeLeft;
+
+    // Анимация круга
+    const progress = timeLeft / seconds;
+    const offset = circumference * (1 - progress);
+    circle.style.strokeDashoffset = offset;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      callback();
+    }
+  }, 1000);
+}
+
+// 7. Переходы
+function onExerciseEnd() {
+  // Упражнение закончилось по таймеру -> идем в отдых
+  if (currentExerciseIndex < exercisesList.length - 1) {
+    startRest();
   } else {
-    alert('Тренировка завершена!');
-    window.location.href = 'index.html';
+    finishWorkout();
   }
+}
+
+function onRestEnd() {
+  // Отдых закончился -> следующее упражнение
+  currentExerciseIndex++;
+  startExercise();
+}
+
+function completeStep() {
+  // Нажали "Готово" вручную
+  clearInterval(timerInterval);
+  if (currentMode === 'exercise') {
+    // Если это было последнее упражнение
+    if (currentExerciseIndex === exercisesList.length - 1) {
+        finishWorkout();
+    } else {
+        startRest();
+    }
+  }
+}
+
+function skipStep() {
+  // Нажали "Пропустить"
+  clearInterval(timerInterval);
+  if (currentMode === 'rest') {
+    currentExerciseIndex++;
+    startExercise();
+  } else if (currentMode === 'exercise') {
+    // Если пропускаем упражнение, переходим к отдыху (или концу)
+    if (currentExerciseIndex < exercisesList.length - 1) {
+        startRest();
+    } else {
+        finishWorkout();
+    }
+  }
+}
+
+function finishWorkout() {
+  clearInterval(timerInterval);
+  saveToHistory(currentTrainingData.id, currentTrainingData.name);
+  
+  // Показываем уведомление в Telegram
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+    window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+  }
+  
+  switchScreen('finish');
+  document.getElementById('btn-back-main').style.display = 'inline-flex';
+}
+
+function goHome() {
+  window.location.href = 'index.html';
+}
+
+function switchScreen(screenName) {
+  Object.keys(screens).forEach(key => {
+    screens[key].style.display = (key === screenName) ? 'block' : 'none';
+  });
 }
