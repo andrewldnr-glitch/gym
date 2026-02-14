@@ -10,7 +10,7 @@
 </head>
 <body class="has-tab-bar">
   <div class="container">
-    
+
     <!-- Блок: Тренировки -->
     <h2>📊 Статистика</h2>
     <div class="stat-item" style="display:flex; justify-content:space-between; align-items:center;">
@@ -52,15 +52,15 @@
       <div id="weight-history-list"></div>
     </div>
 
-            <!-- КНОПКА ПОДЕЛИТЬСЯ (Обновленная) -->
+    <!-- КНОПКА ПОДЕЛИТЬСЯ -->
     <div style="padding: 10px 0 30px;">
-        <button class="btn-share-result" onclick="shareResults()">
-            🚀 Поделиться результатом
-        </button>
+      <button class="btn-share-result" onclick="shareResults()">
+        🚀 Поделиться результатом
+      </button>
     </div>
 
   </div>
-  
+
   <!-- Навигация -->
   <nav class="tab-bar">
     <a href="index.html" class="tab-item">
@@ -83,40 +83,98 @@
   <script src="js/weight.js"></script>
   <script src="js/achievements.js"></script>
   <script src="js/profile.js"></script>
-  
+
   <script>
-    // Запуск функций при загрузке страницы
-    document.addEventListener('DOMContentLoaded', () => {
-      updateStats();
-      initWeightSection();
-      renderAchievements(); 
-      checkAllAchievements(); 
+    // --- helper: безопасный JSON.parse
+    function safeParse(str, fallback) {
+      try { return JSON.parse(str); } catch (e) { return fallback; }
+    }
+
+    // --- 1) Bootstrap: подтянуть данные с Supabase и положить в localStorage
+    async function syncFromSupabaseToLocalStorage() {
+      // apiBootstrap определен в js/api.js
+      if (typeof apiBootstrap !== 'function') return;
+
+      // initData есть только в Telegram
+      const initData = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp.initData : '';
+      if (!initData) return;
+
+      const data = await apiBootstrap();
+
+      // userStats
+      const stats = data && data.stats ? data.stats : {};
+      localStorage.setItem('userStats', JSON.stringify({
+        totalWorkouts: Number(stats.total_workouts || 0),
+        lastTrainingDate: stats.last_training_at || null,
+        // оставим места под будущие поля
+        steps: safeParse(localStorage.getItem('userStats') || '{}', {}).steps || 0,
+        calories: safeParse(localStorage.getItem('userStats') || '{}', {}).calories || 0
+      }));
+
+      // trainingHistory — в формате, который читает наш profile.js
+      const workouts = Array.isArray(data.workouts) ? data.workouts : [];
+      localStorage.setItem('trainingHistory', JSON.stringify(
+        workouts.map(w => ({
+          date: w.finished_at,
+          source: w.source,
+          course_id: w.course_id,
+          day_index: w.day_index,
+          level: w.level,
+          payload: w.payload
+        }))
+      ));
+
+      // weightHistory — под weight.js (обычно ожидает [{date, weight}, ...])
+      const weights = Array.isArray(data.weights) ? data.weights : [];
+      // В Supabase мы отдаём по убыванию (новые сверху) — развернём в хронологию
+      const chronological = weights.slice().reverse().map(x => ({
+        date: x.measured_at,
+        weight: Number(x.weight)
+      }));
+      localStorage.setItem('weightHistory', JSON.stringify(chronological));
+    }
+
+    // --- 2) Запуск UI: безопасно, даже если часть функций не загрузилась
+    function runUi() {
+      if (typeof updateStats === 'function') updateStats();
+      if (typeof initWeightSection === 'function') initWeightSection();
+      if (typeof renderAchievements === 'function') renderAchievements();
+      if (typeof checkAllAchievements === 'function') checkAllAchievements();
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Сначала синк (если Telegram + функция доступна)
+        await syncFromSupabaseToLocalStorage();
+      } catch (e) {
+        console.warn('Supabase bootstrap failed, using local cache:', e);
+      } finally {
+        // Потом рисуем UI из localStorage
+        runUi();
+      }
     });
 
-    // ФУНКЦИЯ ШАРИНГА (Исправленная)
+    // --- ШАРИНГ (как у тебя, без изменений логики)
     function shareResults() {
-        // 1. Собираем данные
-        const weightHistory = typeof getWeightHistory === 'function' ? getWeightHistory() : [];
-        const stats = JSON.parse(localStorage.getItem('userStats') || '{}');
-        const streak = localStorage.getItem('streak') || 0;
-        
-        // Считаем вес
-        let currentWeight = '--';
-        let weightDiffText = '';
+      const weightHistory = typeof getWeightHistory === 'function' ? getWeightHistory() : [];
+      const stats = safeParse(localStorage.getItem('userStats') || '{}', {});
+      const streak = localStorage.getItem('streak') || 0;
 
-        if (weightHistory && weightHistory.length > 0) {
-            const start = weightHistory[0].weight;
-            const last = weightHistory[weightHistory.length - 1].weight;
-            currentWeight = last;
-            
-            if (weightHistory.length > 1) {
-                const diff = last - start;
-                weightDiffText = diff > 0 ? `(+${diff.toFixed(1)} кг)` : `(${diff.toFixed(1)} кг)`;
-            }
+      let currentWeight = '--';
+      let weightDiffText = '';
+
+      if (weightHistory && weightHistory.length > 0) {
+        const start = weightHistory[0].weight;
+        const last = weightHistory[weightHistory.length - 1].weight;
+        currentWeight = last;
+
+        if (weightHistory.length > 1) {
+          const diff = last - start;
+          weightDiffText = diff > 0 ? `(+${diff.toFixed(1)} кг)` : `(${diff.toFixed(1)} кг)`;
         }
+      }
 
-        // Формируем текст
-        const message = 
+      const message =
 `🏃‍♂️ Мой прогресс в FitGym:
 
 🔥 Серия: ${streak} дней
@@ -126,23 +184,15 @@
 
 Занимайся со мной! @kagym_bot`;
 
-        // 2. Отправляем через Telegram (Надежный способ)
-        if (window.Telegram && window.Telegram.WebApp) {
-            // Кодируем текст для URL
-            const encodedMsg = encodeURIComponent(message);
-            // Формируем ссылку для шаринга
-            const shareUrl = `https://t.me/share/url?url=&text=${encodedMsg}`;
-            
-            // Открываем нативное меню шаринга Телеграм
-            Telegram.WebApp.openTelegramLink(shareUrl);
-            
-            // Вибрация
-            Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-        } else {
-            // Фолбэк если не в Телеграм
-            navigator.clipboard.writeText(message);
-            alert('Результат скопирован в буфер обмена!');
-        }
+      if (window.Telegram && window.Telegram.WebApp) {
+        const encodedMsg = encodeURIComponent(message);
+        const shareUrl = `https://t.me/share/url?url=&text=${encodedMsg}`;
+        Telegram.WebApp.openTelegramLink(shareUrl);
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+      } else {
+        navigator.clipboard.writeText(message);
+        alert('Результат скопирован в буфер обмена!');
+      }
     }
   </script>
 </body>
