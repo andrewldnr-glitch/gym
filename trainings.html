@@ -90,5 +90,53 @@
       renderWorkoutList('workout-list', muscleGroup, currentLevel);
     }
   </script>
+<!-- Модальное окно упражнения -->
+<div id="exercise-modal" class="modal-overlay">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeExerciseModal()">✕</button>
+    
+    <h2 class="modal-title">Название</h2>
+    <p class="modal-desc" style="color: #aaa; margin-bottom: 20px;">Описание</p>
+    
+    <div class="modal-info-blocks">
+       <div class="info-block">
+           <span class="label">Вес / Инвентарь</span>
+           <span class="value modal-weight">-</span>
+       </div>
+       <div class="info-block">
+           <span class="label">Повторы</span>
+           <span class="value modal-reps">-</span>
+       </div>
+    </div>
+
+    <div class="modal-advice-box">
+        <p class="label">Совет тренера:</p>
+        <p class="modal-advice" style="color: var(--accent-secondary);">Совет</p>
+    </div>
+
+    <!-- Кнопка и Таймер -->
+    <div class="timer-container">
+        <button class="start-btn" onclick="startExerciseTimer(this)">Начать подход</button>
+        
+        <div class="timer-display" style="display:none;">
+            <svg class="timer-svg" viewBox="0 0 100 100">
+                <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="timer-circle" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <span class="timer-text">60</span>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function closeExerciseModal() {
+        document.getElementById('exercise-modal').classList.remove('active');
+    }
+    // Закрытие по клику вне окна
+    document.getElementById('exercise-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeExerciseModal();
+    });
+</script>
 </body>
 </html>
