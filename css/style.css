@@ -18,16 +18,16 @@
 body {
   margin: 0; padding: 0;
   font-family: var(--font-family);
-  
+
   /* Настройки фона */
-  background-color: var(--bg-primary); /* Фоновый цвет, если картинка не загрузилась */
-  background-image: 
-    linear-gradient(rgba(10, 10, 12, 0.55), rgba(10, 10, 12, 0.55)), /* Затемнение 85% */
-    url('../assets/images/background.png'); /* Путь к вашей картинке */
-  
-  background-size: cover; /* Растянуть на весь экран */
-  background-position: center; /* Центрировать */
-  background-attachment: fixed; /* Фиксировать при прокрутке */
+  background-color: var(--bg-primary);
+  background-image:
+    linear-gradient(rgba(10, 10, 12, 0.55), rgba(10, 10, 12, 0.55)),
+    url('../assets/images/background.png');
+
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   background-repeat: no-repeat;
 
   color: var(--text-primary);
@@ -115,7 +115,7 @@ p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 .timer-bg { fill: none; stroke: var(--border-light); stroke-width: 8; }
 .timer-progress { fill: none; stroke: var(--accent-primary); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 0; transition: stroke-dashoffset 0.1s linear; }
 .rest-mode .timer-progress { stroke: var(--accent-secondary); }
-.ready-mode .timer-progress { stroke: var(--accent-tertiary); } /* Синий для подготовки */
+.ready-mode .timer-progress { stroke: var(--accent-tertiary); }
 
 .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
 .timer-seconds { font-size: 4rem; font-weight: 700; color: var(--text-primary); line-height: 1; display: block; }
@@ -167,6 +167,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 .loader-dot:nth-child(2) { animation-delay: -0.16s; background-color: var(--accent-secondary); }
 .loader-dot:nth-child(3) { background-color: var(--accent-tertiary); }
 @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+
 /* --- Дневник веса --- */
 .weight-section {
   margin-top: 30px;
@@ -276,7 +277,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  opacity: 0.4; /* Не получено */
+  opacity: 0.4;
   transition: all 0.3s;
 }
 
@@ -301,125 +302,49 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   color: var(--text-primary);
   font-weight: 600;
 }
+
 /* --- Стили для кнопки "Поделиться" --- */
-
 .btn-share-result {
-    width: 100%;
-    padding: 16px 20px;
-    margin-top: 10px;
-    
-    /* Яркий градиент (под цвет акцентов на скриншотах) */
-    background: linear-gradient(135deg, #00E676 0%, #00F260 100%);
-    
-    /* Цвет текста - темно-серый/черный, так как фон яркий */
-    color: #121212; 
-    font-size: 16px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    
-    border: none;
-    border-radius: 12px; /* Скругление как у карточек */
-    
-    /* Эффект свечения (неон) */
-    box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
-    
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+  width: 100%;
+  padding: 16px 20px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #00E676 0%, #00F260 100%);
+  color: #121212;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-/* Эффект при нажатии */
 .btn-share-result:active {
-    transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3);
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3);
 }
 
-/* Если вы хотите, чтобы кнопка была темно-зеленой с белым текстом (альтернатива)
-   раскомментируйте блок ниже и закомментируйте верхний */
-/*
-.btn-share-result {
-    background: rgba(0, 230, 118, 0.15);
-    color: #00E676;
-    border: 1px solid rgba(0, 230, 118, 0.3);
-    box-shadow: none;
-}
-*/
-
-/* --- Стили для модальных окон --- */
+/* --- Стили для модальных окон (старые .modal - оставлены для совместимости) --- */
 .modal {
-    display: none; /* Скрыто по умолчанию */
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
 }
 
-.modal.active {
-    display: flex; /* Показываем при активации */
-}
+.modal.active { display: flex; }
 
-.modal-content {
-    background: var(--card-bg, #1c1c1e);
-    padding: 25px;
-    border-radius: 20px;
-    width: 85%;
-    max-width: 350px;
-    text-align: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.modal-input {
-    width: 100%;
-    padding: 15px;
-    margin: 10px 0 20px 0;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: #fff;
-    font-size: 1.2rem;
-    text-align: center;
-    outline: none;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.modal-buttons button {
-    flex: 1;
-    padding: 12px;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: opacity 0.2s;
-}
-
-.btn-cancel {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-.btn-ok {
-    background: #00E676; /* Яркий зеленый */
-    color: #000;
-}
-
-.btn-cancel:active, .btn-ok:active {
-    opacity: 0.8;
-}
-/* --- Стили для страницы тренировок --- */
-
-/* Бейдж уровня в шапке */
+/* --- Стили страницы тренировок --- */
 .level-badge {
   background: var(--accent-primary);
   color: #000;
@@ -431,7 +356,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   box-shadow: 0 2px 10px rgba(0, 230, 118, 0.3);
 }
 
-/* Блок фильтров */
 .filter-tabs {
   display: flex;
   gap: 10px;
@@ -460,7 +384,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-weight: 600;
 }
 
-/* Карточка упражнения */
 .workout-card {
   background: var(--card-bg);
   border-radius: 16px;
@@ -495,9 +418,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   object-fit: contain;
 }
 
-.workout-details {
-  flex-grow: 1;
-}
+.workout-details { flex-grow: 1; }
 
 .workout-details h3 {
   font-size: 1.1rem;
@@ -526,7 +447,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   color: var(--text-secondary);
   line-height: 1.3;
   display: -webkit-box;
-  -webkit-line-clamp: 1; /* Обрезаем длинный текст */
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -537,168 +458,189 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   opacity: 0.7;
 }
 
-/* Кнопка назад */
 .back-btn {
   font-size: 0.9rem;
   margin-bottom: 5px;
   display: inline-block;
 }
-/* --- Стили Модального окна --- */
+
+/* =========================================================
+   ✅ ИСПРАВЛЕНО: модалка упражнения теперь по центру экрана
+   + скролл внутри, если контента много
+   ========================================================= */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: flex-end; /* Выезжает снизу */
-    justify-content: center;
-    z-index: 100;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+
+  display: flex;
+  align-items: center;      /* было flex-end */
+  justify-content: center;
+
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  padding: 18px;
 }
 
 .modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 .modal-content {
-    background: #1c1c1e;
-    width: 100%;
-    max-height: 90vh;
-    border-radius: 24px 24px 0 0;
-    padding: 24px;
-    position: relative;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-    box-shadow: 0 -5px 30px rgba(0,0,0,0.5);
+  background: #1c1c1e;
+  width: 100%;
+  max-width: 420px;
+  max-height: 88vh;
+
+  border-radius: 24px;
+  padding: 24px;
+  position: relative;
+
+  transform: translateY(14px) scale(0.98);
+  transition: transform 0.25s ease;
+  box-shadow: 0 15px 45px rgba(0,0,0,0.55);
+
+  overflow-y: auto; /* скролл внутри */
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-overlay.active .modal-content {
-    transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 .modal-close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: #888;
-    font-size: 24px;
-    cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 24px;
+  cursor: pointer;
 }
 
-.modal-title {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
+.modal-title { font-size: 1.5rem; margin-bottom: 10px; }
 
 .modal-info-blocks {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .info-block {
-    flex: 1;
-    background: #2c2c2e;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
+  flex: 1;
+  background: #2c2c2e;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
 }
 
 .info-block .label {
-    display: block;
-    font-size: 0.75rem;
-    color: #888;
-    margin-bottom: 5px;
-    text-transform: uppercase;
+  display: block;
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 5px;
+  text-transform: uppercase;
 }
 
 .info-block .value {
-    display: block;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #fff;
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
 }
 
 .modal-advice-box {
-    background: rgba(0, 230, 118, 0.1);
-    border-left: 3px solid var(--accent-primary);
-    padding: 15px;
-    border-radius: 0 12px 12px 0;
-    margin-bottom: 30px;
+  background: rgba(0, 230, 118, 0.1);
+  border-left: 3px solid var(--accent-primary);
+  padding: 15px;
+  border-radius: 0 12px 12px 0;
+  margin-bottom: 18px;
 }
 
 /* Таймер */
 .timer-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0 0;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .start-btn {
-    width: 100%;
-    padding: 18px;
-    background: var(--accent-primary);
-    color: #000;
-    border: none;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.1s;
+  width: 100%;
+  padding: 18px;
+  background: var(--accent-primary);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
 }
 
-.start-btn:active {
-    transform: scale(0.95);
-}
+.start-btn:active { transform: scale(0.95); }
 
 .timer-display {
-    position: relative;
-    width: 150px;
-    height: 150px;
+  position: relative;
+  width: 150px;
+  height: 150px;
 }
 
 .timer-svg {
-    width: 100%;
-    height: 100%;
-    transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
 }
 
 .timer-bg {
-    fill: none;
-    stroke: #333;
-    stroke-width: 8;
+  fill: none;
+  stroke: #333;
+  stroke-width: 8;
 }
 
 .timer-circle {
-    fill: none;
-    stroke: var(--accent-primary);
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-dasharray: 283; /* 2 * PI * 45 */
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  fill: none;
+  stroke: var(--accent-primary);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s;
 }
 
 .timer-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3rem;
-    font-weight: bold;
-    color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fff;
 }
-/* --- Стили Главного Меню --- */
 
+/* ✅ Кнопка пропуска отдыха */
+.rest-skip-btn {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+.rest-skip-btn:active { transform: scale(0.98); }
+
+/* --- Стили Главного Меню --- */
 .main-menu {
   display: flex;
   flex-direction: column;
@@ -719,11 +661,8 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.menu-card:active {
-  transform: scale(0.98);
-}
+.menu-card:active { transform: scale(0.98); }
 
-/* Левая часть с иконкой */
 .menu-icon-bg {
   width: 90px;
   min-height: 120px;
@@ -740,15 +679,9 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   stroke: #000;
 }
 
-.menu-icon-bg.light {
-  background: rgba(255, 255, 255, 0.1);
-}
+.menu-icon-bg.light { background: rgba(255, 255, 255, 0.1); }
+.menu-icon-bg.light svg { stroke: var(--accent-primary); }
 
-.menu-icon-bg.light svg {
-  stroke: var(--accent-primary);
-}
-
-/* Правая часть с текстом */
 .menu-content {
   padding: 20px;
   flex-grow: 1;
@@ -796,6 +729,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   text-transform: uppercase;
   font-weight: 700;
 }
+
 /* --- Стили карточек курсов --- */
 .course-card {
   background: var(--card-bg);
@@ -807,9 +741,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   transition: transform 0.2s;
 }
 
-.course-card:active {
-  transform: scale(0.98);
-}
+.course-card:active { transform: scale(0.98); }
 
 .course-header {
   display: flex;
@@ -845,10 +777,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   margin-bottom: 20px;
 }
 
-.course-meta .icon {
-  font-style: normal;
-  margin-right: 5px;
-}
+.course-meta .icon { font-style: normal; margin-right: 5px; }
 
 .start-course-btn {
   width: 100%;
@@ -861,94 +790,79 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-size: 1rem;
   cursor: pointer;
 }
+
 /* --- Стили страницы курса --- */
-.course-detail-header {
-    margin-bottom: 25px;
-}
+.course-detail-header { margin-bottom: 25px; }
 
 .course-detail-header h1 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
 }
 
 .course-stats {
-    display: flex;
-    gap: 15px;
-    margin-top: 15px;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
-.course-stats b {
-    color: var(--text-primary);
-}
+.course-stats b { color: var(--text-primary); }
 
 .course-rules {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .rule-item {
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .rule-item:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .rule-item h4 {
-    color: var(--accent-primary);
-    margin-bottom: 5px;
-    font-size: 0.95rem;
+  color: var(--accent-primary);
+  margin-bottom: 5px;
+  font-size: 0.95rem;
 }
 
 .rule-item p {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    line-height: 1.4;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
 }
 
-/* Карточки дней */
 .days-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 30px;
 }
 
 .day-card {
-    background: var(--card-bg);
-    padding: 15px 20px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: background 0.2s;
+  background: var(--card-bg);
+  padding: 15px 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.2s;
 }
 
-.day-card:active {
-    background: rgba(255, 255, 255, 0.08);
-}
+.day-card:active { background: rgba(255, 255, 255, 0.08); }
 
-.day-info h3 {
-    font-size: 1rem;
-    margin-bottom: 3px;
-}
+.day-info h3 { font-size: 1rem; margin-bottom: 3px; }
 
-.day-info p {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
+.day-info p { font-size: 0.8rem; color: var(--text-secondary); }
 
-.day-arrow {
-    color: var(--accent-primary);
-    font-size: 0.9rem;
-}
+.day-arrow { color: var(--accent-primary); font-size: 0.9rem; }
