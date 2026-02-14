@@ -299,27 +299,63 @@ function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
 // ==========================================
 
 function openCourseDetail(courseId) {
-    window.location.href = `course-detail.html?id=${courseId}`;
+    // Сохраняем ID выбранного курса в память телефона
+    localStorage.setItem('selectedCourseId', courseId);
+    // Переходим на страницу деталей (без параметров в URL)
+    window.location.href = 'course-detail.html';
 }
 
 function initCourseDetail() {
-    // Функция должна работать только на странице курса
-    const container = document.getElementById('course-content');
-    if (!container) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const courseId = params.get('id');
+    // Получаем ID из памяти, а не из URL
+    const courseId = localStorage.getItem('selectedCourseId');
     
     if (!courseId) {
-        container.innerHTML = '<p>Курс не выбран.</p>';
+        // Если ID нет, возвращаем назад
+        window.location.href = 'courses.html';
         return;
     }
     
     const course = COURSES_DATABASE.find(c => c.id === courseId);
     if (!course) {
-        container.innerHTML = '<p>Курс не найден.</p>';
+        document.getElementById('course-content').innerHTML = '<p>Курс не найден</p>';
         return;
     }
+    
+    const container = document.getElementById('course-content');
+    let daysHtml = '';
+    
+    course.schedule.forEach((day, index) => {
+        daysHtml += `
+        <div class="day-card" onclick="startCourseDay('${course.id}', ${index})">
+            <div class="day-info">
+                <h3>День ${index + 1}: ${day.name}</h3>
+                <p>${day.exercises.length} упражнений</p>
+            </div>
+            <span class="day-arrow">▶</span>
+        </div>`;
+    });
+
+    container.innerHTML = `
+        <div class="course-detail-header">
+            <h1>${course.title}</h1>
+            <p>${course.description}</p>
+            <div class="course-stats">
+                <span><b>Сложность:</b> ${course.level === 'beginner' ? 'Начальный' : 'Продвинутый'}</span>
+                <span><b>Длительность:</b> ${course.duration}</span>
+            </div>
+        </div>
+        <div class="course-rules">
+            <div class="rule-item">
+                <h4>📅 Как тренироваться</h4>
+                <p>Тренируйтесь 3 раза в неделю. Отдых между тренировками — 1-2 дня.</p>
+            </div>
+        </div>
+        <h2 style="margin-top: 30px; margin-bottom: 15px;">Расписание</h2>
+        <div class="days-list">
+            ${daysHtml}
+        </div>
+    `;
+}
     
     let daysHtml = '';
     course.schedule.forEach((day, index) => {
