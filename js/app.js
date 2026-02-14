@@ -100,7 +100,7 @@ const EXERCISE_DATABASE = [
         }
     },
 
-    // --- ДОПОЛНИТЕЛЬНЫЕ ---
+    // --- ДОПОЛНИТЕЛЬНЫЕ (ДЛЯ КУРСОВ) ---
     {
         id: 'leg_press', name: 'Жим ногами', muscle: 'legs',
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M6 8l6 4l6 -4"/></svg>`, 
@@ -233,9 +233,16 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     container.innerHTML = html;
 }
 
+// === ФУНКЦИЯ ОТРИСОВКИ КУРСОВ (ИСПРАВЛЕНА) ===
 function renderCoursesList(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+
+    // Проверка, что база данных существует и не пуста
+    if (!COURSES_DATABASE || COURSES_DATABASE.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#888;">Нет доступных программ</p>';
+        return;
+    }
 
     let html = '';
     COURSES_DATABASE.forEach(course => {
@@ -296,7 +303,7 @@ function openCourseDetail(courseId) {
 }
 
 function initCourseDetail() {
-    // Проверяем, есть ли контейнер на странице. Если нет — выходим.
+    // Функция должна работать только на странице курса
     const container = document.getElementById('course-content');
     if (!container) return;
 
@@ -581,5 +588,5 @@ function updateWeightChart(history) {
 
 document.addEventListener('DOMContentLoaded', () => {
     initWeightModule();
-    initCourseDetail(); // Инициализируем детали курса, если мы на той странице
+    initCourseDetail(); // Автоматически запустит отрисовку курса, если мы на странице курса
 });
