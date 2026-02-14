@@ -18,9 +18,9 @@
 
   <div class="container">
     <!-- Шапка страницы -->
-    <header style="display: flex; justify-content: space-between; align-items: center;">
+    <header class="page-header">
       <div>
-        <a href="index.html" class="back-btn" style="text-decoration: none; color: var(--text-secondary);">← Назад</a>
+        <a href="index.html" class="back-btn">← Назад</a>
         <h1 id="page-title">Ваши тренировки</h1>
       </div>
       <div id="level-badge" class="level-badge">Уровень</div>
@@ -28,16 +28,15 @@
 
     <!-- Блок переключения категорий (Фильтр) -->
     <div class="filter-tabs">
-      <button class="filter-btn active" onclick="filterExercises('all')">Все</button>
-      <button class="filter-btn" onclick="filterExercises('chest')">Грудь</button>
-      <button class="filter-btn" onclick="filterExercises('back')">Спина</button>
-      <button class="filter-btn" onclick="filterExercises('legs')">Ноги</button>
+      <button class="filter-btn active" data-muscle="all" onclick="filterExercises('all')">Все</button>
+      <button class="filter-btn" data-muscle="chest" onclick="filterExercises('chest')">Грудь</button>
+      <button class="filter-btn" data-muscle="back" onclick="filterExercises('back')">Спина</button>
+      <button class="filter-btn" data-muscle="legs" onclick="filterExercises('legs')">Ноги</button>
     </div>
 
     <!-- Контейнер для списка карточек -->
     <div id="workout-list" class="workouts-grid">
-      <!-- Сюда скрипт вставит упражнения -->
-      <div class="loading-state" style="text-align: center; padding: 20px;">
+      <div class="loading-state">
         <p>Загрузка программы...</p>
       </div>
     </div>
@@ -45,17 +44,25 @@
 
   <!-- Подключаем основной скрипт -->
   <script src="js/app.js"></script>
-  
+
   <!-- Логика страницы -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       initTrainingPage();
+
+      // Закрытие по клику вне окна (используем closeExerciseModal из app.js)
+      const modal = document.getElementById('exercise-modal');
+      if (modal) {
+        modal.addEventListener('click', function(e) {
+          if (e.target === this) closeExerciseModal();
+        });
+      }
     });
 
     function initTrainingPage() {
       // 1. Получаем уровень из памяти
       const currentLevel = localStorage.getItem('userLevel') || 'beginner';
-      
+
       // 2. Обновляем бейдж на экране
       const badge = document.getElementById('level-badge');
       const levelNames = {
@@ -63,91 +70,71 @@
         intermediate: 'Средний',
         pro: 'Профи'
       };
-      badge.textContent = levelNames[currentLevel] || 'Новичок';
-      
-      // 3. Рисуем список (функция находится в app.js)
-      // Передаем: ID контейнера, Группу мышц ('all' - показать все сначала), Уровень
+      if (badge) badge.textContent = levelNames[currentLevel] || 'Новичок';
+
+      // 3. Рисуем список
       renderWorkoutList('workout-list', 'all', currentLevel);
     }
 
     // Функция фильтрации при нажатии кнопок
     function filterExercises(muscleGroup) {
       const currentLevel = localStorage.getItem('userLevel') || 'beginner';
-      
+
       // Обновляем активную кнопку
       document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.toLowerCase().includes(muscleGroup) || (muscleGroup === 'all' && btn.textContent === 'Все')) {
-           btn.classList.add('active');
-        }
+        btn.classList.toggle('active', btn.dataset.muscle === muscleGroup);
       });
-      // Если нажали "Все", кнопка с текстом "Все" должна стать активной
-      if (muscleGroup === 'all') {
-          document.querySelector('.filter-btn').classList.add('active'); // простейший селектор
-      }
 
       // Перерисовываем список
       renderWorkoutList('workout-list', muscleGroup, currentLevel);
     }
   </script>
-<!-- Модальное окно упражнения -->
-<div id="exercise-modal" class="modal-overlay">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeExerciseModal()">✕</button>
-    
-    <!-- Счетчик подходов -->
-    <div id="sets-counter" style="text-align: center; font-size: 0.9rem; color: var(--accent-primary); margin-bottom: 10px; font-weight: bold;">
-      Подход 1 / 3
-    </div>
 
-    <h2 class="modal-title">Название</h2>
-    <p class="modal-desc" style="color: #aaa; margin-bottom: 20px;">Описание</p>
-    
-    <div class="modal-info-blocks">
-       <div class="info-block">
-           <span class="label">Вес / Инвентарь</span>
-           <span class="value modal-weight">-</span>
-       </div>
-       <div class="info-block">
-           <span class="label">Повторы</span>
-           <span class="value modal-reps">-</span>
-       </div>
-    </div>
+  <!-- Модальное окно упражнения -->
+  <div id="exercise-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeExerciseModal()">✕</button>
 
-    <div class="modal-advice-box">
+      <!-- Счетчик подходов -->
+      <div id="sets-counter" class="sets-counter">Подход 1 / 3</div>
+
+      <h2 class="modal-title">Название</h2>
+      <p class="modal-desc">Описание</p>
+
+      <div class="modal-info-blocks">
+        <div class="info-block">
+          <span class="label">Вес / Инвентарь</span>
+          <span class="value modal-weight">-</span>
+        </div>
+        <div class="info-block">
+          <span class="label">Повторы</span>
+          <span class="value modal-reps">-</span>
+        </div>
+      </div>
+
+      <div class="modal-advice-box">
         <p class="label">Совет тренера:</p>
         <p class="modal-advice" style="color: var(--accent-secondary);">Совет</p>
-    </div>
+      </div>
 
-    <!-- Кнопка и Таймер -->
-    <div class="timer-container">
-        <!-- Кнопка (меняет текст) -->
-        <button id="action-btn" class="start-btn" onclick="handleWorkoutAction(this)">Начать подход 1</button>
-        
-        <!-- Блок Таймера (ID исправлен на timer-block) -->
-        <div id="timer-block" class="timer-display" style="display:none; flex-direction: column; align-items: center;">
-            <span style="color: #aaa; font-size: 0.9rem; margin-bottom: 10px;">Отдых</span>
-            <div style="position: relative; width: 150px; height: 150px;">
-                <svg class="timer-svg" viewBox="0 0 100 100">
-                    <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
-                    <circle class="timer-circle" cx="50" cy="50" r="45"></circle>
-                </svg>
-                <span id="timer-text" class="timer-text">60</span>
-            </div>
+      <!-- Кнопка и Таймер -->
+      <div class="timer-container">
+        <button id="action-btn" class="start-btn btn-state-primary" onclick="handleWorkoutAction(this)">Начать подход 1</button>
+
+        <div id="timer-block" class="timer-display" style="display:none;">
+          <span class="timer-label">Отдых</span>
+          <div class="timer-frame">
+            <svg class="timer-svg" viewBox="0 0 100 100">
+              <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="timer-circle" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <span id="timer-text" class="timer-text">60</span>
+          </div>
         </div>
+      </div>
+
     </div>
   </div>
-</div>
 
-  
-<script>
-    function closeExerciseModal() {
-        document.getElementById('exercise-modal').classList.remove('active');
-    }
-    // Закрытие по клику вне окна
-    document.getElementById('exercise-modal').addEventListener('click', function(e) {
-        if (e.target === this) closeExerciseModal();
-    });
-</script>
 </body>
 </html>
