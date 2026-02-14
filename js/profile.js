@@ -1,79 +1,138 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Профиль</title>
-  <link rel="stylesheet" href="css/style.css">
-  <!-- Подключаем Chart.js для графиков -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body class="has-tab-bar">
-  <div class="container">
-    
-    <!-- Блок: Тренировки -->
-    <h2>📊 Статистика</h2>
-    <div class="stat-item" style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <div class="stat-label">Всего тренировок</div>
-        <div class="stat-value" id="total-count">0</div>
+// js/profile.js
+// Логика страницы профиля (статистика + история тренировок)
+// ВАЖНО: этот файл подключается в profile.html как <script src="js/profile.js"></script>
+
+(() => {
+  'use strict';
+
+  const STATS_KEY = 'userStats';
+
+  // Поддержим несколько возможных ключей истории (на будущее)
+  const HISTORY_KEYS = [
+    'trainingHistory',
+    'workoutHistory',
+    'workoutSessions',
+    'trainingSessions',
+    'history'
+  ];
+
+  function safeJsonParse(str, fallback) {
+    try {
+      return JSON.parse(str);
+    } catch (_) {
+      return fallback;
+    }
+  }
+
+  function formatDate(dateLike) {
+    if (!dateLike) return '-';
+    const d = new Date(dateLike);
+    if (Number.isNaN(d.getTime())) return '-';
+    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function readHistory() {
+    for (const key of HISTORY_KEYS) {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const arr = safeJsonParse(raw, null);
+      if (Array.isArray(arr)) return { key, arr };
+    }
+    return { key: null, arr: [] };
+  }
+
+  function pickLastDate(stats, historyArr) {
+    const fromStats =
+      stats.lastTrainingDate ||
+      stats.lastWorkoutDate ||
+      stats.lastTraining ||
+      stats.lastWorkout ||
+      null;
+
+    if (fromStats) return fromStats;
+
+    // Попробуем вывести из истории
+    if (historyArr && historyArr.length > 0) {
+      const last = historyArr
+        .map(x => x?.date || x?.finishedAt || x?.completedAt || x?.ts)
+        .filter(Boolean)
+        .sort((a, b) => new Date(b) - new Date(a))[0];
+
+      return last || null;
+    }
+
+    return null;
+  }
+
+  function renderHistoryList(historyArr) {
+    const listEl = document.getElementById('history-list');
+    if (!listEl) return;
+
+    if (!historyArr || historyArr.length === 0) {
+      listEl.innerHTML = '<p>Вы еще не завершили ни одной тренировки.</p>';
+      return;
+    }
+
+    // Нормализуем записи и отсортируем по дате (новые сверху)
+    const normalized = historyArr
+      .map((x) => {
+        const date = x?.date || x?.finishedAt || x?.completedAt || x?.ts || null;
+        const title =
+          x?.title ||
+          x?.name ||
+          x?.workoutName ||
+          (x?.source === 'course' ? 'Тренировка (курс)' : 'Тренировка') ||
+          'Тренировка';
+
+        const extra =
+          x?.level ? ` • ${x.level}` : '';
+
+        return { date, title: `${title}${extra}` };
+      })
+      .filter(x => x.date); // оставим только те, где есть дата
+
+    if (normalized.length === 0) {
+      listEl.innerHTML = '<p>Вы еще не завершили ни одной тренировки.</p>';
+      return;
+    }
+
+    normalized.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    const top = normalized.slice(0, 10);
+    listEl.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        ${top.map(item => `
+          <div class="stat-item" style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="color:var(--text-primary); font-weight:600;">${item.title}</div>
+            <div style="color:var(--text-secondary); font-size:0.9rem;">${formatDate(item.date)}</div>
+          </div>
+        `).join('')}
       </div>
-      <div style="text-align:right;">
-         <div class="stat-label">Последняя</div>
-         <div id="last-training-date" style="color:var(--text-secondary); font-size:0.9rem;">-</div>
-      </div>
-    </div>
+    `;
+  }
 
-    <!-- Блок: Вес -->
-    <div class="weight-section">
-      <div class="weight-header">
-        <h2>⚖️ Мой вес</h2>
-        <div class="weight-current" id="current-weight-display">-- <small>кг</small></div>
-      </div>
+  // Эту функцию вызывает profile.html при загрузке :contentReference[oaicite:3]{index=3}
+  function updateStats() {
+    const stats = safeJsonParse(localStorage.getItem(STATS_KEY) || '{}', {});
 
-      <!-- График -->
-      <div class="chart-container">
-        <canvas id="weightChart"></canvas>
-      </div>
+    const { arr: historyArr } = readHistory();
 
-      <!-- Ввод веса -->
-      <div class="input-weight-group">
-        <input type="number" id="weight-input" class="input-weight" placeholder="Вес, кг" step="0.1">
-        <button class="btn-add-weight" onclick="addNewWeight()">OK</button>
-      </div>
+    // Считаем “всего тренировок”
+    const total =
+      Number(stats.totalWorkouts ?? stats.totalCount ?? stats.workouts ?? historyArr.length ?? 0) || 0;
 
-      <!-- История веса -->
-      <h3 style="margin-bottom: 10px; font-size: 1rem; color: var(--text-secondary);">История (последние 5)</h3>
-      <div id="weight-history-list"></div>
-    </div>
+    const totalEl = document.getElementById('total-count');
+    if (totalEl) totalEl.textContent = String(total);
 
-  </div>
-  
-  <!-- Навигация -->
-  <nav class="tab-bar">
-    <a href="index.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Home</span>
-    </a>
-    <a href="profile.html" class="tab-item active">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span>Stats</span>
-    </a>
-    <a href="info.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      <span>Tools</span>
-    </a>
-  </nav>
+    // Последняя тренировка
+    const lastDate = pickLastDate(stats, historyArr);
+    const lastEl = document.getElementById('last-training-date');
+    if (lastEl) lastEl.textContent = formatDate(lastDate);
 
-  <script src="js/app.js"></script>
-  <script src="js/profile.js"></script>
-  <script src="js/weight.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      updateStats();
-      initWeightSection(); // Инициализация графика веса
-    });
-  </script>
-</body>
-</html>
+    // История
+    renderHistoryList(historyArr);
+  }
+
+  // Экспортируем в глобал, потому что profile.html вызывает updateStats() напрямую
+  window.updateStats = updateStats;
+})();
