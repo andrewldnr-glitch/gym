@@ -1,4 +1,186 @@
 /* css/style.css */
+/* css/style.css */
+
+/* =========================================================
+   THEME SYSTEM (Light/Dark) — ДОБАВЛЕНО
+   Работает если data-theme стоит на html ИЛИ на body
+   ========================================================= */
+
+html.theme-transition, html.theme-transition * {
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+/* БАЗА (по умолчанию) — твой текущий Dark */
+:root {
+  --bg-primary: #0A0A0C;
+  --bg-secondary: #141416;
+  --bg-card: rgba(28, 28, 30, 0.6);
+
+  --accent-primary: #FF6B35;
+  --accent-secondary: #31C48D;
+  --accent-tertiary: #3B82F6;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #8E8E93;
+
+  --border-light: rgba(255, 255, 255, 0.1);
+  --card-radius: 20px;
+
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* Доп. переменные чтобы тема реально меняла весь UI */
+  --tabbar-bg: rgba(20, 20, 22, 0.95);
+  --shadow-soft: 0 10px 20px rgba(0, 0, 0, 0.30);
+  --shadow-card: 0 10px 20px rgba(0, 0, 0, 0.30), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --chip-bg: rgba(0, 0, 0, 0.30);
+
+  --overlay-bg: rgba(0, 0, 0, 0.85);
+  --modal-bg: #1c1c1e;
+  --panel-bg: #2c2c2e;
+
+  --page-grad: linear-gradient(rgba(10, 10, 12, 0.55), rgba(10, 10, 12, 0.55));
+  --page-bg-image: url('../assets/images/background.png');
+}
+
+/* LIGHT THEME */
+:root[data-theme="light"],
+body[data-theme="light"] {
+  --bg-primary: #F6F7FB;
+  --bg-secondary: #FFFFFF;
+  --bg-card: rgba(255, 255, 255, 0.78);
+
+  --accent-primary: #5B6CFF;     /* спокойный индиго */
+  --accent-secondary: #31C48D;
+  --accent-tertiary: #8B5CF6;    /* мягкий пурпур */
+
+  --text-primary: #0B1220;
+  --text-secondary: rgba(11, 18, 32, 0.55);
+
+  --border-light: rgba(11, 18, 32, 0.10);
+
+  --tabbar-bg: rgba(255, 255, 255, 0.92);
+  --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
+  --shadow-card: 0 12px 30px rgba(15, 23, 42, 0.08), inset 0 0 0 1px rgba(11, 18, 32, 0.06);
+
+  --input-bg: rgba(11, 18, 32, 0.05);
+  --chip-bg: rgba(11, 18, 32, 0.06);
+
+  --overlay-bg: rgba(15, 23, 42, 0.35);
+  --modal-bg: #FFFFFF;
+  --panel-bg: rgba(11, 18, 32, 0.04);
+
+  /* в Light убираем тёмную подложку и делаем мягкий градиент */
+  --page-grad: radial-gradient(900px 700px at 20% 10%, rgba(91,108,255,0.18), transparent 55%),
+              radial-gradient(900px 700px at 80% 30%, rgba(139,92,246,0.16), transparent 60%),
+              radial-gradient(900px 700px at 40% 90%, rgba(49,196,141,0.12), transparent 55%);
+  --page-bg-image: none;
+}
+
+/* =========================================================
+   Дальше — твой CSS (почти без изменений)
+   ========================================================= */
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0; padding: 0;
+  font-family: var(--font-family);
+
+  background-color: var(--bg-primary);
+  background-image:
+    var(--page-grad),
+    var(--page-bg-image);
+
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; }
+
+h1 { font-size: 2rem; margin: 10px 0; font-weight: 700; letter-spacing: -0.5px; }
+h2 { font-size: 1.5rem; margin: 10px 0 20px; font-weight: 700; }
+h3 { font-size: 1.2rem; margin: 10px 0 15px; font-weight: 600; }
+p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
+
+.card {
+  background: var(--bg-card); border-radius: var(--card-radius); padding: 16px; margin-bottom: 12px;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  cursor: pointer; transition: all 0.2s ease; text-decoration: none; color: inherit; display: block;
+}
+.card:hover { transform: translateY(-2px); background: rgba(35, 35, 40, 0.7); }
+:root[data-theme="light"] .card:hover,
+body[data-theme="light"] .card:hover { background: rgba(255,255,255,0.92); }
+
+.card-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.card-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; }
+
+/* ... (твой CSS дальше без изменений, кроме пары переменных ниже) ... */
+
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
+  background: var(--tabbar-bg); backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-light);
+  display: flex; justify-content: space-around; align-items: center;
+  padding-bottom: 10px; z-index: 100;
+  pointer-events: none;
+}
+
+/* ВАЖНО: там где у тебя было var(--card-bg) — такого нет, оставляем var(--bg-card) */
+.workout-card { background: var(--bg-card); }
+
+/* чипы */
+.tag { background: var(--chip-bg); }
+
+/* инпуты */
+.input-weight { background: var(--input-bg); border: 1px solid var(--border-light); color: var(--text-primary); }
+
+/* модалки */
+.modal-overlay { background: var(--overlay-bg); }
+.modal-content { background: var(--modal-bg); }
+.info-block { background: var(--panel-bg); }
+
+/* =========================================================
+   THEME TOGGLE UI — ДОБАВЛЕНО
+   ========================================================= */
+.theme-toggle {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.theme-btn {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+}
+
+.theme-btn.active {
+  border-color: rgba(255,255,255,0.0);
+  background: linear-gradient(135deg, rgba(91,108,255,0.35), rgba(139,92,246,0.25));
+  box-shadow: var(--shadow-soft);
+}
+
+:root[data-theme="dark"] .theme-btn.active,
+body[data-theme="dark"] .theme-btn.active {
+  background: linear-gradient(135deg, rgba(255,107,53,0.35), rgba(59,130,246,0.25));
+}
+
+.theme-btn:active { transform: scale(0.98); }
 
 /* =========================
    THEME TOKENS (DEFAULT = DARK)
