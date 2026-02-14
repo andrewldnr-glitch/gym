@@ -10,7 +10,7 @@ const EXERCISE_DATABASE = [
         muscle: 'chest',
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h12"/></svg>`,
         description: 'Базовое упражнение для грудных мышц и трицепса.',
-        sets: 3, // Количество подходов
+        sets: 3,
         levels: {
             beginner: { weight: 'Вес тела', reps: '10-12 раз', restTime: 60, advice: 'Упор на колени, если тяжело.' },
             intermediate: { weight: 'Вес тела', reps: '15-20 раз', restTime: 45, advice: 'Медленное опускание.' },
@@ -182,13 +182,18 @@ function showExerciseDetail(exerciseId, level) {
     
     // Сброс интерфейса
     updateSetsCounter();
-    const startBtn = modal.querySelector('.start-btn');
-    const timerBlock = modal.querySelector('.timer-block'); // Исправлено на timer-block согласно HTML из пред. ответа
+    
+    // Ищем элементы по ID (так надежнее)
+    const startBtn = document.getElementById('action-btn');
+    const timerBlock = document.getElementById('timer-block');
     
     if (startBtn) {
         startBtn.style.display = 'block';
         startBtn.innerText = 'Начать подход 1';
-        startBtn.onclick = () => handleWorkoutAction(startBtn); // Привязываем обработчик
+        startBtn.style.background = 'var(--accent-primary)'; // Зеленый
+        startBtn.style.color = '#000';
+        // Привязываем обработчик прямо здесь для надежности
+        startBtn.onclick = () => handleWorkoutAction(startBtn); 
     }
     if (timerBlock) {
         timerBlock.style.display = 'none';
@@ -206,26 +211,38 @@ function updateSetsCounter() {
 }
 
 function handleWorkoutAction(button) {
-    // Если тренировка завершена
-    if (workoutState.currentSet > workoutState.totalSets) {
-        finishExercise(button);
+    const currentText = button.innerText;
+
+    // 1. Если нажали "Начать подход" -> Меняем на "Завершить"
+    if (currentText.includes('Начать подход')) {
+        button.innerText = `Завершить подход ${workoutState.currentSet}`;
+        button.style.background = '#FF9500'; // Оранжевый
+        if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
         return;
     }
-    // Иначе начинаем отдых
-    startRestTimer(button);
+
+    // 2. Если нажали "Завершить подход" -> Запускаем отдых
+    if (currentText.includes('Завершить подход')) {
+        startRestTimer(button);
+        return;
+    }
+
+    // 3. Если нажали "Закрыть" (в конце)
+    if (currentText.includes('Закрыть')) {
+        closeExerciseModal();
+    }
 }
 
 function startRestTimer(button) {
     button.style.display = 'none';
     
-    // Ищем элементы динамически или используем сохраненные ссылки
-    const modal = document.getElementById('exercise-modal');
-    const timerBlock = document.getElementById('timer-block') || modal.querySelector('.timer-block');
-    const timerText = document.getElementById('timer-text') || modal.querySelector('.timer-text');
-    const timerCircle = modal.querySelector('.timer-circle');
+    const timerBlock = document.getElementById('timer-block');
+    const timerText = document.getElementById('timer-text');
+    const timerCircle = document.querySelector('.timer-circle');
 
     if (!timerBlock || !timerText || !timerCircle) {
-        console.error('Timer elements missing in HTML!');
+        console.error('Ошибка: Не найдены элементы таймера!');
+        alert('Ошибка таймера. Проверьте консоль.');
         return;
     }
 
@@ -267,28 +284,24 @@ function nextSet(button, timerBlock) {
     updateSetsCounter();
 
     if (workoutState.currentSet > workoutState.totalSets) {
-        finishExercise(button);
+        finishExercise(button, timerBlock);
     } else {
         timerBlock.style.display = 'none';
         button.style.display = 'block';
         button.innerText = `Начать подход ${workoutState.currentSet}`;
+        button.style.background = 'var(--accent-primary)'; // Снова зеленый
         if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('warning');
     }
 }
 
-function finishExercise(button) {
-    const modal = document.getElementById('exercise-modal');
-    const timerBlock = document.getElementById('timer-block') || modal.querySelector('.timer-block');
+function finishExercise(button, timerBlock) {
     const counter = document.getElementById('sets-counter');
+    const modal = document.getElementById('exercise-modal');
     
     if(timerBlock) timerBlock.style.display = 'none';
     button.style.display = 'block';
     button.innerText = 'Закрыть';
-    button.onclick = () => {
-        closeExerciseModal();
-        // Сбрасываем onclick обратно на стандартный
-        button.onclick = () => handleWorkoutAction(button);
-    };
+    button.style.background = '#333'; // Темный
     
     modal.querySelector('.modal-title').innerText = "Отлично!";
     modal.querySelector('.modal-desc').innerText = "Упражнение выполнено.";
