@@ -1,40 +1,46 @@
-// === 1. БАЗА ДАННЫХ УПРАЖНЕНИЙ (С ИКОНКАМИ SVG) ===
+// ==========================================
+// === 1. БАЗА ДАННЫХ УПРАЖНЕНИЙ (С ПОДХОДАМИ) ===
+// ==========================================
+
 const EXERCISE_DATABASE = [
     // --- ГРУДЬ ---
     {
         id: 'pushups',
-        name: 'Отжимания (классические)',
+        name: 'Отжимания',
         muscle: 'chest',
-        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5h11M6.5 17.5h11M4 10v4M20 10v4M6 12h12M4 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm20 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>`,
-        description: 'Базовое упражнение для развития грудных мышц и трицепса без инвентаря.',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h12"/></svg>`,
+        description: 'Базовое упражнение для грудных мышц и трицепса.',
+        sets: 3, // Количество подходов
         levels: {
-            beginner: { weight: 'Собственный вес', reps: '10-12 раз', time: 45, advice: 'Упор на колени, если тяжело. Спина прямая.' },
-            intermediate: { weight: 'Собственный вес', reps: '15-20 раз', time: 60, advice: 'Опускайтесь медленно (3 сек), поднимайтесь быстро.' },
-            pro: { weight: 'С рюкзаком 10-15 кг', reps: '15-20 раз', time: 90, advice: 'Максимальная амплитуда, грудь касается пола.' }
+            beginner: { weight: 'Вес тела', reps: '10-12 раз', restTime: 60, advice: 'Упор на колени, если тяжело.' },
+            intermediate: { weight: 'Вес тела', reps: '15-20 раз', restTime: 45, advice: 'Медленное опускание.' },
+            pro: { weight: 'Рюкзак 10 кг', reps: '20 раз', restTime: 30, advice: 'Взрывной подъем.' }
         }
     },
     {
         id: 'bench_press',
         name: 'Жим штанги лежа',
         muscle: 'chest',
-        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 6v12M6 10v4M18 10v4"/></svg>`,
-        description: 'Главное упражнение для массы грудных мышц.',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h12M6 18h12M4 10v4M20 10v4M6 12h12"/></svg>`,
+        description: 'Главное упражнение на массу груди.',
+        sets: 4,
         levels: {
-            beginner: { weight: 'Только гриф (20 кг)', reps: '12-15 раз', time: 60, advice: 'Изучите траекторию движения.' },
-            intermediate: { weight: '40-50 кг', reps: '10-12 раз', time: 75, advice: 'Лопатки сведены, ноги плотно на полу.' },
-            pro: { weight: '70-90% от 1ПМ', reps: '6-8 раз', time: 90, advice: 'Контролируемый негатив, страховка обязательна.' }
+            beginner: { weight: 'Гриф (20кг)', reps: '12-15 раз', restTime: 90, advice: 'Освоить технику.' },
+            intermediate: { weight: '40-50кг', reps: '10-12 раз', restTime: 75, advice: 'Лопатки сведены.' },
+            pro: { weight: '80кг+', reps: '6-8 раз', restTime: 120, advice: 'Со страховкой.' }
         }
     },
     {
         id: 'dumbbell_flyes',
         name: 'Разводка гантелей',
         muscle: 'chest',
-        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M6 9l6 3l6 -3M6 15l6 -3l6 3"/></svg>`,
-        description: 'Изоляция для растяжения грудных мышц.',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M6 9l6 3l6 -3"/></svg>`,
+        description: 'Растяжение грудных мышц.',
+        sets: 3,
         levels: {
-            beginner: { weight: '4-6 кг', reps: '12 раз', time: 45, advice: 'Легкий вес, фокус на чувстве растяжения.' },
-            intermediate: { weight: '8-12 кг', reps: '12 раз', time: 60, advice: 'Локти чуть согнуты.' },
-            pro: { weight: '14-18 кг', reps: '10-12 раз', time: 60, advice: 'Работайте до жжения.' }
+            beginner: { weight: '4-6 кг', reps: '12 раз', restTime: 60, advice: 'Локти чуть согнуты.' },
+            intermediate: { weight: '10 кг', reps: '12 раз', restTime: 60, advice: 'Чувство растяжения.' },
+            pro: { weight: '16 кг', reps: '12 раз', restTime: 45, advice: 'До жжения.' }
         }
     },
 
@@ -44,23 +50,25 @@ const EXERCISE_DATABASE = [
         name: 'Подтягивания',
         muscle: 'back',
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 0l-3-3m3 3l3-3M7 21v-2a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v2"/></svg>`,
-        description: 'Лучшее упражнение для ширины спины.',
+        description: 'Ширина спины.',
+        sets: 3,
         levels: {
-            beginner: { weight: 'Гравитрон (помощь)', reps: '8-10 раз', time: 60, advice: 'Фокус на сведении лопаток.' },
-            intermediate: { weight: 'Собственный вес', reps: '10-12 раз', time: 75, advice: 'Подбородок выше перекладины.' },
-            pro: { weight: 'Пояс с весом 10-20 кг', reps: '8-10 раз', time: 90, advice: 'Без рывков, чистая техника.' }
+            beginner: { weight: 'Гравитрон', reps: '8-10 раз', restTime: 90, advice: 'Сведение лопаток.' },
+            intermediate: { weight: 'Вес тела', reps: '10-12 раз', restTime: 60, advice: 'Без рывков.' },
+            pro: { weight: 'Пояс 15кг', reps: '10 раз', restTime: 60, advice: 'Чистая техника.' }
         }
     },
     {
         id: 'deadlift',
         name: 'Становая тяга',
         muscle: 'back',
-        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M6 8l6 4l6 -4M6 16l6 -4l6 4"/></svg>`,
-        description: 'Базовое упражнение для всей задней цепи мышц.',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M6 8l6 4l6 -4"/></svg>`,
+        description: 'Мощь всей задней цепи.',
+        sets: 4,
         levels: {
-            beginner: { weight: 'Гриф (20 кг)', reps: '10-12 раз', time: 60, advice: 'Спина идеально прямая!' },
-            intermediate: { weight: '40-60 кг', reps: '8-10 раз', time: 75, advice: 'Гриф скользит по ногам.' },
-            pro: { weight: '100+ кг', reps: '5-6 раз', time: 120, advice: 'Используйте пояс.' }
+            beginner: { weight: 'Гриф (20кг)', reps: '10 раз', restTime: 120, advice: 'Прямая спина.' },
+            intermediate: { weight: '50кг', reps: '8-10 раз', restTime: 90, advice: 'Гриф близко к ногам.' },
+            pro: { weight: '100кг+', reps: '5-6 раз', restTime: 180, advice: 'Пояс обязателен.' }
         }
     },
 
@@ -71,10 +79,11 @@ const EXERCISE_DATABASE = [
         muscle: 'legs',
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="6" r="2"/><path d="M7 21l3-9-2-3m7 12l-3-9 2-3"/></svg>`,
         description: 'Король упражнений для ног.',
+        sets: 4,
         levels: {
-            beginner: { weight: 'Собственный вес', reps: '15-20 раз', time: 60, advice: 'Пятки не отрывать.' },
-            intermediate: { weight: 'Гантели 10-15 кг', reps: '15 раз', time: 75, advice: 'Глубокий присед.' },
-            pro: { weight: 'Штанга 60-100 кг', reps: '8-10 раз', time: 90, advice: 'Взгляд прямо, спина напряжена.' }
+            beginner: { weight: 'Вес тела', reps: '20 раз', restTime: 60, advice: 'Пятки на полу.' },
+            intermediate: { weight: 'Гантели 15кг', reps: '15 раз', restTime: 60, advice: 'Глубокий присед.' },
+            pro: { weight: 'Штанга 80кг', reps: '10 раз', restTime: 90, advice: 'Взгляд прямо.' }
         }
     },
     {
@@ -82,16 +91,31 @@ const EXERCISE_DATABASE = [
         name: 'Выпады',
         muscle: 'legs',
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4l-4 16M8 8l4 4 4-4"/></svg>`,
-        description: 'Развитие баланса и формы ног.',
+        description: 'Форма ног и баланс.',
+        sets: 3,
         levels: {
-            beginner: { weight: 'Собственный вес', reps: '10-12 на ногу', time: 60, advice: 'Колено не касается пола.' },
-            intermediate: { weight: 'Гантели 8-12 кг', reps: '12 на ногу', time: 75, advice: 'Держите корпус вертикально.' },
-            pro: { weight: 'Штанга 40-50 кг', reps: '10 на ногу', time: 90, advice: 'Сложная координация.' }
+            beginner: { weight: 'Вес тела', reps: '10 на ногу', restTime: 60, advice: 'Колено не касается пола.' },
+            intermediate: { weight: 'Гантели 10кг', reps: '12 на ногу', restTime: 60, advice: 'Корпус вертикально.' },
+            pro: { weight: 'Штанга 40кг', reps: '10 на ногу', restTime: 60, advice: 'Равновесие.' }
         }
     }
 ];
 
-// === 2. ФУНКЦИЯ ОТРИСОВКИ СПИСКА (Правильная версия) ===
+// ==========================================
+// === 2. СОСТОЯНИЕ ТРЕНИРОВКИ ===
+// ==========================================
+
+let workoutState = {
+    currentSet: 1,
+    totalSets: 3,
+    restTime: 60,
+    timerInterval: null
+};
+
+// ==========================================
+// === 3. ФУНКЦИИ ИНТЕРФЕЙСА (ОТРИСОВКА) ===
+// ==========================================
+
 function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -112,27 +136,25 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
         
         html += `
         <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
-            <div class="workout-icon">
-                ${exercise.icon} 
-            </div>
+            <div class="workout-icon">${exercise.icon}</div>
             <div class="workout-details">
                 <h3>${exercise.name}</h3>
                 <div class="workout-tags">
                     <span class="tag weight">${levelData.weight}</span>
-                    <span class="tag reps">${levelData.reps}</span>
+                    <span class="tag reps">${exercise.sets || 3}x${levelData.reps}</span>
                 </div>
                 <p class="workout-advice">${levelData.advice}</p>
             </div>
-            <div class="workout-action">
-                <span>▶</span>
-            </div>
+            <div class="workout-action"><span>▶</span></div>
         </div>`;
     });
-
     container.innerHTML = html;
 }
 
-// === 3. ФУНКЦИЯ ОТКРЫТИЯ МОДАЛКИ (Правильная версия) ===
+// ==========================================
+// === 4. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
+// ==========================================
+
 function showExerciseDetail(exerciseId, level) {
     const exercise = EXERCISE_DATABASE.find(ex => ex.id === exerciseId);
     if (!exercise) return;
@@ -141,93 +163,148 @@ function showExerciseDetail(exerciseId, level) {
     const modal = document.getElementById('exercise-modal');
     
     if (!modal) {
-        console.error('Ошибка: Модальное окно #exercise-modal не найдено!');
+        console.error('Modal not found');
         return;
     }
 
-    // Заполняем данные
+    // Сброс состояния
+    if (workoutState.timerInterval) clearInterval(workoutState.timerInterval);
+    workoutState.currentSet = 1;
+    workoutState.totalSets = exercise.sets || 3;
+    workoutState.restTime = levelData.restTime || 60;
+
+    // Заполнение данных
     modal.querySelector('.modal-title').innerText = exercise.name;
     modal.querySelector('.modal-desc').innerText = exercise.description;
     modal.querySelector('.modal-weight').innerText = levelData.weight;
     modal.querySelector('.modal-reps').innerText = levelData.reps;
     modal.querySelector('.modal-advice').innerText = levelData.advice;
     
-    // Настройка кнопки старта
+    // Сброс интерфейса
+    updateSetsCounter();
     const startBtn = modal.querySelector('.start-btn');
-    const timerDisplay = modal.querySelector('.timer-display');
+    const timerBlock = modal.querySelector('.timer-block'); // Исправлено на timer-block согласно HTML из пред. ответа
     
-    // Сброс состояния при открытии
-    startBtn.style.display = 'block';
-    startBtn.dataset.time = levelData.time || 60;
-    startBtn.dataset.name = exercise.name;
-    timerDisplay.style.display = 'none';
+    if (startBtn) {
+        startBtn.style.display = 'block';
+        startBtn.innerText = 'Начать подход 1';
+        startBtn.onclick = () => handleWorkoutAction(startBtn); // Привязываем обработчик
+    }
+    if (timerBlock) {
+        timerBlock.style.display = 'none';
+    }
     
-    // Сброс таймера
-    const timerText = timerDisplay.querySelector('.timer-text');
-    const timerCircle = modal.querySelector('.timer-circle');
-    if(timerText) timerText.innerText = levelData.time || 60;
-    if(timerCircle) timerCircle.style.strokeDashoffset = 0;
-    
-    // Показываем окно
     modal.classList.add('active');
-    
     if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
 }
 
-// === 4. ФУНКЦИЯ ТАЙМЕРА ===
-function startExerciseTimer(button) {
-    const time = parseInt(button.dataset.time) || 60;
-    const modal = document.getElementById('exercise-modal');
-    const timerDisplay = modal.querySelector('.timer-display');
-    const timerText = timerDisplay.querySelector('.timer-text');
-    const timerCircle = modal.querySelector('.timer-circle');
-    
+function updateSetsCounter() {
+    const counter = document.getElementById('sets-counter');
+    if (counter) {
+        counter.innerText = `Подход ${workoutState.currentSet} / ${workoutState.totalSets}`;
+    }
+}
+
+function handleWorkoutAction(button) {
+    // Если тренировка завершена
+    if (workoutState.currentSet > workoutState.totalSets) {
+        finishExercise(button);
+        return;
+    }
+    // Иначе начинаем отдых
+    startRestTimer(button);
+}
+
+function startRestTimer(button) {
     button.style.display = 'none';
-    timerDisplay.style.display = 'block';
     
-    let timeLeft = time;
+    // Ищем элементы динамически или используем сохраненные ссылки
+    const modal = document.getElementById('exercise-modal');
+    const timerBlock = document.getElementById('timer-block') || modal.querySelector('.timer-block');
+    const timerText = document.getElementById('timer-text') || modal.querySelector('.timer-text');
+    const timerCircle = modal.querySelector('.timer-circle');
+
+    if (!timerBlock || !timerText || !timerCircle) {
+        console.error('Timer elements missing in HTML!');
+        return;
+    }
+
+    timerBlock.style.display = 'flex';
+    
+    let timeLeft = workoutState.restTime;
     timerText.innerText = timeLeft;
     
-    // Расчет длины окружности для анимации
+    // Анимация круга
     const radius = 45;
     const circumference = 2 * Math.PI * radius;
     timerCircle.style.strokeDasharray = circumference;
-    timerCircle.style.strokeDashoffset = 0; 
-    
+    timerCircle.style.strokeDashoffset = 0;
+    timerCircle.style.stroke = '#00E676';
+
     if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
 
-    const interval = setInterval(() => {
+    workoutState.timerInterval = setInterval(() => {
         timeLeft--;
         timerText.innerText = timeLeft;
         
-        // Анимация круга
-        const offset = circumference - (timeLeft / time) * circumference;
+        const offset = circumference - (timeLeft / workoutState.restTime) * circumference;
         timerCircle.style.strokeDashoffset = offset;
 
         if (timeLeft <= 3) {
-             timerCircle.style.stroke = '#FF4444'; 
-             if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+            timerCircle.style.stroke = '#FF4444';
+            if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
         }
 
         if (timeLeft <= 0) {
-            clearInterval(interval);
-            timerText.innerText = "Готово!";
-            timerCircle.style.stroke = '#00E676'; 
-            
-            if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-            
-            setTimeout(() => {
-                button.style.display = 'block';
-                timerDisplay.style.display = 'none';
-                timerCircle.style.stroke = '#00E676'; 
-                timerCircle.style.strokeDashoffset = 0; 
-            }, 2000);
+            clearInterval(workoutState.timerInterval);
+            nextSet(button, timerBlock);
         }
     }, 1000);
 }
 
+function nextSet(button, timerBlock) {
+    workoutState.currentSet++;
+    updateSetsCounter();
+
+    if (workoutState.currentSet > workoutState.totalSets) {
+        finishExercise(button);
+    } else {
+        timerBlock.style.display = 'none';
+        button.style.display = 'block';
+        button.innerText = `Начать подход ${workoutState.currentSet}`;
+        if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('warning');
+    }
+}
+
+function finishExercise(button) {
+    const modal = document.getElementById('exercise-modal');
+    const timerBlock = document.getElementById('timer-block') || modal.querySelector('.timer-block');
+    const counter = document.getElementById('sets-counter');
+    
+    if(timerBlock) timerBlock.style.display = 'none';
+    button.style.display = 'block';
+    button.innerText = 'Закрыть';
+    button.onclick = () => {
+        closeExerciseModal();
+        // Сбрасываем onclick обратно на стандартный
+        button.onclick = () => handleWorkoutAction(button);
+    };
+    
+    modal.querySelector('.modal-title').innerText = "Отлично!";
+    modal.querySelector('.modal-desc').innerText = "Упражнение выполнено.";
+    if(counter) counter.innerText = "Готово 🎉";
+    
+    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+}
+
+function closeExerciseModal() {
+    const modal = document.getElementById('exercise-modal');
+    if (modal) modal.classList.remove('active');
+    if (workoutState.timerInterval) clearInterval(workoutState.timerInterval);
+}
+
 // ==========================================
-// === ЛОГИКА ВЕСА И ГРАФИКА (Без изменений) ===
+// === 5. ЛОГИКА ВЕСА И ГРАФИКА ===
 // ==========================================
 
 const WEIGHT_KEY = 'weightHistory';
@@ -329,6 +406,10 @@ function updateWeightChart(history) {
         });
     }
 }
+
+// ==========================================
+// === 6. ЗАПУСК ПРИЛОЖЕНИЯ ===
+// ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
     initWeightModule(); 
