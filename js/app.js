@@ -1,5 +1,5 @@
 // ==========================================
-// === 1. БАЗА ДАННЫХ УПРАЖНЕНИЙ (С ПОДХОДАМИ) ===
+// === 1. БАЗА ДАННЫХ УПРАЖНЕНИЙ ===
 // ==========================================
 
 const EXERCISE_DATABASE = [
@@ -98,11 +98,133 @@ const EXERCISE_DATABASE = [
             intermediate: { weight: 'Гантели 10кг', reps: '12 на ногу', restTime: 60, advice: 'Корпус вертикально.' },
             pro: { weight: 'Штанга 40кг', reps: '10 на ногу', restTime: 60, advice: 'Равновесие.' }
         }
+    },
+
+    // --- ДОПОЛНИТЕЛЬНЫЕ УПРАЖНЕНИЯ (ДЛЯ КУРСОВ) ---
+    {
+        id: 'leg_press',
+        name: 'Жим ногами',
+        muscle: 'legs',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M6 8l6 4l6 -4"/></svg>`, 
+        description: 'Безопасная альтернатива приседаниям.',
+        sets: 3,
+        levels: { beginner: { weight: '10-20 кг', reps: '12-15 раз', restTime: 60, advice: 'Не выпрямляйте колени полностью.' } }
+    },
+    {
+        id: 'overhead_press',
+        name: 'Жим гантелей сидя',
+        muscle: 'shoulders',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="6" r="2"/><path d="M12 8v8"/></svg>`,
+        description: 'Базовое упражнение для плеч.',
+        sets: 3,
+        levels: { beginner: { weight: '5-8 кг', reps: '12-15 раз', restTime: 60, advice: 'Держите спину прямо.' } }
+    },
+    {
+        id: 'crunches',
+        name: 'Скручивания на пресс',
+        muscle: 'abs',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>`,
+        description: 'Упражнение на мышцы живота.',
+        sets: 3,
+        levels: { beginner: { weight: 'Вес тела', reps: '15-20 раз', restTime: 45, advice: 'Поднимайте лопатки, поясница прижата.' } }
+    },
+    {
+        id: 'romanian_deadlift',
+        name: 'Румынская тяга',
+        muscle: 'back',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M6 8l6 4l6 -4"/></svg>`,
+        description: 'Проработка задней поверхности бедра.',
+        sets: 3,
+        levels: { beginner: { weight: 'Гриф (20кг)', reps: '10-12 раз', restTime: 60, advice: 'Ноги чуть согнуты, наклон за счет отведения таза.' } }
+    },
+    {
+        id: 'leg_extension',
+        name: 'Разгибания ног',
+        muscle: 'legs',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16"/></svg>`,
+        description: 'Изоляция квадрицепса.',
+        sets: 3,
+        levels: { beginner: { weight: '10-15 кг', reps: '12-15 раз', restTime: 45, advice: 'Движение плавное.' } }
+    },
+    {
+        id: 'lat_pulldown',
+        name: 'Тяга блока к груди',
+        muscle: 'back',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 0l-3-3m3 3l3-3"/></svg>`,
+        description: 'Альтернатива подтягиваниям.',
+        sets: 3,
+        levels: { beginner: { weight: '20-30 кг', reps: '12-15 раз', restTime: 60, advice: 'Тяните локти вниз.' } }
+    },
+    {
+        id: 'triceps_extension',
+        name: 'Разгибания на трицепс',
+        muscle: 'arms',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16"/></svg>`,
+        description: 'Изоляция трицепса.',
+        sets: 3,
+        levels: { beginner: { weight: '10-15 кг', reps: '12-15 раз', restTime: 45, advice: 'Локти прижаты к телу.' } }
+    },
+    {
+        id: 'hyperextension',
+        name: 'Гиперэкстензия',
+        muscle: 'back',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v16"/></svg>`,
+        description: 'Укрепление поясницы.',
+        sets: 3,
+        levels: { beginner: { weight: 'Вес тела', reps: '12-15 раз', restTime: 60, advice: 'Не прогибайтесь чрезмерно.' } }
+    },
+    {
+        id: 'one_arm_row',
+        name: 'Тяга гантели одной рукой',
+        muscle: 'back',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>`,
+        description: 'Толщина спины.',
+        sets: 3,
+        levels: { beginner: { weight: '8-10 кг', reps: '10 раз', restTime: 60, advice: 'Тяните локоть назад.' } }
+    },
+    {
+        id: 'leg_raises',
+        name: 'Подъем ног',
+        muscle: 'abs',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16"/></svg>`,
+        description: 'Нижний пресс.',
+        sets: 3,
+        levels: { beginner: { weight: 'Вес тела', reps: '12-15 раз', restTime: 45, advice: 'Не раскачивайтесь.' } }
     }
 ];
 
 // ==========================================
-// === 2. СОСТОЯНИЕ ТРЕНИРОВКИ ===
+// === 2. БАЗА КУРСОВ ===
+// ==========================================
+
+const COURSES_DATABASE = [
+    {
+        id: 'beginner_gym',
+        title: 'Программа для начинающих',
+        subtitle: 'Тренажерный зал',
+        description: 'Полная программа 3 раза в неделю. Идеально для старта.',
+        duration: '12 недель',
+        goal: 'base',
+        level: 'beginner',
+        schedule: [
+            {
+                name: 'Понедельник',
+                exercises: ['pull_ups', 'deadlift', 'leg_press', 'overhead_press', 'crunches']
+            },
+            {
+                name: 'Среда',
+                exercises: ['bench_press', 'dumbbell_flyes', 'romanian_deadlift', 'leg_extension', 'lat_pulldown', 'triceps_extension']
+            },
+            {
+                name: 'Пятница',
+                exercises: ['hyperextension', 'squats', 'lunges', 'lat_pulldown', 'one_arm_row', 'leg_raises']
+            }
+        ]
+    }
+];
+
+// ==========================================
+// === 3. СОСТОЯНИЕ ТРЕНИРОВКИ ===
 // ==========================================
 
 let workoutState = {
@@ -113,9 +235,10 @@ let workoutState = {
 };
 
 // ==========================================
-// === 3. ФУНКЦИИ ИНТЕРФЕЙСА (ОТРИСОВКА) ===
+// === 4. ФУНКЦИИ ИНТЕРФЕЙСА (ОТРИСОВКА) ===
 // ==========================================
 
+// Отрисовка списка разовых тренировок
 function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -151,8 +274,37 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     container.innerHTML = html;
 }
 
+// Отрисовка списка курсов
+function renderCoursesList(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let html = '';
+    COURSES_DATABASE.forEach(course => {
+        html += `
+        <div class="course-card" onclick="openCourseDetail('${course.id}')">
+            <div class="course-header">
+                <h2>${course.title}</h2>
+                <span class="course-badge">${course.level === 'beginner' ? 'Новичок' : 'Продвинутый'}</span>
+            </div>
+            <p class="course-desc">${course.description}</p>
+            <div class="course-meta">
+                <span><span class="icon">📅</span> ${course.duration}</span>
+                <span><span class="icon">🏋️</span> ${course.schedule.length} дня в неделю</span>
+            </div>
+            <button class="start-course-btn">Начать курс</button>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+// Открытие курса (пока заглушка, редирект на страницу курса)
+function openCourseDetail(courseId) {
+    window.location.href = `course-detail.html?id=${courseId}`;
+}
+
 // ==========================================
-// === 4. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
+// === 5. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
 // ==========================================
 
 function showExerciseDetail(exerciseId, level) {
@@ -183,16 +335,14 @@ function showExerciseDetail(exerciseId, level) {
     // Сброс интерфейса
     updateSetsCounter();
     
-    // Ищем элементы по ID (так надежнее)
     const startBtn = document.getElementById('action-btn');
     const timerBlock = document.getElementById('timer-block');
     
     if (startBtn) {
         startBtn.style.display = 'block';
         startBtn.innerText = 'Начать подход 1';
-        startBtn.style.background = 'var(--accent-primary)'; // Зеленый
+        startBtn.style.background = 'var(--accent-primary)';
         startBtn.style.color = '#000';
-        // Привязываем обработчик прямо здесь для надежности
         startBtn.onclick = () => handleWorkoutAction(startBtn); 
     }
     if (timerBlock) {
@@ -213,21 +363,18 @@ function updateSetsCounter() {
 function handleWorkoutAction(button) {
     const currentText = button.innerText;
 
-    // 1. Если нажали "Начать подход" -> Меняем на "Завершить"
     if (currentText.includes('Начать подход')) {
         button.innerText = `Завершить подход ${workoutState.currentSet}`;
-        button.style.background = '#FF9500'; // Оранжевый
+        button.style.background = '#FF9500';
         if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
         return;
     }
 
-    // 2. Если нажали "Завершить подход" -> Запускаем отдых
     if (currentText.includes('Завершить подход')) {
         startRestTimer(button);
         return;
     }
 
-    // 3. Если нажали "Закрыть" (в конце)
     if (currentText.includes('Закрыть')) {
         closeExerciseModal();
     }
@@ -251,7 +398,6 @@ function startRestTimer(button) {
     let timeLeft = workoutState.restTime;
     timerText.innerText = timeLeft;
     
-    // Анимация круга
     const radius = 45;
     const circumference = 2 * Math.PI * radius;
     timerCircle.style.strokeDasharray = circumference;
@@ -289,7 +435,7 @@ function nextSet(button, timerBlock) {
         timerBlock.style.display = 'none';
         button.style.display = 'block';
         button.innerText = `Начать подход ${workoutState.currentSet}`;
-        button.style.background = 'var(--accent-primary)'; // Снова зеленый
+        button.style.background = 'var(--accent-primary)';
         if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('warning');
     }
 }
@@ -301,7 +447,7 @@ function finishExercise(button, timerBlock) {
     if(timerBlock) timerBlock.style.display = 'none';
     button.style.display = 'block';
     button.innerText = 'Закрыть';
-    button.style.background = '#333'; // Темный
+    button.style.background = '#333';
     
     modal.querySelector('.modal-title').innerText = "Отлично!";
     modal.querySelector('.modal-desc').innerText = "Упражнение выполнено.";
@@ -317,7 +463,7 @@ function closeExerciseModal() {
 }
 
 // ==========================================
-// === 5. ЛОГИКА ВЕСА И ГРАФИКА ===
+// === 6. ЛОГИКА ВЕСА И ГРАФИКА ===
 // ==========================================
 
 const WEIGHT_KEY = 'weightHistory';
@@ -421,7 +567,7 @@ function updateWeightChart(history) {
 }
 
 // ==========================================
-// === 6. ЗАПУСК ПРИЛОЖЕНИЯ ===
+// === 7. ЗАПУСК ПРИЛОЖЕНИЯ ===
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
