@@ -1,11 +1,10 @@
-// === ОБНОВЛЕННАЯ БАЗА ДАННЫХ С ИКОНКАМИ (SVG) ===
+// === 1. БАЗА ДАННЫХ УПРАЖНЕНИЙ (С ИКОНКАМИ SVG) ===
 const EXERCISE_DATABASE = [
     // --- ГРУДЬ ---
     {
         id: 'pushups',
         name: 'Отжимания (классические)',
         muscle: 'chest',
-        // SVG иконка (гантель/силушка) прямо в коде
         icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5h11M6.5 17.5h11M4 10v4M20 10v4M6 12h12M4 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm20 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>`,
         description: 'Базовое упражнение для развития грудных мышц и трицепса без инвентаря.',
         levels: {
@@ -30,7 +29,7 @@ const EXERCISE_DATABASE = [
         id: 'dumbbell_flyes',
         name: 'Разводка гантелей',
         muscle: 'chest',
-        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M6 9l6 3l6 -3M6 15l6 -3l6 3"/></svg>`, // Условная иконка
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M6 9l6 3l6 -3M6 15l6 -3l6 3"/></svg>`,
         description: 'Изоляция для растяжения грудных мышц.',
         levels: {
             beginner: { weight: '4-6 кг', reps: '12 раз', time: 45, advice: 'Легкий вес, фокус на чувстве растяжения.' },
@@ -92,7 +91,7 @@ const EXERCISE_DATABASE = [
     }
 ];
 
-// === ОБНОВЛЕННАЯ ФУНКЦИЯ ОТРИСОВКИ (Исправляем вывод иконки) ===
+// === 2. ФУНКЦИЯ ОТРИСОВКИ СПИСКА (Правильная версия) ===
 function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -114,7 +113,7 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
         html += `
         <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
             <div class="workout-icon">
-                ${exercise.icon} <!-- Вставляем SVG код -->
+                ${exercise.icon} 
             </div>
             <div class="workout-details">
                 <h3>${exercise.name}</h3>
@@ -133,17 +132,16 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     container.innerHTML = html;
 }
 
-// === ФУНКЦИЯ ОТКРЫТИЯ УПРАЖНЕНИЯ С ТАЙМЕРОМ ===
+// === 3. ФУНКЦИЯ ОТКРЫТИЯ МОДАЛКИ (Правильная версия) ===
 function showExerciseDetail(exerciseId, level) {
     const exercise = EXERCISE_DATABASE.find(ex => ex.id === exerciseId);
     if (!exercise) return;
     
     const levelData = exercise.levels[level];
-    
-    // Находим контейнер модалки (предполагаем, что он есть в HTML)
     const modal = document.getElementById('exercise-modal');
+    
     if (!modal) {
-        console.error('Modal not found! Add HTML for #exercise-modal');
+        console.error('Ошибка: Модальное окно #exercise-modal не найдено!');
         return;
     }
 
@@ -154,163 +152,103 @@ function showExerciseDetail(exerciseId, level) {
     modal.querySelector('.modal-reps').innerText = levelData.reps;
     modal.querySelector('.modal-advice').innerText = levelData.advice;
     
-    // Сохраняем время в кнопку
+    // Настройка кнопки старта
     const startBtn = modal.querySelector('.start-btn');
-    startBtn.dataset.time = levelData.time || 60; // Время по умолчанию или из базы
+    const timerDisplay = modal.querySelector('.timer-display');
+    
+    // Сброс состояния при открытии
+    startBtn.style.display = 'block';
+    startBtn.dataset.time = levelData.time || 60;
     startBtn.dataset.name = exercise.name;
-
-    // Показываем модалку
+    timerDisplay.style.display = 'none';
+    
+    // Сброс таймера
+    const timerText = timerDisplay.querySelector('.timer-text');
+    const timerCircle = modal.querySelector('.timer-circle');
+    if(timerText) timerText.innerText = levelData.time || 60;
+    if(timerCircle) timerCircle.style.strokeDashoffset = 0;
+    
+    // Показываем окно
     modal.classList.add('active');
     
-    // Вибрация при открытии
     if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
 }
 
-// === ФУНКЦИЯ СТАРТА ТАЙМЕРА ===
+// === 4. ФУНКЦИЯ ТАЙМЕРА ===
 function startExerciseTimer(button) {
     const time = parseInt(button.dataset.time) || 60;
-    const name = button.dataset.name;
-    
-    // Скрываем кнопку старта, показываем таймер
     const modal = document.getElementById('exercise-modal');
     const timerDisplay = modal.querySelector('.timer-display');
+    const timerText = timerDisplay.querySelector('.timer-text');
     const timerCircle = modal.querySelector('.timer-circle');
     
     button.style.display = 'none';
     timerDisplay.style.display = 'block';
     
     let timeLeft = time;
-    timerDisplay.innerText = timeLeft;
+    timerText.innerText = timeLeft;
     
-    // Вибрация при старте
+    // Расчет длины окружности для анимации
+    const radius = 45;
+    const circumference = 2 * Math.PI * radius;
+    timerCircle.style.strokeDasharray = circumference;
+    timerCircle.style.strokeDashoffset = 0; 
+    
     if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
 
     const interval = setInterval(() => {
         timeLeft--;
-        timerDisplay.innerText = timeLeft;
+        timerText.innerText = timeLeft;
         
-        // Визуальный отсчет (опционально: изменение цвета)
+        // Анимация круга
+        const offset = circumference - (timeLeft / time) * circumference;
+        timerCircle.style.strokeDashoffset = offset;
+
         if (timeLeft <= 3) {
-             timerCircle.style.stroke = '#FF4444'; // Краснеет в конце
+             timerCircle.style.stroke = '#FF4444'; 
              if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
         }
 
         if (timeLeft <= 0) {
             clearInterval(interval);
+            timerText.innerText = "Готово!";
+            timerCircle.style.stroke = '#00E676'; 
             
-            // Фанфары или сигнал
-            timerDisplay.innerText = "Готово!";
-            timerCircle.style.stroke = '#00E676';
-            
-            // Сильная вибрация
             if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
             
-            // Вернуть кнопку через 2 секунды
             setTimeout(() => {
                 button.style.display = 'block';
                 timerDisplay.style.display = 'none';
-                timerCircle.style.stroke = '#00E676'; // Сброс цвета
+                timerCircle.style.stroke = '#00E676'; 
+                timerCircle.style.strokeDashoffset = 0; 
             }, 2000);
         }
     }, 1000);
 }
 
-// === ФУНКЦИЯ РЕНДЕРИНГА (Отрисовки) ===
-// Она принимает ID контейнера, группу мышц и уровень
-function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
-    const container = document.getElementById(containerId);
-    if (!container) return;
+// ==========================================
+// === ЛОГИКА ВЕСА И ГРАФИКА (Без изменений) ===
+// ==========================================
 
-    // 1. Фильтруем базу данных
-    let filtered = EXERCISE_DATABASE;
-    if (muscleGroup !== 'all') {
-        filtered = EXERCISE_DATABASE.filter(ex => ex.muscle === muscleGroup);
-    }
-
-    // 2. Проверка на пустоту (страховка)
-    if (filtered.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state" style="text-align:center; padding: 40px; color: #888;">
-                <img src="https://img.icons8.com/fluency/96/000000/no-entries.png" alt="Empty">
-                <p>Тренировки для этого раздела скоро появятся!</p>
-            </div>`;
-        return;
-    }
-
-    // 3. Генерируем HTML
-    let html = '';
-    filtered.forEach(exercise => {
-        // Получаем данные для нужного уровня
-        const levelData = exercise.levels[level] || exercise.levels['beginner'];
-        
-        html += `
-        <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
-            <div class="workout-icon">
-                <img src="${exercise.image}" alt="${exercise.name}">
-            </div>
-            <div class="workout-details">
-                <h3>${exercise.name}</h3>
-                <div class="workout-tags">
-                    <span class="tag weight">${levelData.weight}</span>
-                    <span class="tag reps">${levelData.reps}</span>
-                </div>
-                <p class="workout-advice">${levelData.advice}</p>
-            </div>
-            <div class="workout-action">
-                <span>➜</span>
-            </div>
-        </div>`;
-    });
-
-    container.innerHTML = html;
-}
-
-// === ФУНКЦИЯ ПОКАЗА ДЕТАЛЕЙ (вместо alert) ===
-function showExerciseDetail(exerciseId, level) {
-    const exercise = EXERCISE_DATABASE.find(ex => ex.id === exerciseId);
-    if (!exercise) return;
-    
-    const levelData = exercise.levels[level];
-    
-    // Создаем простую модалку или используем вашу
-    // Пример с системным alert для быстрой проверки, потом заменим на вашу модалку
-    alert(`Упражнение: ${exercise.name}\nВес: ${levelData.weight}\nПовторы: ${levelData.reps}\nСовет: ${levelData.advice}`);
-    
-    // ВИБРАЦИЯ
-    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
-}
-
-// --- ПОЛНАЯ ЛОГИКА ВЕСА И ГРАФИКА ---
-
-// 1. Ключ для хранения
 const WEIGHT_KEY = 'weightHistory';
 
-// 2. Получить данные из памяти
 function getWeightHistory() {
     const data = localStorage.getItem(WEIGHT_KEY);
     if (data) {
-        try {
-            return JSON.parse(data);
-        } catch (e) {
-            return [];
-        }
+        try { return JSON.parse(data); } 
+        catch (e) { return []; }
     }
     return [];
 }
 
-// 3. Сохранить данные
 function saveWeightHistory(history) {
     localStorage.setItem(WEIGHT_KEY, JSON.stringify(history));
 }
 
-// 4. Функция обновления цифры в заголовке (Её не хватало в вашем куске)
 function updateDashboardStats(history) {
     const weightDisplayEl = document.getElementById('current-weight-display');
-    
-    // Если элемент найден на странице (в профиле)
     if (weightDisplayEl) {
         if (history && history.length > 0) {
-            // Берем последний вес
             const lastWeight = history[history.length - 1].weight;
             weightDisplayEl.textContent = lastWeight;
         } else {
@@ -319,63 +257,47 @@ function updateDashboardStats(history) {
     }
 }
 
-// 5. Инициализация при старте
 function initWeightModule() {
     const history = getWeightHistory();
-    
-    // Если есть данные, обновляем график и цифру
     if (history.length > 0) {
         updateWeightChart(history);
-        updateDashboardStats(history); // Вызываем обновление цифры
+        updateDashboardStats(history);
     }
 }
 
-// 6. Добавление нового веса
 function addWeight() {
     const input = document.getElementById('weight-input');
     const value = parseFloat(input.value);
-
     if (!value || isNaN(value)) {
         alert('Введите корректное значение веса');
         return;
     }
-
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
     let history = getWeightHistory();
-
     const existingIndex = history.findIndex(item => item.date === today);
-
     if (existingIndex >= 0) {
         history[existingIndex].weight = value;
     } else {
         history.push({ date: today, weight: value });
     }
-
     history.sort((a, b) => new Date(a.date) - new Date(b.date));
     saveWeightHistory(history);
-
     updateWeightChart(history);
-    updateDashboardStats(history); // И здесь тоже обновляем цифру
-
+    updateDashboardStats(history);
     closeModal('weight-modal');
-    
     if (window.Telegram && window.Telegram.WebApp) {
         Telegram.WebApp.HapticFeedback.notificationOccurred('success');
     }
 }
 
-// 7. Функция отрисовки графика
 function updateWeightChart(history) {
     const ctx = document.getElementById('weightChart');
-    // Если элемента нет (мы не на странице профиля), просто выходим
     if (!ctx) return; 
-
     const labels = history.map(item => {
         const date = new Date(item.date);
         return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
     });
     const data = history.map(item => item.weight);
-
     if (window.myWeightChart) {
         window.myWeightChart.data.labels = labels;
         window.myWeightChart.data.datasets[0].data = data;
@@ -400,24 +322,14 @@ function updateWeightChart(history) {
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { 
-                        grid: { color: 'rgba(255,255,255,0.1)' },
-                        ticks: { color: '#aaa' }
-                    },
-                    x: { 
-                        grid: { display: false },
-                        ticks: { color: '#aaa' }
-                    }
+                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#aaa' } },
+                    x: { grid: { display: false }, ticks: { color: '#aaa' } }
                 }
             }
         });
     }
 }
 
-// 8. Запуск при загрузке страницы
-// ВАЖНО: Если у вас УЖЕ есть document.addEventListener('DOMContentLoaded') в файле,
-// то НЕ копируйте эти строки целиком, а просто добавьте вызов initWeightModule(); ВНУТРЬ существующего блока.
 document.addEventListener('DOMContentLoaded', () => {
-    // ... возможный другой ваш код ...
     initWeightModule(); 
 });
