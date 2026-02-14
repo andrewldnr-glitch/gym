@@ -1,222 +1,108 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Профиль</title>
+// js/theme.js
+(function () {
+  const STORAGE_KEY = "fitgym_theme";
+  const THEMES = ["light", "dark"];
 
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-
-<body class="has-tab-bar">
-  <div class="container">
-
-    <!-- ✅ Переключатель темы -->
-    <div class="theme-card">
-      <div class="theme-title">
-        <strong>Тема интерфейса</strong>
-        <span>Светлая или тёмная</span>
-      </div>
-
-      <div class="theme-segment" role="tablist" aria-label="Theme">
-        <button id="theme-btn-light" type="button">Light</button>
-        <button id="theme-btn-dark" type="button">Dark</button>
-      </div>
-    </div>
-
-    <!-- Блок: Тренировки -->
-    <h2>📊 Статистика</h2>
-    <div class="stat-item" style="display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <div class="stat-label">Всего тренировок</div>
-        <div class="stat-value" id="total-count">0</div>
-      </div>
-      <div style="text-align:right;">
-        <div class="stat-label">Последняя</div>
-        <div id="last-training-date" style="color:var(--text-secondary); font-size:0.9rem;">-</div>
-      </div>
-    </div>
-
-    <!-- История тренировок -->
-    <h3 style="margin-top: 20px; margin-bottom: 10px;">История тренировок</h3>
-    <div id="history-list"><p>Вы еще не завершили ни одной тренировки.</p></div>
-
-    <!-- Блок: Достижения -->
-    <div class="achievements-section">
-      <h2>🏆 Достижения</h2>
-      <div id="achievements-container" class="badges-grid"></div>
-    </div>
-
-    <!-- Блок: Вес -->
-    <div class="weight-section">
-      <div class="weight-header">
-        <h2>⚖️ Дневник веса</h2>
-        <div class="weight-current" id="current-weight-display">-- <small>кг</small></div>
-      </div>
-
-      <div class="chart-container">
-        <canvas id="weightChart"></canvas>
-      </div>
-
-      <div class="input-weight-group">
-        <input type="number" id="weight-input" class="input-weight" placeholder="Вес, кг" step="0.1">
-        <button class="btn-add-weight" onclick="addNewWeight()">OK</button>
-      </div>
-      <div id="weight-history-list"></div>
-    </div>
-
-    <!-- КНОПКА ПОДЕЛИТЬСЯ -->
-    <div style="padding: 10px 0 30px;">
-      <button class="btn-share-result" onclick="shareResults()">
-        🚀 Поделиться результатом
-      </button>
-    </div>
-
-  </div>
-
-  <!-- Навигация -->
-  <nav class="tab-bar">
-    <a href="index.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-      <span>Home</span>
-    </a>
-
-    <a href="profile.html" class="tab-item active">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="18" y1="20" x2="18" y2="10"/>
-        <line x1="12" y1="20" x2="12" y2="4"/>
-        <line x1="6" y1="20" x2="6" y2="14"/>
-      </svg>
-      <span>Stats</span>
-    </a>
-
-    <a href="info.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="16" x2="12" y2="12"/>
-        <line x1="12" y1="8" x2="12.01" y2="8"/>
-      </svg>
-      <span>Tools</span>
-    </a>
-  </nav>
-
-  <!-- ПОДКЛЮЧЕНИЕ СКРИПТОВ -->
-  <script src="js/theme.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/weight.js"></script>
-  <script src="js/achievements.js"></script>
-  <script src="js/profile.js"></script>
-
-  <script>
-    // --- helper: безопасный JSON.parse
-    function safeParse(str, fallback) {
-      try { return JSON.parse(str); } catch (e) { return fallback; }
+  function getSavedTheme() {
+    try {
+      const v = localStorage.getItem(STORAGE_KEY);
+      return THEMES.includes(v) ? v : null;
+    } catch (_) {
+      return null;
     }
+  }
 
-    // --- 1) Bootstrap: подтянуть данные с Supabase и положить в localStorage
-    async function syncFromSupabaseToLocalStorage() {
-      if (typeof apiBootstrap !== 'function') return;
-
-      const initData = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp.initData : '';
-      if (!initData) return;
-
-      const data = await apiBootstrap();
-
-      // userStats
-      const stats = data && data.stats ? data.stats : {};
-      localStorage.setItem('userStats', JSON.stringify({
-        totalWorkouts: Number(stats.total_workouts || 0),
-        lastTrainingDate: stats.last_training_at || null,
-        steps: safeParse(localStorage.getItem('userStats') || '{}', {}).steps || 0,
-        calories: safeParse(localStorage.getItem('userStats') || '{}', {}).calories || 0
-      }));
-
-      // trainingHistory
-      const workouts = Array.isArray(data.workouts) ? data.workouts : [];
-      localStorage.setItem('trainingHistory', JSON.stringify(
-        workouts.map(w => ({
-          date: w.finished_at,
-          source: w.source,
-          course_id: w.course_id,
-          day_index: w.day_index,
-          level: w.level,
-          payload: w.payload
-        }))
-      ));
-
-      // weightHistory
-      const weights = Array.isArray(data.weights) ? data.weights : [];
-      const chronological = weights.slice().reverse().map(x => ({
-        date: x.measured_at,
-        weight: Number(x.weight)
-      }));
-      localStorage.setItem('weightHistory', JSON.stringify(chronological));
+  function getSystemTheme() {
+    try {
+      return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    } catch (_) {
+      return "dark";
     }
+  }
 
-    // --- 2) Запуск UI
-    function runUi() {
-      if (typeof updateStats === 'function') updateStats();
-      if (typeof initWeightSection === 'function') initWeightSection();
-      if (typeof renderAchievements === 'function') renderAchievements();
-      if (typeof checkAllAchievements === 'function') checkAllAchievements();
-    }
+  function setThemeAttr(theme) {
+    // ставим и на <html>, и на <body> — чтобы CSS точно сработал при любой схеме селекторов
+    document.documentElement.setAttribute("data-theme", theme);
+    if (document.body) document.body.setAttribute("data-theme", theme);
+  }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        await syncFromSupabaseToLocalStorage();
-      } catch (e) {
-        console.warn('Supabase bootstrap failed, using local cache:', e);
-      } finally {
-        runUi();
-      }
+  function persistTheme(theme) {
+    try { localStorage.setItem(STORAGE_KEY, theme); } catch (_) {}
+  }
+
+  function markActiveButtons(theme) {
+    // 1) Рекомендуемый формат: data-theme-btn="light|dark"
+    document.querySelectorAll("[data-theme-btn]").forEach(btn => {
+      const t = btn.getAttribute("data-theme-btn");
+      btn.classList.toggle("active", t === theme);
+      btn.setAttribute("aria-pressed", t === theme ? "true" : "false");
     });
 
-    // --- ШАРИНГ
-    function shareResults() {
-      const weightHistory = typeof getWeightHistory === 'function' ? getWeightHistory() : [];
-      const stats = safeParse(localStorage.getItem('userStats') || '{}', {});
-      const streak = localStorage.getItem('streak') || 0;
-
-      let currentWeight = '--';
-      let weightDiffText = '';
-
-      if (weightHistory && weightHistory.length > 0) {
-        const start = weightHistory[0].weight;
-        const last = weightHistory[weightHistory.length - 1].weight;
-        currentWeight = last;
-
-        if (weightHistory.length > 1) {
-          const diff = last - start;
-          weightDiffText = diff > 0 ? `(+${diff.toFixed(1)} кг)` : `(${diff.toFixed(1)} кг)`;
-        }
-      }
-
-      const message =
-`🏃‍♂️ Мой прогресс в FitGym:
-
-🔥 Серия: ${streak} дней
-⚖️ Вес: ${currentWeight} кг ${weightDiffText}
-👟 Шагов: ${stats.steps || 0}
-⚡️ Калорий: ${stats.calories || 0}
-
-Занимайся со мной! @kagym_bot`;
-
-      if (window.Telegram && window.Telegram.WebApp) {
-        const encodedMsg = encodeURIComponent(message);
-        const shareUrl = `https://t.me/share/url?url=&text=${encodedMsg}`;
-        Telegram.WebApp.openTelegramLink(shareUrl);
-        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-      } else {
-        navigator.clipboard.writeText(message);
-        alert('Результат скопирован в буфер обмена!');
-      }
+    // 2) Поддержка альтернативных/старых вариантов разметки (если у тебя уже так)
+    const lightBtn = document.getElementById("theme-light");
+    const darkBtn = document.getElementById("theme-dark");
+    if (lightBtn && darkBtn) {
+      lightBtn.classList.toggle("active", theme === "light");
+      darkBtn.classList.toggle("active", theme === "dark");
+      lightBtn.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
+      darkBtn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
     }
-  </script>
-</body>
-</html>
+  }
+
+  function applyTheme(theme, { save = true } = {}) {
+    const t = THEMES.includes(theme) ? theme : "dark";
+    setThemeAttr(t);
+    markActiveButtons(t);
+    if (save) persistTheme(t);
+
+    // приятная микро-анимация (можно убрать)
+    try {
+      document.documentElement.classList.add("theme-transition");
+      window.setTimeout(() => document.documentElement.classList.remove("theme-transition"), 200);
+    } catch (_) {}
+  }
+
+  function attachClickHandlers() {
+    // Универсально: слушаем клики по кнопкам
+    document.addEventListener("click", (e) => {
+      const target = e.target && e.target.closest ? e.target.closest("[data-theme-btn]") : null;
+      if (target) {
+        const t = target.getAttribute("data-theme-btn");
+        if (THEMES.includes(t)) applyTheme(t, { save: true });
+      }
+
+      // поддержка id theme-light/theme-dark, если они у тебя есть
+      const t2 = e.target && e.target.closest ? e.target.closest("#theme-light, #theme-dark") : null;
+      if (t2) {
+        applyTheme(t2.id === "theme-light" ? "light" : "dark", { save: true });
+      }
+    });
+  }
+
+  function init() {
+    const saved = getSavedTheme();
+    const initial = saved || getSystemTheme();
+    applyTheme(initial, { save: !!saved }); // если темы не было — не записываем сразу, чтобы можно было “системную”
+    attachClickHandlers();
+
+    // если пользователь НЕ выбирал тему вручную — реагируем на системную
+    try {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      mq.addEventListener("change", () => {
+        const savedNow = getSavedTheme();
+        if (!savedNow) applyTheme(getSystemTheme(), { save: false });
+      });
+    } catch (_) {}
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  // экспорт для отладки (не обязателен)
+  window.__fitgymTheme = { applyTheme };
+})();
