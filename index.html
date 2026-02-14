@@ -19,13 +19,15 @@
       padding-bottom: 14px;
     }
 
+    /* ВАЖНО: этот класс ТОЛЬКО для внутреннего контейнера круга */
     .opal-ring-wrap {
       width: 220px;
       height: 220px;
       position: relative;
       display: grid;
       place-items: center;
-      margin: 6px 0 2px;
+      margin: 6px auto 2px;
+      flex-shrink: 0;
     }
 
     .opal-ring {
@@ -33,6 +35,7 @@
       height: 100%;
       transform: rotate(-90deg);
       filter: drop-shadow(0 18px 30px rgba(124,124,255,0.18));
+      display: block;
     }
 
     .opal-ring-bg {
@@ -85,6 +88,7 @@
       display: grid;
       gap: 12px;
       width: 100%;
+      max-width: 420px;
     }
 
     .opal-card {
@@ -165,7 +169,6 @@
     .opal-cta {
       margin-top: 6px;
       width: 100%;
-      max-width: 420px;
     }
 
     .opal-cta .btn-main {
@@ -176,6 +179,11 @@
     /* make cards feel like in mock */
     .opal-card.card {
       cursor: default;
+    }
+
+    /* На всякий случай: карточка прогресса не режет содержимое */
+    .opal-progress-card {
+      overflow: visible;
     }
   </style>
 
@@ -197,14 +205,15 @@
     </header>
 
     <section class="opal-hero">
-      <!-- Progress Ring -->
-      <div class="opal-ring-wrap card opal-card" style="width:100%; max-width:420px;">
+      <!-- Progress Card -->
+      <div class="card opal-card opal-progress-card" style="width:100%; max-width:420px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <div style="font-weight:900;">Прогресс</div>
           <div id="opal-progress-hint" style="color:var(--text-secondary); font-weight:800; font-size:0.85rem;">Эта неделя</div>
         </div>
 
-        <div class="opal-ring-wrap" style="width:220px; height:220px; margin: 0 auto;">
+        <!-- Ring (внутренний контейнер) -->
+        <div class="opal-ring-wrap">
           <svg class="opal-ring" viewBox="0 0 220 220" aria-hidden="true">
             <defs>
               <linearGradient id="opalGrad" x1="0" y1="0" x2="1" y2="1">
@@ -228,7 +237,7 @@
       </div>
 
       <!-- Cards -->
-      <div class="opal-grid" style="max-width:420px;">
+      <div class="opal-grid">
         <div class="card opal-card">
           <div class="opal-card-title">
             <div class="label">На этой неделе</div>
@@ -345,12 +354,9 @@
 
     // -----------------------------
     // Compute progress (weekly goal)
-    // Goal assumption: 7 тренировок/нед. (можно потом вынести в настройки)
-    // Active time: пока оценочно 45 мин / тренировка (позже можно считать по реальным данным)
     // -----------------------------
     function loadTrainingHistory() {
       try {
-        // у тебя есть trainingHistory (локально) + workouts в supabase (но на Home мы без сети)
         return JSON.parse(localStorage.getItem('trainingHistory') || '[]');
       } catch(_) { return []; }
     }
@@ -365,12 +371,14 @@
       const circle = document.getElementById('opal-ring-fg');
       const label = document.getElementById('opal-percent');
       const r = 100;
-      const c = 2 * Math.PI * r; // ~628
+      const c = 2 * Math.PI * r;
       const p = clamp(percent, 0, 100);
       const offset = c * (1 - p/100);
-      circle.style.strokeDasharray = String(c);
-      circle.style.strokeDashoffset = String(offset);
-      label.textContent = `${Math.round(p)}%`;
+      if (circle) {
+        circle.style.strokeDasharray = String(c);
+        circle.style.strokeDashoffset = String(offset);
+      }
+      if (label) label.textContent = `${Math.round(p)}%`;
     }
 
     function buildMiniChart(values) {
@@ -384,7 +392,6 @@
         return;
       }
 
-      // take last 14 points
       const pts = values.slice(-14);
 
       const w = 400, h = 92;
@@ -407,7 +414,6 @@
       const d = coords.map((p,i) => `${i===0?'M':'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
       line.setAttribute('d', d);
 
-      // area path
       const dA = `${d} L ${coords[coords.length-1].x.toFixed(1)} ${(h-padY).toFixed(1)} L ${coords[0].x.toFixed(1)} ${(h-padY).toFixed(1)} Z`;
       area.setAttribute('d', dA);
     }
@@ -416,18 +422,15 @@
       const now = new Date();
       const ws = startOfWeek(now);
 
-      // Week range
       const rangeEl = document.getElementById('opal-week-range');
       if (rangeEl) rangeEl.textContent = fmtRange(ws);
 
-      // Trainings
       const hist = loadTrainingHistory();
       const weekItems = hist.filter(x => {
-        const dt = new Date(x.date || x.finished_at || x.finishedAt || x.finished_at_iso || Date.now());
+        const dt = new Date(x.date || x.finished_at || Date.now());
         return dt >= ws && dt < new Date(ws.getTime() + 7*24*3600*1000);
       });
 
-      // days with workouts
       const daysSet = new Set(
         weekItems.map(x => {
           const dt = new Date(x.date || x.finished_at || Date.now());
@@ -438,7 +441,6 @@
       const workouts = weekItems.length;
       const days = daysSet.size;
 
-      // active time (estimation)
       const activeMinutes = workouts * 45;
       const hours = Math.floor(activeMinutes / 60);
       const mins = activeMinutes % 60;
@@ -451,12 +453,10 @@
       if (workoutsEl) workoutsEl.textContent = String(workouts);
       if (daysEl) daysEl.textContent = `${days}/7`;
 
-      // progress percent (weekly goal: 5 workouts = 100% default)
       const WEEK_GOAL = 5;
       const pct = (workouts / WEEK_GOAL) * 100;
       updateRing(pct);
 
-      // weight chart
       const weights = loadWeightHistory();
       const last = weights.length ? weights[weights.length-1] : null;
       const wLastEl = document.getElementById('opal-weight-last');
