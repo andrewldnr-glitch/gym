@@ -850,7 +850,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   flex-direction: column;
   gap: 10px;
   padding-bottom: 30px;
-}
 
 .day-card {
   background: var(--card-bg);
