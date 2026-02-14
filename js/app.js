@@ -1,41 +1,41 @@
-// === БАЗА ДАННЫХ УПРАЖНЕНИЙ ===
-// Добавляем прямо в код, чтобы данные всегда были доступны
+// === ОБНОВЛЕННАЯ БАЗА ДАННЫХ С ИКОНКАМИ (SVG) ===
 const EXERCISE_DATABASE = [
     // --- ГРУДЬ ---
     {
         id: 'pushups',
         name: 'Отжимания (классические)',
         muscle: 'chest',
-        image: 'https://img.icons8.com/fluency/96/push-ups.png', // Заглушка, замените на свои картинки
-        description: 'Базовое упражнение для развития грудных мышц и трицепса.',
+        // SVG иконка (гантель/силушка) прямо в коде
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5h11M6.5 17.5h11M4 10v4M20 10v4M6 12h12M4 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm20 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>`,
+        description: 'Базовое упражнение для развития грудных мышц и трицепса без инвентаря.',
         levels: {
-            beginner: { weight: 'Собственный вес', reps: '10-12 раз', advice: 'Упор на колени, если тяжело. Спина прямая.' },
-            intermediate: { weight: 'Собственный вес', reps: '15-20 раз', advice: 'Опускайтесь медленно (3 сек), поднимайтесь быстро.' },
-            pro: { weight: 'С рюкзаком 10-15 кг', reps: '15-20 раз', advice: 'Максимальная амплитуда, грудь касается пола.' }
+            beginner: { weight: 'Собственный вес', reps: '10-12 раз', time: 45, advice: 'Упор на колени, если тяжело. Спина прямая.' },
+            intermediate: { weight: 'Собственный вес', reps: '15-20 раз', time: 60, advice: 'Опускайтесь медленно (3 сек), поднимайтесь быстро.' },
+            pro: { weight: 'С рюкзаком 10-15 кг', reps: '15-20 раз', time: 90, advice: 'Максимальная амплитуда, грудь касается пола.' }
         }
     },
     {
         id: 'bench_press',
         name: 'Жим штанги лежа',
         muscle: 'chest',
-        image: 'https://img.icons8.com/fluency/96/bench-press.png',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 6v12M6 10v4M18 10v4"/></svg>`,
         description: 'Главное упражнение для массы грудных мышц.',
         levels: {
-            beginner: { weight: 'Только гриф (20 кг)', reps: '12-15 раз', advice: 'Изучите траекторию движения, не прогибайте спину.' },
-            intermediate: { weight: '40-50 кг', reps: '10-12 раз', advice: 'Лопатки сведены, ноги плотно на полу.' },
-            pro: { weight: '70-90% от 1ПМ', reps: '6-8 раз', advice: 'Контролируемый негатив, страховка обязательна.' }
+            beginner: { weight: 'Только гриф (20 кг)', reps: '12-15 раз', time: 60, advice: 'Изучите траекторию движения.' },
+            intermediate: { weight: '40-50 кг', reps: '10-12 раз', time: 75, advice: 'Лопатки сведены, ноги плотно на полу.' },
+            pro: { weight: '70-90% от 1ПМ', reps: '6-8 раз', time: 90, advice: 'Контролируемый негатив, страховка обязательна.' }
         }
     },
     {
         id: 'dumbbell_flyes',
         name: 'Разводка гантелей',
         muscle: 'chest',
-        image: 'https://img.icons8.com/fluency/96/dumbbell.png',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M6 9l6 3l6 -3M6 15l6 -3l6 3"/></svg>`, // Условная иконка
         description: 'Изоляция для растяжения грудных мышц.',
         levels: {
-            beginner: { weight: '4-6 кг', reps: '12 раз', advice: 'Легкий вес, фокус на чувстве растяжения.' },
-            intermediate: { weight: '8-12 кг', reps: '12 раз', advice: 'Локти чуть согнуты, не ударяйте гантели друг о друга.' },
-            pro: { weight: '14-18 кг', reps: '10-12 раз', advice: 'Работайте до жжения в середине груди.' }
+            beginner: { weight: '4-6 кг', reps: '12 раз', time: 45, advice: 'Легкий вес, фокус на чувстве растяжения.' },
+            intermediate: { weight: '8-12 кг', reps: '12 раз', time: 60, advice: 'Локти чуть согнуты.' },
+            pro: { weight: '14-18 кг', reps: '10-12 раз', time: 60, advice: 'Работайте до жжения.' }
         }
     },
 
@@ -44,24 +44,24 @@ const EXERCISE_DATABASE = [
         id: 'pull_ups',
         name: 'Подтягивания',
         muscle: 'back',
-        image: 'https://img.icons8.com/fluency/96/pull-up.png',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 0l-3-3m3 3l3-3M7 21v-2a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v2"/></svg>`,
         description: 'Лучшее упражнение для ширины спины.',
         levels: {
-            beginner: { weight: 'Гравитрон (помощь)', reps: '8-10 раз', advice: 'Если нет гравитрона, используйте стул под ноги.' },
-            intermediate: { weight: 'Собственный вес', reps: '10-12 раз', advice: 'Подбородок выше перекладины, сводите лопатки.' },
-            pro: { weight: 'Пояс с весом 10-20 кг', reps: '8-10 раз', advice: 'Без рывков, чистая техника.' }
+            beginner: { weight: 'Гравитрон (помощь)', reps: '8-10 раз', time: 60, advice: 'Фокус на сведении лопаток.' },
+            intermediate: { weight: 'Собственный вес', reps: '10-12 раз', time: 75, advice: 'Подбородок выше перекладины.' },
+            pro: { weight: 'Пояс с весом 10-20 кг', reps: '8-10 раз', time: 90, advice: 'Без рывков, чистая техника.' }
         }
     },
     {
         id: 'deadlift',
         name: 'Становая тяга',
         muscle: 'back',
-        image: 'https://img.icons8.com/fluency/96/deadlift.png',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M6 8l6 4l6 -4M6 16l6 -4l6 4"/></svg>`,
         description: 'Базовое упражнение для всей задней цепи мышц.',
         levels: {
-            beginner: { weight: 'Гриф (20 кг)', reps: '10-12 раз', advice: 'Спина идеально прямая! Отводите таз назад.' },
-            intermediate: { weight: '40-60 кг', reps: '8-10 раз', advice: 'Гриф скользит по ногам, не округляйте поясницу.' },
-            pro: { weight: '100+ кг', reps: '5-6 раз', advice: 'Используйте пояс и магнезию.' }
+            beginner: { weight: 'Гриф (20 кг)', reps: '10-12 раз', time: 60, advice: 'Спина идеально прямая!' },
+            intermediate: { weight: '40-60 кг', reps: '8-10 раз', time: 75, advice: 'Гриф скользит по ногам.' },
+            pro: { weight: '100+ кг', reps: '5-6 раз', time: 120, advice: 'Используйте пояс.' }
         }
     },
 
@@ -70,27 +70,150 @@ const EXERCISE_DATABASE = [
         id: 'squats',
         name: 'Приседания',
         muscle: 'legs',
-        image: 'https://img.icons8.com/fluency/96/squats.png',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="6" r="2"/><path d="M7 21l3-9-2-3m7 12l-3-9 2-3"/></svg>`,
         description: 'Король упражнений для ног.',
         levels: {
-            beginner: { weight: 'Собственный вес', reps: '15-20 раз', advice: 'Пятки не отрывать, колени за носки не выходят.' },
-            intermediate: { weight: 'Гантели 10-15 кг', reps: '15 раз', advice: 'Глубокий присед, бедро параллельно полу.' },
-            pro: { weight: 'Штанга 60-100 кг', reps: '8-10 раз', advice: 'Взгляд прямо, спина напряжена, мощный подъем.' }
+            beginner: { weight: 'Собственный вес', reps: '15-20 раз', time: 60, advice: 'Пятки не отрывать.' },
+            intermediate: { weight: 'Гантели 10-15 кг', reps: '15 раз', time: 75, advice: 'Глубокий присед.' },
+            pro: { weight: 'Штанга 60-100 кг', reps: '8-10 раз', time: 90, advice: 'Взгляд прямо, спина напряжена.' }
         }
     },
     {
         id: 'lunges',
         name: 'Выпады',
         muscle: 'legs',
-        image: 'https://img.icons8.com/fluency/96/lunges.png',
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4l-4 16M8 8l4 4 4-4"/></svg>`,
         description: 'Развитие баланса и формы ног.',
         levels: {
-            beginner: { weight: 'Собственный вес', reps: '10-12 на ногу', advice: 'Широкий шаг, колено не касается пола.' },
-            intermediate: { weight: 'Гантели 8-12 кг', reps: '12 на ногу', advice: 'Держите корпус вертикально.' },
-            pro: { weight: 'Штанга 40-50 кг', reps: '10 на ногу', advice: 'Сложная координация, следите за равновесием.' }
+            beginner: { weight: 'Собственный вес', reps: '10-12 на ногу', time: 60, advice: 'Колено не касается пола.' },
+            intermediate: { weight: 'Гантели 8-12 кг', reps: '12 на ногу', time: 75, advice: 'Держите корпус вертикально.' },
+            pro: { weight: 'Штанга 40-50 кг', reps: '10 на ногу', time: 90, advice: 'Сложная координация.' }
         }
     }
 ];
+
+// === ОБНОВЛЕННАЯ ФУНКЦИЯ ОТРИСОВКИ (Исправляем вывод иконки) ===
+function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let filtered = EXERCISE_DATABASE;
+    if (muscleGroup !== 'all') {
+        filtered = EXERCISE_DATABASE.filter(ex => ex.muscle === muscleGroup);
+    }
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="empty-state" style="text-align:center; padding: 40px; color: #888;"><p>Тренировок нет.</p></div>`;
+        return;
+    }
+
+    let html = '';
+    filtered.forEach(exercise => {
+        const levelData = exercise.levels[level] || exercise.levels['beginner'];
+        
+        html += `
+        <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
+            <div class="workout-icon">
+                ${exercise.icon} <!-- Вставляем SVG код -->
+            </div>
+            <div class="workout-details">
+                <h3>${exercise.name}</h3>
+                <div class="workout-tags">
+                    <span class="tag weight">${levelData.weight}</span>
+                    <span class="tag reps">${levelData.reps}</span>
+                </div>
+                <p class="workout-advice">${levelData.advice}</p>
+            </div>
+            <div class="workout-action">
+                <span>▶</span>
+            </div>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+// === ФУНКЦИЯ ОТКРЫТИЯ УПРАЖНЕНИЯ С ТАЙМЕРОМ ===
+function showExerciseDetail(exerciseId, level) {
+    const exercise = EXERCISE_DATABASE.find(ex => ex.id === exerciseId);
+    if (!exercise) return;
+    
+    const levelData = exercise.levels[level];
+    
+    // Находим контейнер модалки (предполагаем, что он есть в HTML)
+    const modal = document.getElementById('exercise-modal');
+    if (!modal) {
+        console.error('Modal not found! Add HTML for #exercise-modal');
+        return;
+    }
+
+    // Заполняем данные
+    modal.querySelector('.modal-title').innerText = exercise.name;
+    modal.querySelector('.modal-desc').innerText = exercise.description;
+    modal.querySelector('.modal-weight').innerText = levelData.weight;
+    modal.querySelector('.modal-reps').innerText = levelData.reps;
+    modal.querySelector('.modal-advice').innerText = levelData.advice;
+    
+    // Сохраняем время в кнопку
+    const startBtn = modal.querySelector('.start-btn');
+    startBtn.dataset.time = levelData.time || 60; // Время по умолчанию или из базы
+    startBtn.dataset.name = exercise.name;
+
+    // Показываем модалку
+    modal.classList.add('active');
+    
+    // Вибрация при открытии
+    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+}
+
+// === ФУНКЦИЯ СТАРТА ТАЙМЕРА ===
+function startExerciseTimer(button) {
+    const time = parseInt(button.dataset.time) || 60;
+    const name = button.dataset.name;
+    
+    // Скрываем кнопку старта, показываем таймер
+    const modal = document.getElementById('exercise-modal');
+    const timerDisplay = modal.querySelector('.timer-display');
+    const timerCircle = modal.querySelector('.timer-circle');
+    
+    button.style.display = 'none';
+    timerDisplay.style.display = 'block';
+    
+    let timeLeft = time;
+    timerDisplay.innerText = timeLeft;
+    
+    // Вибрация при старте
+    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+
+    const interval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.innerText = timeLeft;
+        
+        // Визуальный отсчет (опционально: изменение цвета)
+        if (timeLeft <= 3) {
+             timerCircle.style.stroke = '#FF4444'; // Краснеет в конце
+             if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(interval);
+            
+            // Фанфары или сигнал
+            timerDisplay.innerText = "Готово!";
+            timerCircle.style.stroke = '#00E676';
+            
+            // Сильная вибрация
+            if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+            
+            // Вернуть кнопку через 2 секунды
+            setTimeout(() => {
+                button.style.display = 'block';
+                timerDisplay.style.display = 'none';
+                timerCircle.style.stroke = '#00E676'; // Сброс цвета
+            }, 2000);
+        }
+    }, 1000);
+}
 
 // === ФУНКЦИЯ РЕНДЕРИНГА (Отрисовки) ===
 // Она принимает ID контейнера, группу мышц и уровень
