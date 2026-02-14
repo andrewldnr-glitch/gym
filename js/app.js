@@ -1,3 +1,162 @@
+// === БАЗА ДАННЫХ УПРАЖНЕНИЙ ===
+// Добавляем прямо в код, чтобы данные всегда были доступны
+const EXERCISE_DATABASE = [
+    // --- ГРУДЬ ---
+    {
+        id: 'pushups',
+        name: 'Отжимания (классические)',
+        muscle: 'chest',
+        image: 'https://img.icons8.com/fluency/96/push-ups.png', // Заглушка, замените на свои картинки
+        description: 'Базовое упражнение для развития грудных мышц и трицепса.',
+        levels: {
+            beginner: { weight: 'Собственный вес', reps: '10-12 раз', advice: 'Упор на колени, если тяжело. Спина прямая.' },
+            intermediate: { weight: 'Собственный вес', reps: '15-20 раз', advice: 'Опускайтесь медленно (3 сек), поднимайтесь быстро.' },
+            pro: { weight: 'С рюкзаком 10-15 кг', reps: '15-20 раз', advice: 'Максимальная амплитуда, грудь касается пола.' }
+        }
+    },
+    {
+        id: 'bench_press',
+        name: 'Жим штанги лежа',
+        muscle: 'chest',
+        image: 'https://img.icons8.com/fluency/96/bench-press.png',
+        description: 'Главное упражнение для массы грудных мышц.',
+        levels: {
+            beginner: { weight: 'Только гриф (20 кг)', reps: '12-15 раз', advice: 'Изучите траекторию движения, не прогибайте спину.' },
+            intermediate: { weight: '40-50 кг', reps: '10-12 раз', advice: 'Лопатки сведены, ноги плотно на полу.' },
+            pro: { weight: '70-90% от 1ПМ', reps: '6-8 раз', advice: 'Контролируемый негатив, страховка обязательна.' }
+        }
+    },
+    {
+        id: 'dumbbell_flyes',
+        name: 'Разводка гантелей',
+        muscle: 'chest',
+        image: 'https://img.icons8.com/fluency/96/dumbbell.png',
+        description: 'Изоляция для растяжения грудных мышц.',
+        levels: {
+            beginner: { weight: '4-6 кг', reps: '12 раз', advice: 'Легкий вес, фокус на чувстве растяжения.' },
+            intermediate: { weight: '8-12 кг', reps: '12 раз', advice: 'Локти чуть согнуты, не ударяйте гантели друг о друга.' },
+            pro: { weight: '14-18 кг', reps: '10-12 раз', advice: 'Работайте до жжения в середине груди.' }
+        }
+    },
+
+    // --- СПИНА ---
+    {
+        id: 'pull_ups',
+        name: 'Подтягивания',
+        muscle: 'back',
+        image: 'https://img.icons8.com/fluency/96/pull-up.png',
+        description: 'Лучшее упражнение для ширины спины.',
+        levels: {
+            beginner: { weight: 'Гравитрон (помощь)', reps: '8-10 раз', advice: 'Если нет гравитрона, используйте стул под ноги.' },
+            intermediate: { weight: 'Собственный вес', reps: '10-12 раз', advice: 'Подбородок выше перекладины, сводите лопатки.' },
+            pro: { weight: 'Пояс с весом 10-20 кг', reps: '8-10 раз', advice: 'Без рывков, чистая техника.' }
+        }
+    },
+    {
+        id: 'deadlift',
+        name: 'Становая тяга',
+        muscle: 'back',
+        image: 'https://img.icons8.com/fluency/96/deadlift.png',
+        description: 'Базовое упражнение для всей задней цепи мышц.',
+        levels: {
+            beginner: { weight: 'Гриф (20 кг)', reps: '10-12 раз', advice: 'Спина идеально прямая! Отводите таз назад.' },
+            intermediate: { weight: '40-60 кг', reps: '8-10 раз', advice: 'Гриф скользит по ногам, не округляйте поясницу.' },
+            pro: { weight: '100+ кг', reps: '5-6 раз', advice: 'Используйте пояс и магнезию.' }
+        }
+    },
+
+    // --- НОГИ ---
+    {
+        id: 'squats',
+        name: 'Приседания',
+        muscle: 'legs',
+        image: 'https://img.icons8.com/fluency/96/squats.png',
+        description: 'Король упражнений для ног.',
+        levels: {
+            beginner: { weight: 'Собственный вес', reps: '15-20 раз', advice: 'Пятки не отрывать, колени за носки не выходят.' },
+            intermediate: { weight: 'Гантели 10-15 кг', reps: '15 раз', advice: 'Глубокий присед, бедро параллельно полу.' },
+            pro: { weight: 'Штанга 60-100 кг', reps: '8-10 раз', advice: 'Взгляд прямо, спина напряжена, мощный подъем.' }
+        }
+    },
+    {
+        id: 'lunges',
+        name: 'Выпады',
+        muscle: 'legs',
+        image: 'https://img.icons8.com/fluency/96/lunges.png',
+        description: 'Развитие баланса и формы ног.',
+        levels: {
+            beginner: { weight: 'Собственный вес', reps: '10-12 на ногу', advice: 'Широкий шаг, колено не касается пола.' },
+            intermediate: { weight: 'Гантели 8-12 кг', reps: '12 на ногу', advice: 'Держите корпус вертикально.' },
+            pro: { weight: 'Штанга 40-50 кг', reps: '10 на ногу', advice: 'Сложная координация, следите за равновесием.' }
+        }
+    }
+];
+
+// === ФУНКЦИЯ РЕНДЕРИНГА (Отрисовки) ===
+// Она принимает ID контейнера, группу мышц и уровень
+function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // 1. Фильтруем базу данных
+    let filtered = EXERCISE_DATABASE;
+    if (muscleGroup !== 'all') {
+        filtered = EXERCISE_DATABASE.filter(ex => ex.muscle === muscleGroup);
+    }
+
+    // 2. Проверка на пустоту (страховка)
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state" style="text-align:center; padding: 40px; color: #888;">
+                <img src="https://img.icons8.com/fluency/96/000000/no-entries.png" alt="Empty">
+                <p>Тренировки для этого раздела скоро появятся!</p>
+            </div>`;
+        return;
+    }
+
+    // 3. Генерируем HTML
+    let html = '';
+    filtered.forEach(exercise => {
+        // Получаем данные для нужного уровня
+        const levelData = exercise.levels[level] || exercise.levels['beginner'];
+        
+        html += `
+        <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
+            <div class="workout-icon">
+                <img src="${exercise.image}" alt="${exercise.name}">
+            </div>
+            <div class="workout-details">
+                <h3>${exercise.name}</h3>
+                <div class="workout-tags">
+                    <span class="tag weight">${levelData.weight}</span>
+                    <span class="tag reps">${levelData.reps}</span>
+                </div>
+                <p class="workout-advice">${levelData.advice}</p>
+            </div>
+            <div class="workout-action">
+                <span>➜</span>
+            </div>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+}
+
+// === ФУНКЦИЯ ПОКАЗА ДЕТАЛЕЙ (вместо alert) ===
+function showExerciseDetail(exerciseId, level) {
+    const exercise = EXERCISE_DATABASE.find(ex => ex.id === exerciseId);
+    if (!exercise) return;
+    
+    const levelData = exercise.levels[level];
+    
+    // Создаем простую модалку или используем вашу
+    // Пример с системным alert для быстрой проверки, потом заменим на вашу модалку
+    alert(`Упражнение: ${exercise.name}\nВес: ${levelData.weight}\nПовторы: ${levelData.reps}\nСовет: ${levelData.advice}`);
+    
+    // ВИБРАЦИЯ
+    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+}
+
 // --- ПОЛНАЯ ЛОГИКА ВЕСА И ГРАФИКА ---
 
 // 1. Ключ для хранения
