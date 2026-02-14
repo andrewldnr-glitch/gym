@@ -1,120 +1,471 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Твои тренировки</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>FitGym</title>
+
+  <link rel="stylesheet" href="css/style.css" />
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    function initApp() {
-      if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-      }
+
+  <style>
+    /* OPAL Home layout helpers (страница Home) */
+    .opal-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding-top: 6px;
+      padding-bottom: 14px;
     }
-    initApp();
+
+    .opal-ring-wrap {
+      width: 220px;
+      height: 220px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      margin: 6px 0 2px;
+    }
+
+    .opal-ring {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      filter: drop-shadow(0 18px 30px rgba(124,124,255,0.18));
+    }
+
+    .opal-ring-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.16);
+      stroke-width: 10;
+    }
+
+    html[data-theme="light"] .opal-ring-bg,
+    body[data-theme="light"] .opal-ring-bg {
+      stroke: rgba(11,16,32,0.10);
+    }
+
+    .opal-ring-fg {
+      fill: none;
+      stroke: url(#opalGrad);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 628;
+      stroke-dashoffset: 628;
+      transition: stroke-dashoffset 600ms ease;
+    }
+
+    .opal-ring-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .opal-ring-center .pct {
+      font-size: 3.1rem;
+      font-weight: 1000;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .opal-ring-center .sub {
+      margin-top: 6px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .opal-grid {
+      display: grid;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .opal-card {
+      padding: 16px;
+    }
+
+    .opal-card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .opal-card-title .label {
+      font-weight: 900;
+      letter-spacing: -0.3px;
+    }
+
+    .opal-card-title .hint {
+      color: var(--text-secondary);
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .opal-kpis {
+      display: grid;
+      gap: 10px;
+    }
+
+    .opal-kpi {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      background: rgba(255,255,255,0.06);
+    }
+
+    html[data-theme="light"] .opal-kpi,
+    body[data-theme="light"] .opal-kpi {
+      background: rgba(11,16,32,0.04);
+    }
+
+    .opal-kpi .k {
+      color: var(--text-secondary);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .opal-kpi .v {
+      font-weight: 1000;
+      letter-spacing: -0.4px;
+      font-size: 1.05rem;
+    }
+
+    .opal-mini-chart {
+      width: 100%;
+      height: 92px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+      position: relative;
+    }
+
+    html[data-theme="light"] .opal-mini-chart,
+    body[data-theme="light"] .opal-mini-chart {
+      background: rgba(11,16,32,0.04);
+    }
+
+    .opal-mini-chart svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .opal-cta {
+      margin-top: 6px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .opal-cta .btn-main {
+      font-size: 1.05rem;
+      padding: 18px 18px;
+    }
+
+    /* make cards feel like in mock */
+    .opal-card.card {
+      cursor: default;
+    }
+  </style>
+
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
   </script>
 </head>
+
 <body class="has-tab-bar">
-
-  <!-- Заставка -->
-  <div id="splash" class="splash-screen">
-    <div class="splash-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-      </svg>
-    </div>
-    <div class="splash-title">FitGym</div>
-    <div class="loader">
-      <div class="loader-dot"></div>
-      <div class="loader-dot"></div>
-      <div class="loader-dot"></div>
-    </div>
-  </div>
-
   <div class="container">
-    <header>
-      <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Добро пожаловать</p>
-      <h1>Привет, <span id="user-name" style="color: var(--accent-primary);">Гость</span>!</h1>
-      <p style="margin-top: 5px;">Выберите режим тренировки.</p>
+    <header style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h1 style="margin-bottom:2px;">FitGym</h1>
+        <p style="margin-top:0;">Спокойно. Стабильно. По плану.</p>
+      </div>
     </header>
-    
-    <!-- ГЛАВНОЕ МЕНЮ -->
-    <div class="main-menu">
-      
-      <!-- 1. КАРТОЧКА КУРСЫ (Герой) -->
-      <a href="courses.html" class="menu-card hero-card">
-        <div class="menu-icon-bg">
-           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-             <line x1="16" y1="2" x2="16" y2="6"></line>
-             <line x1="8" y1="2" x2="8" y2="6"></line>
-             <line x1="3" y1="10" x2="21" y2="10"></line>
-           </svg>
-        </div>
-        <div class="menu-content">
-          <div class="menu-header">
-            <h2>Программы тренировок</h2>
-            <span class="recommend-badge">Рекомендуем</span>
-          </div>
-          <p>Готовые планы на 4-8 недель. Идеально для новичков и тех, кто хочет систему.</p>
-          <div class="menu-arrow">➜</div>
-        </div>
-      </a>
 
-      <!-- 2. КАРТОЧКА РАЗОВЫЕ ТРЕНИРОВКИ -->
-      <a href="trainings.html" class="menu-card secondary-card">
-        <div class="menu-icon-bg light">
-           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-             <path d="M6.5 6.5h11M6.5 17.5h11M4 10v4M20 10v4M6 12h12"/>
-           </svg>
+    <section class="opal-hero">
+      <!-- Progress Ring -->
+      <div class="opal-ring-wrap card opal-card" style="width:100%; max-width:420px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="font-weight:900;">Прогресс</div>
+          <div id="opal-progress-hint" style="color:var(--text-secondary); font-weight:800; font-size:0.85rem;">Эта неделя</div>
         </div>
-        <div class="menu-content">
-          <div class="menu-header">
-            <h2>Разовые тренировки</h2>
-          </div>
-          <p>Конструктор упражнений. Выберите группу мышц и тренируйтесь сейчас.</p>
-          <div class="menu-arrow">➜</div>
-        </div>
-      </a>
 
-    </div>
+        <div class="opal-ring-wrap" style="width:220px; height:220px; margin: 0 auto;">
+          <svg class="opal-ring" viewBox="0 0 220 220" aria-hidden="true">
+            <defs>
+              <linearGradient id="opalGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="var(--accent-primary)"></stop>
+                <stop offset="55%" stop-color="var(--accent-secondary)"></stop>
+                <stop offset="100%" stop-color="var(--accent-tertiary)"></stop>
+              </linearGradient>
+            </defs>
+
+            <circle class="opal-ring-bg" cx="110" cy="110" r="100"></circle>
+            <circle id="opal-ring-fg" class="opal-ring-fg" cx="110" cy="110" r="100"></circle>
+          </svg>
+
+          <div class="opal-ring-center">
+            <div>
+              <div id="opal-percent" class="pct">0%</div>
+              <div class="sub">цель недели</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="opal-grid" style="max-width:420px;">
+        <div class="card opal-card">
+          <div class="opal-card-title">
+            <div class="label">На этой неделе</div>
+            <div class="hint" id="opal-week-range">—</div>
+          </div>
+
+          <div class="opal-kpis">
+            <div class="opal-kpi">
+              <div class="k">Активное время</div>
+              <div class="v" id="opal-active-time">0m</div>
+            </div>
+            <div class="opal-kpi">
+              <div class="k">Тренировок</div>
+              <div class="v" id="opal-workouts">0</div>
+            </div>
+            <div class="opal-kpi">
+              <div class="k">Дней с целью</div>
+              <div class="v" id="opal-days">0/7</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card opal-card">
+          <div class="opal-card-title">
+            <div class="label">Вес</div>
+            <div class="hint" id="opal-weight-last">—</div>
+          </div>
+
+          <div class="opal-mini-chart">
+            <svg viewBox="0 0 400 92" preserveAspectRatio="none">
+              <path id="opal-weight-area" d="" fill="url(#areaGrad)" opacity="0.25"></path>
+              <path id="opal-weight-line" d="" fill="none" stroke="url(#lineGrad)" stroke-width="3" stroke-linecap="round"></path>
+
+              <defs>
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="var(--accent-tertiary)"></stop>
+                  <stop offset="60%" stop-color="var(--accent-secondary)"></stop>
+                  <stop offset="100%" stop-color="var(--accent-primary)"></stop>
+                </linearGradient>
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
+                  <stop offset="100%" stop-color="transparent"></stop>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <p style="margin-top:10px; color:var(--text-secondary); font-weight:800; font-size:0.9rem;">
+            Добавляй вес — и увидишь тренд.
+          </p>
+        </div>
+
+        <div class="opal-cta">
+          <button class="btn-main" onclick="window.location.href='trainings.html'">Start Workout</button>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- Нижнее меню -->
+  <!-- Tab Bar -->
   <nav class="tab-bar">
-    <a href="index.html" class="tab-item active">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Home</span>
+    <a class="tab-item active" href="index.html">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5z"/>
+      </svg>
+      Home
     </a>
-    <a href="profile.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      <span>Profile</span>
+    <a class="tab-item" href="profile.html">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 19a8 8 0 0 1 16 0"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      Stats
     </a>
-    <a href="info.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      <span>Info</span>
+    <a class="tab-item" href="tools.html">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        <circle cx="12" cy="12" r="4"/>
+      </svg>
+      Tools
     </a>
   </nav>
 
-<script src="js/api.js"></script>
-<script src="js/app.js"></script>
-
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        if (window.Telegram && window.Telegram.WebApp.initDataUnsafe.user) {
-          document.getElementById('user-name').innerText = window.Telegram.WebApp.initDataUnsafe.user.first_name;
-        }
-        const splash = document.getElementById('splash');
-        if (splash) {
-          splash.classList.add('hidden');
-          setTimeout(() => { splash.style.display = 'none'; }, 500);
-        }
-      }, 1000);
-    });
+    // -----------------------------
+    // Theme: read saved theme from localStorage (set by Profile)
+    // -----------------------------
+    (function applyThemeFromStorage(){
+      try {
+        const t = localStorage.getItem('theme') || localStorage.getItem('ui_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+      } catch(_) {}
+    })();
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    function startOfWeek(d) {
+      const x = new Date(d);
+      const day = (x.getDay() + 6) % 7; // Mon=0
+      x.setHours(0,0,0,0);
+      x.setDate(x.getDate() - day);
+      return x;
+    }
+
+    function fmtRange(weekStart) {
+      const end = new Date(weekStart);
+      end.setDate(end.getDate() + 6);
+      const opts = { day: 'numeric', month: 'short' };
+      return `${weekStart.toLocaleDateString('ru-RU', opts)} – ${end.toLocaleDateString('ru-RU', opts)}`;
+    }
+
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+    // -----------------------------
+    // Compute progress (weekly goal)
+    // Goal assumption: 7 тренировок/нед. (можно потом вынести в настройки)
+    // Active time: пока оценочно 45 мин / тренировка (позже можно считать по реальным данным)
+    // -----------------------------
+    function loadTrainingHistory() {
+      try {
+        // у тебя есть trainingHistory (локально) + workouts в supabase (но на Home мы без сети)
+        return JSON.parse(localStorage.getItem('trainingHistory') || '[]');
+      } catch(_) { return []; }
+    }
+
+    function loadWeightHistory() {
+      try {
+        return JSON.parse(localStorage.getItem('weightHistory') || '[]');
+      } catch(_) { return []; }
+    }
+
+    function updateRing(percent) {
+      const circle = document.getElementById('opal-ring-fg');
+      const label = document.getElementById('opal-percent');
+      const r = 100;
+      const c = 2 * Math.PI * r; // ~628
+      const p = clamp(percent, 0, 100);
+      const offset = c * (1 - p/100);
+      circle.style.strokeDasharray = String(c);
+      circle.style.strokeDashoffset = String(offset);
+      label.textContent = `${Math.round(p)}%`;
+    }
+
+    function buildMiniChart(values) {
+      const line = document.getElementById('opal-weight-line');
+      const area = document.getElementById('opal-weight-area');
+      if (!line || !area) return;
+
+      if (!values || values.length < 2) {
+        line.setAttribute('d', '');
+        area.setAttribute('d', '');
+        return;
+      }
+
+      // take last 14 points
+      const pts = values.slice(-14);
+
+      const w = 400, h = 92;
+      const padX = 8, padY = 10;
+
+      const ys = pts.map(p => p.weight);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const span = (maxY - minY) || 1;
+
+      const step = (w - padX*2) / (pts.length - 1);
+
+      const coords = pts.map((p, i) => {
+        const x = padX + step * i;
+        const norm = (p.weight - minY) / span;
+        const y = (h - padY) - norm * (h - padY*2);
+        return { x, y };
+      });
+
+      const d = coords.map((p,i) => `${i===0?'M':'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+      line.setAttribute('d', d);
+
+      // area path
+      const dA = `${d} L ${coords[coords.length-1].x.toFixed(1)} ${(h-padY).toFixed(1)} L ${coords[0].x.toFixed(1)} ${(h-padY).toFixed(1)} Z`;
+      area.setAttribute('d', dA);
+    }
+
+    function initHome() {
+      const now = new Date();
+      const ws = startOfWeek(now);
+
+      // Week range
+      const rangeEl = document.getElementById('opal-week-range');
+      if (rangeEl) rangeEl.textContent = fmtRange(ws);
+
+      // Trainings
+      const hist = loadTrainingHistory();
+      const weekItems = hist.filter(x => {
+        const dt = new Date(x.date || x.finished_at || x.finishedAt || x.finished_at_iso || Date.now());
+        return dt >= ws && dt < new Date(ws.getTime() + 7*24*3600*1000);
+      });
+
+      // days with workouts
+      const daysSet = new Set(
+        weekItems.map(x => {
+          const dt = new Date(x.date || x.finished_at || Date.now());
+          return dt.toISOString().slice(0,10);
+        })
+      );
+
+      const workouts = weekItems.length;
+      const days = daysSet.size;
+
+      // active time (estimation)
+      const activeMinutes = workouts * 45;
+      const hours = Math.floor(activeMinutes / 60);
+      const mins = activeMinutes % 60;
+
+      const activeEl = document.getElementById('opal-active-time');
+      const workoutsEl = document.getElementById('opal-workouts');
+      const daysEl = document.getElementById('opal-days');
+
+      if (activeEl) activeEl.textContent = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+      if (workoutsEl) workoutsEl.textContent = String(workouts);
+      if (daysEl) daysEl.textContent = `${days}/7`;
+
+      // progress percent (weekly goal: 5 workouts = 100% default)
+      const WEEK_GOAL = 5;
+      const pct = (workouts / WEEK_GOAL) * 100;
+      updateRing(pct);
+
+      // weight chart
+      const weights = loadWeightHistory();
+      const last = weights.length ? weights[weights.length-1] : null;
+      const wLastEl = document.getElementById('opal-weight-last');
+      if (wLastEl) wLastEl.textContent = last ? `${last.weight} кг` : 'Нет данных';
+
+      buildMiniChart(weights);
+    }
+
+    document.addEventListener('DOMContentLoaded', initHome);
   </script>
 </body>
 </html>
