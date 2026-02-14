@@ -3,103 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Тренировка</title>
+  <title>Программа</title>
+
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/courses.css">
+
+  <!-- Lucide CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
+    // Инициализация TG (если открыто внутри Telegram WebApp)
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
     }
   </script>
 </head>
-<body class="has-tab-bar">
 
+<body class="has-tab-bar">
   <div class="container">
-    <header style="display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <a href="javascript:void(0)" onclick="exitWorkout()" class="back-btn" style="text-decoration: none; color: var(--text-secondary);">← Выход</a>
-        <h1 id="page-title">Тренировка</h1>
+
+    <header class="page-header page-header--with-back">
+      <div class="page-header__left">
+        <a href="courses.html" class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Назад
+        </a>
       </div>
-      <div id="level-badge" class="level-badge">Курс</div>
+
+      <div class="pill pill--opal" aria-label="Курс">
+        <i data-lucide="sparkles"></i>
+        <span>Курс</span>
+      </div>
     </header>
 
-    <!-- Контейнер для списка -->
-    <div id="workout-list" class="workouts-grid">
-      <p style="text-align:center; padding: 20px;">Загрузка...</p>
+    <!-- ✅ app.js ожидает этот контейнер -->
+    <div id="course-content" class="course-content">
+      <div class="loading-state"><p>Загрузка...</p></div>
     </div>
-    
-    <!-- Кнопка завершения тренировки (внизу) -->
-    <div style="padding: 20px 0; margin-top: auto;">
-        <button class="start-course-btn" onclick="finishWorkoutSession()" style="background: #333; color: #fff;">Завершить тренировку</button>
-    </div>
+
   </div>
 
-  <!-- Модалка упражнения -->
-  <div id="exercise-modal" class="modal-overlay">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeExerciseModal()">✕</button>
-      <div id="sets-counter" style="text-align: center; font-size: 0.9rem; color: var(--accent-primary); margin-bottom: 10px; font-weight: bold;">Подход 1 / 3</div>
-      <h2 class="modal-title">Название</h2>
-      <p class="modal-desc" style="color: #aaa; margin-bottom: 20px;">Описание</p>
-      <div class="modal-info-blocks">
-         <div class="info-block"><span class="label">Вес</span><span class="value modal-weight">-</span></div>
-         <div class="info-block"><span class="label">Повторы</span><span class="value modal-reps">-</span></div>
-      </div>
-      <div class="modal-advice-box"><p class="label">Совет:</p><p class="modal-advice" style="color: var(--accent-secondary);">-</p></div>
-      <div class="timer-container">
-          <button id="action-btn" class="start-btn" onclick="handleWorkoutAction(this)">Начать подход 1</button>
-          <div id="timer-block" class="timer-display" style="display:none; flex-direction: column; align-items: center;">
-              <span style="color: #aaa; font-size: 0.9rem; margin-bottom: 10px;">Отдых</span>
-              <div style="position: relative; width: 150px; height: 150px;">
-                  <svg class="timer-svg" viewBox="0 0 100 100"><circle class="timer-bg" cx="50" cy="50" r="45"></circle><circle class="timer-circle" cx="50" cy="50" r="45"></circle></svg>
-                  <span id="timer-text" class="timer-text">60</span>
-              </div>
-          </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="js/app.js"></script>
+  <!-- Скрипты -->
   <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Особая логика инициализации для этого процесса
-        const source = localStorage.getItem('currentWorkoutSource');
-        
-        if (source === 'course') {
-            const courseId = localStorage.getItem('currentCourseId');
-            const dayIndex = parseInt(localStorage.getItem('currentWorkoutDayIndex'));
-            const level = localStorage.getItem('userLevel') || 'beginner';
-            
-            const course = COURSES_DATABASE.find(c => c.id === courseId);
-            if (course && course.schedule[dayIndex]) {
-                const dayData = course.schedule[dayIndex];
-                document.getElementById('page-title').innerText = dayData.name;
-                
-                // Отрисовываем конкретные упражнения из плана
-                renderWorkoutListByIds('workout-list', dayData.exercises, level);
-            } else {
-                window.location.href = 'courses.html';
-            }
-        } else {
-            // Если зашли случайно, кидаем на курсы
-            window.location.href = 'courses.html';
-        }
-    });
+      try { if (window.lucide) lucide.createIcons(); } catch (_) {}
 
-    function exitWorkout() {
-        if(confirm("Вы уверены? Прогресс текущей тренировки не сохранится.")) {
-            window.location.href = 'courses.html';
-        }
-    }
-    
-    function finishWorkoutSession() {
-        alert("Тренировка завершена! Отличная работа.");
-        localStorage.removeItem('currentWorkoutSource');
-        window.location.href = 'courses.html';
-    }
+      if (typeof initCourseDetail === 'function') {
+        initCourseDetail();
+      } else {
+        const c = document.getElementById('course-content');
+        if (c) c.innerHTML = '<div class="loading-state"><p>Не удалось загрузить программу.</p></div>';
+      }
+    });
   </script>
 </body>
 </html>
