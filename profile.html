@@ -4,12 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Профиль</title>
+
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
+
 <body class="has-tab-bar">
   <div class="container">
+
+    <!-- ✅ Переключатель темы -->
+    <div class="theme-card">
+      <div class="theme-title">
+        <strong>Тема интерфейса</strong>
+        <span>Светлая или тёмная</span>
+      </div>
+
+      <div class="theme-segment" role="tablist" aria-label="Theme">
+        <button id="theme-btn-light" type="button">Light</button>
+        <button id="theme-btn-dark" type="button">Dark</button>
+      </div>
+    </div>
 
     <!-- Блок: Тренировки -->
     <h2>📊 Статистика</h2>
@@ -19,8 +34,8 @@
         <div class="stat-value" id="total-count">0</div>
       </div>
       <div style="text-align:right;">
-         <div class="stat-label">Последняя</div>
-         <div id="last-training-date" style="color:var(--text-secondary); font-size:0.9rem;">-</div>
+        <div class="stat-label">Последняя</div>
+        <div id="last-training-date" style="color:var(--text-secondary); font-size:0.9rem;">-</div>
       </div>
     </div>
 
@@ -64,20 +79,34 @@
   <!-- Навигация -->
   <nav class="tab-bar">
     <a href="index.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
       <span>Home</span>
     </a>
+
     <a href="profile.html" class="tab-item active">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"/>
+        <line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
       <span>Stats</span>
     </a>
+
     <a href="info.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
       <span>Tools</span>
     </a>
   </nav>
 
   <!-- ПОДКЛЮЧЕНИЕ СКРИПТОВ -->
+  <script src="js/theme.js"></script>
   <script src="js/api.js"></script>
   <script src="js/app.js"></script>
   <script src="js/weight.js"></script>
@@ -92,10 +121,8 @@
 
     // --- 1) Bootstrap: подтянуть данные с Supabase и положить в localStorage
     async function syncFromSupabaseToLocalStorage() {
-      // apiBootstrap определен в js/api.js
       if (typeof apiBootstrap !== 'function') return;
 
-      // initData есть только в Telegram
       const initData = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp.initData : '';
       if (!initData) return;
 
@@ -106,12 +133,11 @@
       localStorage.setItem('userStats', JSON.stringify({
         totalWorkouts: Number(stats.total_workouts || 0),
         lastTrainingDate: stats.last_training_at || null,
-        // оставим места под будущие поля
         steps: safeParse(localStorage.getItem('userStats') || '{}', {}).steps || 0,
         calories: safeParse(localStorage.getItem('userStats') || '{}', {}).calories || 0
       }));
 
-      // trainingHistory — в формате, который читает наш profile.js
+      // trainingHistory
       const workouts = Array.isArray(data.workouts) ? data.workouts : [];
       localStorage.setItem('trainingHistory', JSON.stringify(
         workouts.map(w => ({
@@ -124,9 +150,8 @@
         }))
       ));
 
-      // weightHistory — под weight.js (обычно ожидает [{date, weight}, ...])
+      // weightHistory
       const weights = Array.isArray(data.weights) ? data.weights : [];
-      // В Supabase мы отдаём по убыванию (новые сверху) — развернём в хронологию
       const chronological = weights.slice().reverse().map(x => ({
         date: x.measured_at,
         weight: Number(x.weight)
@@ -134,7 +159,7 @@
       localStorage.setItem('weightHistory', JSON.stringify(chronological));
     }
 
-    // --- 2) Запуск UI: безопасно, даже если часть функций не загрузилась
+    // --- 2) Запуск UI
     function runUi() {
       if (typeof updateStats === 'function') updateStats();
       if (typeof initWeightSection === 'function') initWeightSection();
@@ -144,17 +169,15 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       try {
-        // Сначала синк (если Telegram + функция доступна)
         await syncFromSupabaseToLocalStorage();
       } catch (e) {
         console.warn('Supabase bootstrap failed, using local cache:', e);
       } finally {
-        // Потом рисуем UI из localStorage
         runUi();
       }
     });
 
-    // --- ШАРИНГ (как у тебя, без изменений логики)
+    // --- ШАРИНГ
     function shareResults() {
       const weightHistory = typeof getWeightHistory === 'function' ? getWeightHistory() : [];
       const stats = safeParse(localStorage.getItem('userStats') || '{}', {});
