@@ -972,3 +972,49 @@ body[data-theme="light"] .loader-dot {
   40% { transform: scale(1); opacity: 1; }
 }
 
+/* =========================
+   OPAL RING — animated glow
+   ========================= */
+
+.opal-ring {
+  overflow: visible;
+}
+
+/* Сам прогресс-круг */
+.opal-ring-fg {
+  filter:
+    drop-shadow(0 0 10px rgba(124,124,255,0.35))
+    drop-shadow(0 0 22px rgba(167,139,250,0.22))
+    drop-shadow(0 0 36px rgba(96,165,250,0.18));
+}
+
+/* В светлой теме делаем свечение мягче */
+html[data-theme="light"] .opal-ring-fg {
+  filter:
+    drop-shadow(0 0 8px rgba(107,124,255,0.22))
+    drop-shadow(0 0 16px rgba(179,139,255,0.14))
+    drop-shadow(0 0 26px rgba(96,165,250,0.10));
+}
+
+/* Анимация "движения" градиента: мы будем вращать градиент */
+@keyframes opalGradSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Этот класс навесим на <linearGradient> через CSS (см. HTML шаг ниже) */
+.opal-grad-anim {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: opalGradSpin 10s linear infinite;
+}
+
+/* Чуть живее — медленное "дыхание" свечения */
+@keyframes opalGlowPulse {
+  0%, 100% { opacity: 0.92; }
+  50%      { opacity: 1; }
+}
+
+.opal-ring-fg {
+  animation: opalGlowPulse 4.5s ease-in-out infinite;
+}
