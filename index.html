@@ -6,6 +6,10 @@
   <title>FitGym</title>
 
   <link rel="stylesheet" href="css/style.css" />
+
+  <!-- ✅ Единая тема для всего приложения (ставим в head, чтобы не было "вспышки") -->
+  <script src="js/theme.js"></script>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
@@ -287,12 +291,10 @@
 
           <div class="opal-mini-chart">
             <svg viewBox="0 0 400 92" preserveAspectRatio="none">
-              <!-- ✅ areaGrad/lineGrad are now defined -->
               <path id="opal-weight-area" d="" fill="url(#areaGrad)" opacity="0.25"></path>
               <path id="opal-weight-line" d="" fill="none" stroke="url(#lineGrad)" stroke-width="3" stroke-linecap="round"></path>
 
               <defs>
-                <!-- ✅ Chart gradient (unique id) -->
                 <linearGradient id="opalChartGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
                   <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
                   <stop offset="55%" stop-color="var(--accent-tertiary)"></stop>
@@ -307,7 +309,6 @@
                     repeatCount="indefinite"></animateTransform>
                 </linearGradient>
 
-                <!-- ✅ Area + line gradients that were referenced but missing -->
                 <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="var(--accent-tertiary)" stop-opacity="0.85"></stop>
                   <stop offset="100%" stop-color="var(--accent-tertiary)" stop-opacity="0"></stop>
@@ -347,9 +348,9 @@
         <path d="M4 19a8 8 0 0 1 16 0"/>
         <circle cx="12" cy="7" r="4"/>
       </svg>
-      Профиль
+      Статистика
     </a>
-    <a class="tab-item" href="tools.html">
+    <a class="tab-item" href="info.html">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
         <circle cx="12" cy="12" r="4"/>
@@ -359,16 +360,6 @@
   </nav>
 
   <script>
-    // -----------------------------
-    // Theme: read saved theme from localStorage (set by Profile)
-    // -----------------------------
-    (function applyThemeFromStorage(){
-      try {
-        const t = localStorage.getItem('theme') || localStorage.getItem('ui_theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
-      } catch(_) {}
-    })();
-
     // -----------------------------
     // Helpers
     // -----------------------------
