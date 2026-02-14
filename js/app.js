@@ -230,10 +230,29 @@ let workoutState = {
 };
 
 // ==========================================
-// === 4. ФУНКЦИИ ИНТЕРФЕЙСА (ОТРИСОВКА) ===
+// === 4. UI HELPERS (states via classes) ===
 // ==========================================
 
-// 4.1 Отрисовка списка разовых тренировок (trainings.html)
+function setActionButtonState(btn, state /* 'primary' | 'warning' | 'neutral' */) {
+  if (!btn) return;
+  btn.classList.remove('btn-state-primary', 'btn-state-warning', 'btn-state-neutral');
+  if (state === 'primary') btn.classList.add('btn-state-primary');
+  if (state === 'warning') btn.classList.add('btn-state-warning');
+  if (state === 'neutral') btn.classList.add('btn-state-neutral');
+}
+
+function setTimerCircleState(circle, state /* 'ok' | 'danger' | 'none' */) {
+  if (!circle) return;
+  circle.classList.remove('is-ok', 'is-danger');
+  if (state === 'ok') circle.classList.add('is-ok');
+  if (state === 'danger') circle.classList.add('is-danger');
+}
+
+// ==========================================
+// === 5. ФУНКЦИИ ИНТЕРФЕЙСА (ОТРИСОВКА) ===
+// ==========================================
+
+// 5.1 Отрисовка списка разовых тренировок (trainings.html)
 function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -242,7 +261,7 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
   if (muscleGroup !== 'all') filtered = EXERCISE_DATABASE.filter(ex => ex.muscle === muscleGroup);
 
   if (filtered.length === 0) {
-    container.innerHTML = `<div class="empty-state" style="text-align:center; padding: 40px; color: #888;"><p>Тренировок нет.</p></div>`;
+    container.innerHTML = `<div class="empty-state loading-state"><p>Тренировок нет.</p></div>`;
     return;
   }
 
@@ -268,7 +287,7 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
   container.innerHTML = html;
 }
 
-// 4.2 Отрисовка списка курсов (courses.html)
+// 5.2 Отрисовка списка курсов (courses.html)
 function renderCoursesList(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -292,13 +311,13 @@ function renderCoursesList(containerId) {
   container.innerHTML = html;
 }
 
-// 4.3 Отрисовка списка по ID (для workout-process.html)
+// 5.3 Отрисовка списка по ID (для workout-process.html)
 function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   if (!exerciseIds || exerciseIds.length === 0) {
-    container.innerHTML = `<div class="empty-state"><p>Список пуст.</p></div>`;
+    container.innerHTML = `<div class="empty-state loading-state"><p>Список пуст.</p></div>`;
     return;
   }
 
@@ -328,7 +347,7 @@ function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
 }
 
 // ==========================================
-// === 5. ЛОГИКА КУРСОВ ===
+// === 6. ЛОГИКА КУРСОВ ===
 // ==========================================
 
 function openCourseDetail(courseId) {
@@ -406,7 +425,7 @@ function startCourseDay(courseId, dayIndex) {
 }
 
 // ==========================================
-// === 6. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
+// === 7. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
 // ==========================================
 
 function showExerciseDetail(exerciseId, level) {
@@ -434,12 +453,12 @@ function showExerciseDetail(exerciseId, level) {
 
   const startBtn = document.getElementById('action-btn');
   const timerBlock = document.getElementById('timer-block');
+  const timerCircle = document.querySelector('.timer-circle');
 
   if (startBtn) {
     startBtn.style.display = 'block';
     startBtn.innerText = 'Начать подход 1';
-    startBtn.style.background = 'var(--accent-primary)';
-    startBtn.style.color = '#000';
+    setActionButtonState(startBtn, 'primary');
     startBtn.onclick = () => handleWorkoutAction(startBtn);
   }
 
@@ -447,6 +466,8 @@ function showExerciseDetail(exerciseId, level) {
     timerBlock.style.display = 'none';
     removeRestSkipButton();
   }
+
+  setTimerCircleState(timerCircle, 'none');
 
   modal.classList.add('active');
   if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
@@ -462,7 +483,7 @@ function handleWorkoutAction(button) {
 
   if (currentText.includes('Начать подход')) {
     button.innerText = `Завершить подход ${workoutState.currentSet}`;
-    button.style.background = '#FF9500';
+    setActionButtonState(button, 'warning');
     if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
     return;
   }
@@ -525,7 +546,8 @@ function startRestTimer(button) {
   const circumference = 2 * Math.PI * radius;
   timerCircle.style.strokeDasharray = String(circumference);
   timerCircle.style.strokeDashoffset = '0';
-  timerCircle.style.stroke = '#00E676';
+
+  setTimerCircleState(timerCircle, 'ok');
 
   if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
 
@@ -538,7 +560,7 @@ function startRestTimer(button) {
     timerCircle.style.strokeDashoffset = String(offset);
 
     if (timeLeft <= 3) {
-      timerCircle.style.stroke = '#FF4444';
+      setTimerCircleState(timerCircle, 'danger');
       if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
 
@@ -584,7 +606,7 @@ function nextSet(button, timerBlock) {
     timerBlock.style.display = 'none';
     button.style.display = 'block';
     button.innerText = `Начать подход ${workoutState.currentSet}`;
-    button.style.background = 'var(--accent-primary)';
+    setActionButtonState(button, 'primary');
     if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('warning');
   }
 }
@@ -598,7 +620,10 @@ function finishExercise(button, timerBlock) {
 
   button.style.display = 'block';
   button.innerText = 'Закрыть';
-  button.style.background = '#333';
+  setActionButtonState(button, 'neutral');
+
+  const timerCircle = document.querySelector('.timer-circle');
+  setTimerCircleState(timerCircle, 'none');
 
   if (modal) {
     modal.querySelector('.modal-title').innerText = "Отлично!";
@@ -620,10 +645,13 @@ function closeExerciseModal() {
 
   workoutState.restButtonRef = null;
   workoutState.restTimerBlockRef = null;
+
+  const timerCircle = document.querySelector('.timer-circle');
+  setTimerCircleState(timerCircle, 'none');
 }
 
 // ==========================================
-// === 7. ЛОГИКА ВЕСА (совместимость, чтобы не конфликтовать с weight.js)
+// === 8. ЛОГИКА ВЕСА (совместимость, чтобы не конфликтовать с weight.js)
 // ==========================================
 
 function initWeightModule() {
@@ -645,7 +673,7 @@ function getWeightHistory() {
 }
 
 // ==========================================
-// === 8. ЗАПУСК ПРИЛОЖЕНИЯ ===
+// === 9. ЗАПУСК ПРИЛОЖЕНИЯ ===
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
