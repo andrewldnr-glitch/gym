@@ -1,79 +1,117 @@
 // js/theme.js
 (function () {
-  const STORAGE_KEY = "uiTheme"; // "light" | "dark"
+  'use strict';
 
-  function applyTheme(theme) {
-    const t = (theme === "light") ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", t);
+  // ✅ Единый ключ (новый стандарт)
+  const STORAGE_KEY = 'uiTheme'; // 'light' | 'dark'
 
-    // Если внутри Telegram — подстроим цвета WebApp (не обязательно, но приятно)
+  // ✅ Поддержка легаси ключей, которые уже встречаются в проекте
+  const LEGACY_KEYS = ['theme', 'ui_theme', 'uiTheme'];
+
+  function normalizeTheme(theme) {
+    return theme === 'light' ? 'light' : 'dark';
+  }
+
+  function readStoredTheme() {
+    try {
+      // 1) сначала новый ключ
+      const v = localStorage.getItem(STORAGE_KEY);
+      if (v === 'light' || v === 'dark') return v;
+
+      // 2) затем легаси
+      for (const k of LEGACY_KEYS) {
+        const vv = localStorage.getItem(k);
+        if (vv === 'light' || vv === 'dark') return vv;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function writeStoredTheme(theme) {
+    try {
+      localStorage.setItem(STORAGE_KEY, theme);
+
+      // ✅ чтобы старые страницы/код тоже не ломались
+      localStorage.setItem('theme', theme);
+      localStorage.setItem('ui_theme', theme);
+    } catch (_) {}
+  }
+
+  function applyThemeToDom(theme) {
+    const t = normalizeTheme(theme);
+    document.documentElement.setAttribute('data-theme', t);
+
+    // Telegram WebApp colors (приятно, но не критично)
     try {
       if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
-        if (t === "light") {
-          tg.setHeaderColor("#F7F7FB");
-          tg.setBackgroundColor("#F7F7FB");
+        if (t === 'light') {
+          tg.setHeaderColor('#F7F7FB');
+          tg.setBackgroundColor('#F7F7FB');
         } else {
-          tg.setHeaderColor("#0A0A0C");
-          tg.setBackgroundColor("#0A0A0C");
+          tg.setHeaderColor('#0A0A0C');
+          tg.setBackgroundColor('#0A0A0C');
         }
       }
     } catch (_) {}
   }
 
-  function getSavedTheme() {
-    try {
-      return localStorage.getItem(STORAGE_KEY);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  function saveTheme(theme) {
-    try {
-      localStorage.setItem(STORAGE_KEY, theme);
-    } catch (_) {}
-  }
-
-  function setActiveButton(theme) {
-    const lightBtn = document.getElementById("theme-btn-light");
-    const darkBtn = document.getElementById("theme-btn-dark");
+  function setActiveButtons(theme) {
+    const t = normalizeTheme(theme);
+    const lightBtn = document.getElementById('theme-btn-light');
+    const darkBtn = document.getElementById('theme-btn-dark');
     if (!lightBtn || !darkBtn) return;
 
-    const isLight = theme === "light";
-    lightBtn.classList.toggle("active", isLight);
-    darkBtn.classList.toggle("active", !isLight);
+    lightBtn.classList.toggle('active', t === 'light');
+    darkBtn.classList.toggle('active', t === 'dark');
+
+    // удобнее для a11y / css
+    lightBtn.setAttribute('aria-selected', t === 'light' ? 'true' : 'false');
+    darkBtn.setAttribute('aria-selected', t === 'dark' ? 'true' : 'false');
   }
 
-  // Публичное API (если понадобится)
+  // ✅ Публичное API
   window.setAppTheme = function (theme) {
-    const t = (theme === "light") ? "light" : "dark";
-    saveTheme(t);
-    applyTheme(t);
-    setActiveButton(t);
+    const t = normalizeTheme(theme);
+    writeStoredTheme(t);
+    applyThemeToDom(t);
+    setActiveButtons(t);
+
+    // haptic
+    try {
+      if (window.Telegram?.WebApp?.HapticFeedback) {
+        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+      }
+    } catch (_) {}
   };
 
-  // Инициализация
-  document.addEventListener("DOMContentLoaded", function () {
-    const saved = getSavedTheme();
-    const theme = (saved === "light" || saved === "dark") ? saved : "dark";
+  // ✅ 1) Применяем тему максимально рано (без вспышки)
+  const initial = readStoredTheme() || 'dark';
+  applyThemeToDom(initial);
 
-    applyTheme(theme);
-    setActiveButton(theme);
+  // ✅ 2) На DOM ready — активируем кнопки и обработчики (если они есть)
+  document.addEventListener('DOMContentLoaded', function () {
+    const current = readStoredTheme() || initial || 'dark';
+    applyThemeToDom(current);
+    setActiveButtons(current);
 
-    const lightBtn = document.getElementById("theme-btn-light");
-    const darkBtn = document.getElementById("theme-btn-dark");
+    const lightBtn = document.getElementById('theme-btn-light');
+    const darkBtn = document.getElementById('theme-btn-dark');
 
-    if (lightBtn) {
-      lightBtn.addEventListener("click", function () {
-        window.setAppTheme("light");
-      });
-    }
+    if (lightBtn) lightBtn.addEventListener('click', () => window.setAppTheme('light'));
+    if (darkBtn) darkBtn.addEventListener('click', () => window.setAppTheme('dark'));
+  });
 
-    if (darkBtn) {
-      darkBtn.addEventListener("click", function () {
-        window.setAppTheme("dark");
-      });
-    }
+  // ✅ 3) Синхронизация между вкладками/страницами
+  window.addEventListener('storage', function (e) {
+    if (!e) return;
+    if (e.key !== STORAGE_KEY && !LEGACY_KEYS.includes(e.key)) return;
+
+    const t = (e.newValue === 'light' || e.newValue === 'dark')
+      ? e.newValue
+      : (readStoredTheme() || 'dark');
+
+    applyThemeToDom(t);
+    setActiveButtons(t);
   });
 })();
