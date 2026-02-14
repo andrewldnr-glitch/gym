@@ -248,6 +248,15 @@ function setTimerCircleState(circle, state /* 'ok' | 'danger' | 'none' */) {
   if (state === 'danger') circle.classList.add('is-danger');
 }
 
+/** ✅ Re-render lucide icons if available */
+function refreshLucideIcons() {
+  try {
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      lucide.createIcons();
+    }
+  } catch (_) {}
+}
+
 // ==========================================
 // === 5. ФУНКЦИИ ИНТЕРФЕЙСА (ОТРИСОВКА) ===
 // ==========================================
@@ -295,20 +304,29 @@ function renderCoursesList(containerId) {
   let html = '';
   COURSES_DATABASE.forEach(course => {
     html += `
-      <div class="course-card" onclick="window.location.href='course-detail.html?id=${course.id}'">
+      <div class="course-card card" onclick="window.location.href='course-detail.html?id=${course.id}'">
         <div class="course-header">
           <h2>${course.title}</h2>
           <span class="course-badge">${course.level === 'beginner' ? 'Новичок' : 'Продвинутый'}</span>
         </div>
+
         <p class="course-desc">${course.description}</p>
+
         <div class="course-meta">
-          <span><span class="icon">📅</span> ${course.duration}</span>
-          <span><span class="icon">🏋️</span> ${course.schedule.length} дня в неделю</span>
+          <span class="course-meta__item">
+            <span class="icon"><i data-lucide="calendar"></i></span>
+            ${course.duration}
+          </span>
+          <span class="course-meta__item">
+            <span class="icon"><i data-lucide="dumbbell"></i></span>
+            ${course.schedule.length} дня в неделю
+          </span>
         </div>
       </div>`;
   });
 
   container.innerHTML = html;
+  refreshLucideIcons(); // ✅ чтобы иконки появились после вставки HTML
 }
 
 // 5.3 Отрисовка списка по ID (для workout-process.html)
@@ -387,7 +405,7 @@ function initCourseDetail() {
           <h3>День ${index + 1}: ${day.name}</h3>
           <p>${day.exercises.length} упражнений</p>
         </div>
-        <span class="day-arrow">▶</span>
+        <span class="day-arrow"><i data-lucide="chevron-right"></i></span>
       </div>`;
   });
 
@@ -395,22 +413,27 @@ function initCourseDetail() {
     <div class="course-detail-header">
       <h1>${course.title}</h1>
       <p>${course.description}</p>
+
       <div class="course-stats">
         <span><b>Сложность:</b> ${course.level === 'beginner' ? 'Начальный' : 'Продвинутый'}</span>
         <span><b>Длительность:</b> ${course.duration}</span>
       </div>
     </div>
+
     <div class="course-rules">
       <div class="rule-item">
-        <h4>📅 Как тренироваться</h4>
+        <h4><i data-lucide="calendar-check"></i> Как тренироваться</h4>
         <p>Тренируйтесь 3 раза в неделю. Отдых между тренировками — 1-2 дня.</p>
       </div>
     </div>
+
     <h2 style="margin-top: 30px; margin-bottom: 15px;">Расписание</h2>
     <div class="days-list">
       ${daysHtml}
     </div>
   `;
+
+  refreshLucideIcons(); // ✅ оживляем иконки в сгенерированном HTML
 }
 
 function startCourseDay(courseId, dayIndex) {
@@ -587,10 +610,8 @@ function skipRest() {
 
   if (timerBlock) timerBlock.style.display = 'none';
 
-  // вибрация "клик"
   if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('medium');
 
-  // Переходим на следующий подход / завершение упражнения
   if (button && timerBlock) {
     nextSet(button, timerBlock);
   }
@@ -651,7 +672,7 @@ function closeExerciseModal() {
 }
 
 // ==========================================
-// === 8. ЛОГИКА ВЕСА (совместимость, чтобы не конфликтовать с weight.js)
+// === 8. ЛОГИКА ВЕСА (совместимость)
 // ==========================================
 
 function initWeightModule() {
