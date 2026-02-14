@@ -232,9 +232,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   transition: transform 0.1s;
 }
 
-.btn-add-weight:active {
-  transform: scale(0.95);
-}
+.btn-add-weight:active { transform: scale(0.95); }
 
 .weight-history-item {
   display: flex;
@@ -284,10 +282,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
 }
 
-.badge-icon {
-  font-size: 1.8rem;
-  margin-bottom: 5px;
-}
+.badge-icon { font-size: 1.8rem; margin-bottom: 5px; }
 
 .badge-name {
   font-size: 0.7rem;
@@ -321,27 +316,9 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   justify-content: center;
   gap: 10px;
 }
+.btn-share-result:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3); }
 
-.btn-share-result:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3);
-}
-
-/* --- Стили для модальных окон (старые .modal) --- */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal.active { display: flex; }
-
-/* --- Стили для страницы тренировок --- */
+/* --- Стили страницы тренировок --- */
 .level-badge {
   background: var(--accent-primary);
   color: #000;
@@ -381,6 +358,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-weight: 600;
 }
 
+/* Карточка упражнения */
 .workout-card {
   background: var(--card-bg);
   border-radius: 16px;
@@ -392,11 +370,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: transform 0.2s, box-shadow 0.2s;
 }
-
-.workout-card:active {
-  transform: scale(0.98);
-  background: rgba(255, 255, 255, 0.08);
-}
+.workout-card:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.08); }
 
 .workout-icon {
   width: 60px;
@@ -409,11 +383,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   flex-shrink: 0;
 }
 
-.workout-icon img {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-}
+.workout-icon img { width: 40px; height: 40px; object-fit: contain; }
 
 .workout-details { flex-grow: 1; }
 
@@ -423,11 +393,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   color: var(--text-primary);
 }
 
-.workout-tags {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 4px;
-}
+.workout-tags { display: flex; gap: 8px; margin-bottom: 4px; }
 
 .tag {
   font-size: 0.75rem;
@@ -449,24 +415,17 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   overflow: hidden;
 }
 
-.workout-action {
-  color: var(--accent-primary);
-  font-size: 1.2rem;
-  opacity: 0.7;
-}
+.workout-action { color: var(--accent-primary); font-size: 1.2rem; opacity: 0.7; }
 
-.back-btn {
-  font-size: 0.9rem;
-  margin-bottom: 5px;
-  display: inline-block;
-}
+.back-btn { font-size: 0.9rem; margin-bottom: 5px; display: inline-block; }
 
 /* =========================================================
-   ✅ Модалка упражнения — по центру
+   МОДАЛКА УПРАЖНЕНИЯ — ПО ЦЕНТРУ
    ========================================================= */
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.85);
@@ -480,6 +439,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease, visibility 0.25s ease;
+
   padding: 18px;
 }
 
@@ -506,9 +466,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   -webkit-overflow-scrolling: touch;
 }
 
-.modal-overlay.active .modal-content {
-  transform: translateY(0) scale(1);
-}
+.modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
 
 .modal-close {
   position: absolute;
@@ -523,11 +481,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 
 .modal-title { font-size: 1.5rem; margin-bottom: 10px; }
 
-.modal-info-blocks {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+.modal-info-blocks { display: flex; gap: 10px; margin-bottom: 20px; }
 
 .info-block {
   flex: 1;
@@ -557,48 +511,48 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border-left: 3px solid var(--accent-primary);
   padding: 15px;
   border-radius: 0 12px 12px 0;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 /* =========================================================
-   ✅ ИСПРАВЛЕНО: таймер и кнопка пропуска — не перекрываются
+   ✅ КРОССПЛАТФОРМЕННО: таймер НЕ "наезжает" на кнопку
    ========================================================= */
 .timer-container {
   display: flex;
-  width: 100%;
   flex-direction: column;
-  align-items: stretch;     /* важно: растягиваем кнопку на всю ширину */
+  align-items: stretch;
   justify-content: center;
-  padding: 10px 0 0;
-  gap: 12px;
-}
-
-/* timer-block (в HTML это div#timer-block.timer-display) */
-.timer-display {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  align-self: center;       /* круг по центру */
-  flex-shrink: 0;
-  margin: 0 auto;           /* страховка для центровки */
-}
-
-.start-btn {
   width: 100%;
-  padding: 18px;
-  background: var(--accent-primary);
-  color: #000;
-  border: none;
-  border-radius: 50px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.1s;
+  padding: 10px 0 0;
+  gap: 14px;
 }
 
-.start-btn:active { transform: scale(0.95); }
+/* Это #timer-block.timer-display */
+.timer-display {
+  width: 100%;
+  height: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-bottom: 12px; /* гарантируем место под кнопку */
+}
+
+/* Внутренний обёрточный div с inline-style (position:relative; width:150px; height:150px;) */
+.timer-display > div {
+  width: 170px !important;
+  height: 170px !important;
+  max-width: 170px;
+  max-height: 170px;
+  margin: 2px auto 10px auto; /* ⬅️ вот этот отступ решает “наезд” */
+  position: relative;
+  flex-shrink: 0;
+}
 
 .timer-svg {
+  display: block;
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
@@ -626,11 +580,27 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 3rem;
-  font-weight: bold;
+  font-weight: 800;
+  line-height: 1;
   color: #fff;
 }
 
-/* Кнопка пропуска отдыха */
+/* Кнопка "Начать/Завершить" */
+.start-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--accent-primary);
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.start-btn:active { transform: scale(0.95); }
+
+/* Кнопка пропуска отдыха (класс должен быть на кнопке) */
 .rest-skip-btn {
   width: 100%;
   padding: 14px 16px;
@@ -638,20 +608,14 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(255,255,255,0.08);
   color: var(--text-primary);
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  margin-top: 2px;          /* небольшой отступ */
+  margin-top: 6px;
 }
-
 .rest-skip-btn:active { transform: scale(0.98); }
 
 /* --- Стили Главного Меню --- */
-.main-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-top: 20px;
-}
+.main-menu { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
 
 .menu-card {
   display: flex;
@@ -665,7 +629,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   transition: transform 0.2s;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
-
 .menu-card:active { transform: scale(0.98); }
 
 .menu-icon-bg {
@@ -677,12 +640,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   justify-content: center;
   flex-shrink: 0;
 }
-
-.menu-icon-bg svg {
-  width: 40px;
-  height: 40px;
-  stroke: #000;
-}
+.menu-icon-bg svg { width: 40px; height: 40px; stroke: #000; }
 
 .menu-icon-bg.light { background: rgba(255, 255, 255, 0.1); }
 .menu-icon-bg.light svg { stroke: var(--accent-primary); }
@@ -696,25 +654,11 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   position: relative;
 }
 
-.menu-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
+.menu-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 
-.menu-content h2 {
-  font-size: 1.1rem;
-  margin: 0;
-  line-height: 1.2;
-}
+.menu-content h2 { font-size: 1.1rem; margin: 0; line-height: 1.2; }
 
-.menu-content p {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin: 0;
-  line-height: 1.4;
-}
+.menu-content p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.4; }
 
 .menu-arrow {
   position: absolute;
@@ -745,7 +689,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   cursor: pointer;
   transition: transform 0.2s;
 }
-
 .course-card:active { transform: scale(0.98); }
 
 .course-header {
@@ -754,11 +697,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   align-items: flex-start;
   margin-bottom: 10px;
 }
-
-.course-header h2 {
-  font-size: 1.1rem;
-  margin: 0;
-}
+.course-header h2 { font-size: 1.1rem; margin: 0; }
 
 .course-badge {
   background: rgba(0, 230, 118, 0.1);
@@ -781,7 +720,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   color: #888;
   margin-bottom: 20px;
 }
-
 .course-meta .icon { font-style: normal; margin-right: 5px; }
 
 .start-course-btn {
@@ -799,10 +737,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 /* --- Стили страницы курса --- */
 .course-detail-header { margin-bottom: 25px; }
 
-.course-detail-header h1 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
+.course-detail-header h1 { font-size: 1.5rem; margin-bottom: 10px; }
 
 .course-stats {
   display: flex;
@@ -811,7 +746,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-size: 0.9rem;
   color: var(--text-secondary);
 }
-
 .course-stats b { color: var(--text-primary); }
 
 .course-rules {
@@ -826,30 +760,23 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   padding-bottom: 15px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-
 .rule-item:last-child {
   margin-bottom: 0;
   padding-bottom: 0;
   border-bottom: none;
 }
 
-.rule-item h4 {
-  color: var(--accent-primary);
-  margin-bottom: 5px;
-  font-size: 0.95rem;
-}
+.rule-item h4 { color: var(--accent-primary); margin-bottom: 5px; font-size: 0.95rem; }
 
-.rule-item p {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
+.rule-item p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; }
 
+/* Карточки дней */
 .days-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding-bottom: 30px;
+}
 
 .day-card {
   background: var(--card-bg);
@@ -862,7 +789,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: background 0.2s;
 }
-
 .day-card:active { background: rgba(255, 255, 255, 0.08); }
 
 .day-info h3 { font-size: 1rem; margin-bottom: 3px; }
