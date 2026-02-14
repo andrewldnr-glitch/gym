@@ -1,25 +1,44 @@
 // js/api.js (без ES modules)
 (function () {
   const BASE = "https://jgjzonrxjiadwilbmkbk.supabase.co/functions/v1";
+  const DEFAULT_TIMEOUT_MS = 15000;
 
   function getInitData() {
-    return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) ? window.Telegram.WebApp.initData : "";
+    // В Telegram WebView объект часто есть, но лучше всегда через window.Telegram
+    return (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData)
+      ? window.Telegram.WebApp.initData
+      : "";
   }
 
-  async function postJson(path, body) {
-    const res = await fetch(`${BASE}/${path}`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
-    });
+  async function postJson(path, body, timeoutMs = DEFAULT_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-    let data = {};
-    try { data = await res.json(); } catch (_) {}
+    try {
+      const res = await fetch(`${BASE}/${path}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
 
-    if (!res.ok || data.ok === false) {
-      throw new Error(data.error || `Request failed: ${res.status}`);
+      let data = {};
+      try { data = await res.json(); } catch (_) {}
+
+      if (!res.ok || data.ok === false) {
+        const errText = data.error || `Request failed: ${res.status}`;
+        console.warn(`[api] ${path} error:`, errText, { status: res.status, data });
+        throw new Error(errText);
+      }
+
+      return data;
+    } catch (e) {
+      // При CORS/сетевых проблемах часто будет TypeError: Failed to fetch
+      console.warn(`[api] ${path} fetch failed:`, e);
+      throw e;
+    } finally {
+      clearTimeout(timer);
     }
-    return data;
   }
 
   window.apiBootstrap = async function () {
