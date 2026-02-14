@@ -575,100 +575,38 @@ function closeExerciseModal() {
 // ==========================================
 // === 7. ЛОГИКА ВЕСА И ГРАФИКА ===
 // ==========================================
-
-const WEIGHT_KEY = 'weightHistory';
-
-function getWeightHistory() {
-    try {
-        const data = localStorage.getItem(WEIGHT_KEY);
-        if (data) return JSON.parse(data);
-    } catch (e) { return []; }
-    return [];
-}
-
-function saveWeightHistory(history) {
-    try {
-        localStorage.setItem(WEIGHT_KEY, JSON.stringify(history));
-    } catch (e) { console.warn("Ошибка сохранения веса"); }
-}
-
-function updateDashboardStats(history) {
-    const weightDisplayEl = document.getElementById('current-weight-display');
-    if (weightDisplayEl) {
-        if (history && history.length > 0) {
-            const lastWeight = history[history.length - 1].weight;
-            weightDisplayEl.textContent = lastWeight;
-        } else {
-            weightDisplayEl.textContent = '--';
-        }
-    }
-}
+//
+// ⚠️ ВАЖНО:
+// Модуль веса вынесен в отдельный файл js/weight.js.
+// Здесь оставляем только совместимость, чтобы не было конфликта WEIGHT_KEY
+// и чтобы старые вызовы не ломались.
 
 function initWeightModule() {
-    const history = getWeightHistory();
-    if (history.length > 0) {
-        updateWeightChart(history);
-        updateDashboardStats(history);
-    }
+  // Если подключён новый модуль веса — используем его
+  if (typeof initWeightSection === 'function') {
+    initWeightSection();
+  }
 }
 
 function addWeight() {
-    const input = document.getElementById('weight-input');
-    const value = parseFloat(input.value);
-    if (!value || isNaN(value)) {
-        alert('Введите корректное значение веса');
-        return;
-    }
-    const today = new Date().toISOString().split('T')[0];
-    let history = getWeightHistory();
-    const existingIndex = history.findIndex(item => item.date === today);
-    if (existingIndex >= 0) history[existingIndex].weight = value;
-    else history.push({ date: today, weight: value });
-    
-    history.sort((a, b) => new Date(a.date) - new Date(b.date));
-    saveWeightHistory(history);
-    updateWeightChart(history);
-    updateDashboardStats(history);
-    closeModal('weight-modal');
-    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+  // В profile.html кнопка веса вызывает addNewWeight() из weight.js,
+  // но если где-то остался вызов addWeight(), аккуратно перенаправим.
+  if (typeof addNewWeight === 'function') {
+    addNewWeight();
+    return;
+  }
+  alert('Функция добавления веса недоступна: подключи js/weight.js');
 }
 
-function updateWeightChart(history) {
-    const ctx = document.getElementById('weightChart');
-    if (!ctx) return; 
-    const labels = history.map(item => new Date(item.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }));
-    const data = history.map(item => item.weight);
-    
-    if (window.myWeightChart) {
-        window.myWeightChart.data.labels = labels;
-        window.myWeightChart.data.datasets[0].data = data;
-        window.myWeightChart.update();
-    } else {
-        window.myWeightChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Вес (кг)',
-                    data: data,
-                    borderColor: '#00E676',
-                    backgroundColor: 'rgba(0, 230, 118, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#aaa' } },
-                    x: { grid: { display: false }, ticks: { color: '#aaa' } }
-                }
-            }
-        });
-    }
+function getWeightHistory() {
+  if (typeof window.getWeightHistory === 'function') {
+    return window.getWeightHistory();
+  }
+  try {
+    return JSON.parse(localStorage.getItem('weightHistory') || '[]');
+  } catch (e) {
+    return [];
+  }
 }
 
 // ==========================================
@@ -676,5 +614,6 @@ function updateWeightChart(history) {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    initWeightModule(); 
+  // Не запускаем никакой "старый" график веса из app.js.
+  // Инициализацию веса делает js/weight.js на нужных страницах.
 });
