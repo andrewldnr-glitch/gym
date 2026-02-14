@@ -60,7 +60,9 @@
     </div>
   </div>
 
-  <script src="js/app.js"></script>
+  <script src="js/api.js"></script>
+<script src="js/app.js"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Особая логика инициализации для этого процесса
@@ -93,11 +95,61 @@
         }
     }
     
-    function finishWorkoutSession() {
-        alert("Тренировка завершена! Отличная работа.");
-        localStorage.removeItem('currentWorkoutSource');
-        window.location.href = 'courses.html';
+   async function finishWorkoutSession() {
+  // Контекст текущей тренировки (у тебя уже используется на загрузке страницы)
+  const courseId = localStorage.getItem('currentCourseId');
+  const dayIndex = parseInt(localStorage.getItem('currentWorkoutDayIndex') || '0', 10);
+  const level = localStorage.getItem('userLevel') || 'beginner';
+
+  // Попробуем вытащить название дня из COURSES_DATABASE
+  let payload = {};
+  try {
+    const course = COURSES_DATABASE.find(c => c.id === courseId);
+    const dayData = course?.schedule?.[dayIndex];
+    payload = {
+      title: dayData?.name || 'Тренировка',
+      courseId,
+      dayIndex,
+      level
+    };
+  } catch (_) {}
+
+  // 1) Локально добавим запись (чтобы UI работал даже если сеть плохая)
+  try {
+    const key = 'trainingHistory';
+    const hist = JSON.parse(localStorage.getItem(key) || '[]');
+    hist.push({
+      date: new Date().toISOString(),
+      source: 'course',
+      course_id: courseId,
+      day_index: dayIndex,
+      level,
+      payload
+    });
+    localStorage.setItem(key, JSON.stringify(hist));
+  } catch (_) {}
+
+  // 2) В Supabase
+  try {
+    if (typeof apiSyncWorkout === 'function') {
+      await apiSyncWorkout({
+        finished_at: new Date().toISOString(),
+        source: 'course',
+        course_id: courseId,
+        day_index: dayIndex,
+        level,
+        payload
+      });
     }
+  } catch (e) {
+    console.warn('Workout sync failed:', e);
+    // Не блокируем пользователя — локальная запись уже есть
+  }
+
+  alert("Тренировка завершена! Отличная работа.");
+  localStorage.removeItem('currentWorkoutSource');
+  window.location.href = 'courses.html';
+}
   </script>
 </body>
 </html>
