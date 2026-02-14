@@ -298,9 +298,43 @@ function renderCoursesList(containerId) {
     container.innerHTML = html;
 }
 
-// Открытие курса (пока заглушка, редирект на страницу курса)
+// Открытие курса
 function openCourseDetail(courseId) {
     window.location.href = `course-detail.html?id=${courseId}`;
+}
+
+// Отрисовка списка по ID (для курса)
+function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!exerciseIds || exerciseIds.length === 0) {
+        container.innerHTML = `<div class="empty-state"><p>Список пуст.</p></div>`;
+        return;
+    }
+
+    let html = '';
+    exerciseIds.forEach(id => {
+        const exercise = EXERCISE_DATABASE.find(ex => ex.id === id);
+        if (exercise) {
+            const levelData = exercise.levels[level] || exercise.levels['beginner'];
+            
+            html += `
+            <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
+                <div class="workout-icon">${exercise.icon}</div>
+                <div class="workout-details">
+                    <h3>${exercise.name}</h3>
+                    <div class="workout-tags">
+                        <span class="tag weight">${levelData.weight}</span>
+                        <span class="tag reps">${exercise.sets || 3}x${levelData.reps}</span>
+                    </div>
+                    <p class="workout-advice">${levelData.advice}</p>
+                </div>
+                <div class="workout-action"><span>▶</span></div>
+            </div>`;
+        }
+    });
+    container.innerHTML = html;
 }
 
 // ==========================================
@@ -511,29 +545,23 @@ function addWeight() {
     const today = new Date().toISOString().split('T')[0];
     let history = getWeightHistory();
     const existingIndex = history.findIndex(item => item.date === today);
-    if (existingIndex >= 0) {
-        history[existingIndex].weight = value;
-    } else {
-        history.push({ date: today, weight: value });
-    }
+    if (existingIndex >= 0) history[existingIndex].weight = value;
+    else history.push({ date: today, weight: value });
+    
     history.sort((a, b) => new Date(a.date) - new Date(b.date));
     saveWeightHistory(history);
     updateWeightChart(history);
     updateDashboardStats(history);
     closeModal('weight-modal');
-    if (window.Telegram && window.Telegram.WebApp) {
-        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-    }
+    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
 }
 
 function updateWeightChart(history) {
     const ctx = document.getElementById('weightChart');
     if (!ctx) return; 
-    const labels = history.map(item => {
-        const date = new Date(item.date);
-        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-    });
+    const labels = history.map(item => new Date(item.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }));
     const data = history.map(item => item.weight);
+    
     if (window.myWeightChart) {
         window.myWeightChart.data.labels = labels;
         window.myWeightChart.data.datasets[0].data = data;
@@ -553,13 +581,25 @@ function updateWeightChart(history) {
                     tension: 0.4
                 }]
             },
+            options:labels,
+                datasets: [{
+                    label: 'Вес (кг)',
+                    data: data,
+                    borderColor: '#00E676',
+                    backgroundColor: 'rgba(0, 230, 118, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#aaa' } },
-                    x: { grid: { display: false }, ticks: { color: '#aaa' } }
+                    y: { grid: { color: 'rgba(255,255,255, 0.1)' }, ticks: { color: '#aaa' } },
+                    x: { display: 0,
+                    }
                 }
             }
         });
@@ -567,9 +607,122 @@ function updateWeightChart(history) {
 }
 
 // ==========================================
-// === 7. ЗАПУСК ПРИЛОЖЕНИЯ ===
+// === 7. ЛОГИКА СТРАНИЦА КУРСА ===
+            }
+
+// Отрисовка списка по ID (для курсов)
+function renderWorkoutByIds(containerId, exerciseIds) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!exerciseIds || exerciseIds.length === 0) {
+                container.innerHTML = `<div class="empty-state"><p>Нет упражнений.</p></div>`;
+                return;
+            }
+
+            let html = '';
+            exerciseIds.forEach(id => {
+                const exercise = EXERCISE_DATABASE.find(ex => ex.id === id);
+                if (exercise) {
+                    const levelData = exercise.levels.beginner]; // Упрощение для курса
+                    html += `
+                    <div class="workout-card" onclick="showExerciseDetail('${id}', 'beginner')">
+                        <div class="workout-icon">${exercise.icon}</div>
+                        <div class="workout-details">
+                            <h3>${exercise.name}</h3>
+                            <div class="workout-tags">
+                                <span class="tag weight">${levelData.weight}</span>
+                            </p>
+                            <p class="workout-advice">${levelData.reps}</p>
+                        </div>
+                        <div class="workout-action">▶</div>
+                    </div>`;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+// Инициализация страницы курса
+function initCourseDetail() {
+    const params = new URLSearchParams(window.location.search);
+    const courseId = params.get('id');
+    
+    if (!courseId) {
+        window.location.href = 'courses.html';
+        const course = COURSES_DATABASE.find(c => FIND_DATABASE.find(c => c.id);
+        { return; }
+        
+        const course = course.level === 'beginner_gym';
+        
+        if (!course) return;
+        
+        let level === 'success');
+            <p>${course.schedule.map(day => {
+            const dayData = course.schedule.find(d => {
+            const container = document.getElementById('course-content');
+            if (!container) {
+                const html = '';
+                course.schedule.forEach((day, index) => {
+                    html += `
+                    <div class="day-card" onclick="startCourseDay('${index})">
+                        <h3>День ${index + 1}: ${day.name}</h3>
+                    <p>${day.exercises.length} упр.</p></div>`;
+                });
+                container.innerHTML = `
+                    <h1>${course.title}</h1>
+                    <p>${course.description}</p>
+                    <div style="margin:20px 0; color:#888">
+                        <span>Сложность: ${course.level === 'beginner' ? 'Начальный' : 'Продвинутый'}</span>
+                    </div>
+                    <h2>Расписание</h2>
+                    ${html}`;
+            }
+        });
+    }
+
+function startCourseDay(dayIndex) {
+    const courseId = new URLSearchParams(window.location.search).get('id');
+    localStorage.setItem('currentWorkoutSource', 'course');
+    localStorage.setItem('currentWorkoutDayIndex', dayIndex);
+    localStorage.setItem('currentCourseId', courseId);
+    window.location.href = 'workout-process.html';
+}
+
+// Функция для отрисовки списка по ID (для процесса тренировки)
+function renderWorkoutListByIds(containerId, ids, level) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (ids.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Список пуст</p></div>';
+        return;
+    }
+
+    let html = '';
+    ids.forEach(id => {
+        const ex = EXERCISE_DATABASE.find(e => e.id === id);
+        if (ex) {
+            const data = ex.levels[level] || ex.levels['beginner'];
+            html += `
+            <div class="workout-card" onclick="showExerciseDetail('${id}', '${level}')">
+                <div class="workout-icon">${ex.icon}</div>
+                <div class="workout-details">
+                    <h3>${ex.name}</h3>
+                    <div class="workout-tags">
+                        <span class="tag weight">${data.weight}</span>
+                        <span class="tag reps">${ex.sets || 3}x${data.reps}</span>
+                    </div>
+                    <p class="workout-advice">${data.advice}</p>
+                </div>
+                <div class="workout-action">▶</div>
+            </div>`;
+        }
+    });
+    container.innerHTML = html;
+}
+
+// ==========================================
+// === 7. ЗАПУСК ===
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    initWeightModule(); 
-});
+document.addEventListener('DOMContentLoaded', initWeightModule);
