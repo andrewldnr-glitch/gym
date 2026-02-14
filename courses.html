@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Курсы</title>
+  <title>Программы</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
@@ -16,34 +16,28 @@
 <body class="has-tab-bar">
 
   <div class="container">
-    <header style="display: flex; align-items: center;">
-      <a href="index.html" class="back-btn" style="text-decoration: none; color: var(--text-secondary);">← Назад</a>
-      <h1 style="margin-left: 15px;">Программы</h1>
+    <header>
+      <h1>Программы</h1>
     </header>
 
-    <p style="color: var(--text-secondary); margin: 10px 0 20px;">
-      Выберите программу тренировок для достижения вашей цели.
-    </p>
-
-    <!-- Сюда скрипт вставит курсы -->
-    <div id="courses-container"></div>
+    <!-- Контейнер, куда скрипт вставит курсы -->
+    <div id="courses-container" class="courses-grid">
+      <p style="text-align: center; color: #888;">Загрузка...</p>
+    </div>
   </div>
 
-  <nav class="tab-bar">
-    <a href="index.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span>Home</span>
-    </a>
-    <a href="profile.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      <span>Profile</span>
-    </a>
-    <a href="info.html" class="tab-item">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      <span>Info</span>
-    </a>
-  </nav>
-
+  <!-- Подключение общего скрипта -->
   <script src="js/app.js"></script>
+  
+  <!-- Запуск отрисовки курсов -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Проверяем, есть ли функция, и вызываем
+      if (typeof renderCoursesList === 'function') {
+        renderCoursesList('courses-container');
+      }
+    });
+  </script>
+
 </body>
 </html>
