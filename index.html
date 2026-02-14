@@ -44,14 +44,13 @@
       stroke-width: 10;
     }
 
-    html[data-theme="light"] .opal-ring-bg,
-    body[data-theme="light"] .opal-ring-bg {
+    html[data-theme="light"] .opal-ring-bg {
       stroke: rgba(11,16,32,0.10);
     }
 
     .opal-ring-fg {
       fill: none;
-      stroke: url(#opalGrad);
+      stroke: url(#opalRingGrad);
       stroke-width: 10;
       stroke-linecap: round;
       stroke-dasharray: 628;
@@ -128,8 +127,7 @@
       background: rgba(255,255,255,0.06);
     }
 
-    html[data-theme="light"] .opal-kpi,
-    body[data-theme="light"] .opal-kpi {
+    html[data-theme="light"] .opal-kpi {
       background: rgba(11,16,32,0.04);
     }
 
@@ -155,8 +153,7 @@
       position: relative;
     }
 
-    html[data-theme="light"] .opal-mini-chart,
-    body[data-theme="light"] .opal-mini-chart {
+    html[data-theme="light"] .opal-mini-chart {
       background: rgba(11,16,32,0.04);
     }
 
@@ -176,12 +173,10 @@
       padding: 18px 18px;
     }
 
-    /* make cards feel like in mock */
     .opal-card.card {
       cursor: default;
     }
 
-    /* На всякий случай: карточка прогресса не режет содержимое */
     .opal-progress-card {
       overflow: visible;
     }
@@ -197,7 +192,8 @@
 
 <body class="has-tab-bar">
   <div class="container">
-    <header style="display:flex; justify-content:space-between; align-items:center;">
+
+    <header class="page-header">
       <div>
         <h1 style="margin-bottom:2px;">FitGym</h1>
         <p style="margin-top:0;">Спокойно. Стабильно. По плану.</p>
@@ -212,23 +208,42 @@
           <div id="opal-progress-hint" style="color:var(--text-secondary); font-weight:800; font-size:0.85rem;">Эта неделя</div>
         </div>
 
-        <!-- Ring (внутренний контейнер) -->
+        <!-- Ring -->
         <div class="opal-ring-wrap">
           <svg class="opal-ring" viewBox="0 0 220 220" aria-hidden="true">
             <defs>
-             <linearGradient id="opalGrad" class="opal-grad-anim" x1="0" y1="0" x2="1" y2="1">
+              <!-- ✅ Gradient for ring (unique id) -->
+              <linearGradient id="opalRingGrad" class="opal-grad-anim" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stop-color="var(--accent-primary)"></stop>
                 <stop offset="55%" stop-color="var(--accent-secondary)"></stop>
                 <stop offset="100%" stop-color="var(--accent-tertiary)"></stop>
               </linearGradient>
+
+              <!-- ✅ Glow filter defined in the same SVG where it is used -->
+              <filter id="opalRingGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"></feGaussianBlur>
+                <feColorMatrix
+                  in="blur"
+                  type="matrix"
+                  values="
+                    1 0 0 0 0
+                    0 1 0 0 0
+                    0 0 1 0 0
+                    0 0 0 0.85 0"
+                  result="glow"></feColorMatrix>
+                <feMerge>
+                  <feMergeNode in="glow"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
             </defs>
 
             <circle class="opal-ring-bg" cx="110" cy="110" r="100"></circle>
-         <circle id="opal-ring-fg"
-  class="opal-ring-fg"
-  cx="110" cy="110" r="100"
-  filter="url(#opalGlow)"></circle>
-
+            <circle
+              id="opal-ring-fg"
+              class="opal-ring-fg"
+              cx="110" cy="110" r="100"
+              filter="url(#opalRingGlow)"></circle>
           </svg>
 
           <div class="opal-ring-center">
@@ -272,44 +287,38 @@
 
           <div class="opal-mini-chart">
             <svg viewBox="0 0 400 92" preserveAspectRatio="none">
+              <!-- ✅ areaGrad/lineGrad are now defined -->
               <path id="opal-weight-area" d="" fill="url(#areaGrad)" opacity="0.25"></path>
               <path id="opal-weight-line" d="" fill="none" stroke="url(#lineGrad)" stroke-width="3" stroke-linecap="round"></path>
 
               <defs>
-  <!-- Анимируем вращение градиента -->
-  <linearGradient id="opalGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-    <stop offset="0%" stop-color="#7C3AED"></stop>   <!-- фиолетовый -->
-    <stop offset="55%" stop-color="#38BDF8"></stop>  <!-- голубой -->
-    <stop offset="100%" stop-color="#A78BFA"></stop> <!-- сиреневый -->
+                <!-- ✅ Chart gradient (unique id) -->
+                <linearGradient id="opalChartGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                  <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
+                  <stop offset="55%" stop-color="var(--accent-tertiary)"></stop>
+                  <stop offset="100%" stop-color="var(--accent-primary)"></stop>
 
-    <animateTransform
-      attributeName="gradientTransform"
-      type="rotate"
-      from="0 0.5 0.5"
-      to="360 0.5 0.5"
-      dur="8s"
-      repeatCount="indefinite" />
-  </linearGradient>
+                  <animateTransform
+                    attributeName="gradientTransform"
+                    type="rotate"
+                    from="0 0.5 0.5"
+                    to="360 0.5 0.5"
+                    dur="8s"
+                    repeatCount="indefinite"></animateTransform>
+                </linearGradient>
 
-  <!-- Мягкое свечение по кругу -->
-  <filter id="opalGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
-    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-    <feColorMatrix
-      in="blur"
-      type="matrix"
-      values="
-        1 0 0 0 0
-        0 1 0 0 0
-        0 0 1 0 0
-        0 0 0 0.85 0"
-      result="glow" />
-    <feMerge>
-      <feMergeNode in="glow"/>
-      <feMergeNode in="SourceGraphic"/>
-    </feMerge>
-  </filter>
-</defs>
+                <!-- ✅ Area + line gradients that were referenced but missing -->
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--accent-tertiary)" stop-opacity="0.85"></stop>
+                  <stop offset="100%" stop-color="var(--accent-tertiary)" stop-opacity="0"></stop>
+                </linearGradient>
 
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
+                  <stop offset="55%" stop-color="var(--accent-tertiary)"></stop>
+                  <stop offset="100%" stop-color="var(--accent-primary)"></stop>
+                </linearGradient>
+              </defs>
             </svg>
           </div>
 
@@ -319,7 +328,7 @@
         </div>
 
         <div class="opal-cta">
-          <button class="btn-main" onclick="window.location.href='trainings.html'">Start Workout</button>
+          <button class="btn-main" onclick="window.location.href='trainings.html'">Начать тренировку</button>
         </div>
       </div>
     </section>
@@ -331,21 +340,21 @@
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5z"/>
       </svg>
-      Home
+      Главная
     </a>
     <a class="tab-item" href="profile.html">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M4 19a8 8 0 0 1 16 0"/>
         <circle cx="12" cy="7" r="4"/>
       </svg>
-      Stats
+      Профиль
     </a>
     <a class="tab-item" href="tools.html">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
         <circle cx="12" cy="12" r="4"/>
       </svg>
-      Tools
+      Инструменты
     </a>
   </nav>
 
@@ -381,7 +390,7 @@
     function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
     // -----------------------------
-    // Compute progress (weekly goal)
+    // Data loaders
     // -----------------------------
     function loadTrainingHistory() {
       try {
@@ -395,6 +404,9 @@
       } catch(_) { return []; }
     }
 
+    // -----------------------------
+    // UI updates
+    // -----------------------------
     function updateRing(percent) {
       const circle = document.getElementById('opal-ring-fg');
       const label = document.getElementById('opal-percent');
@@ -469,6 +481,7 @@
       const workouts = weekItems.length;
       const days = daysSet.size;
 
+      // простая оценка, потом можно заменить на реальные метрики
       const activeMinutes = workouts * 45;
       const hours = Math.floor(activeMinutes / 60);
       const mins = activeMinutes % 60;
