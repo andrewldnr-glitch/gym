@@ -13,17 +13,17 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
-    /* ===== OPAL Background (темнее + контрастнее, ближе к рефу) ===== */
+    /* ===== OPAL Background (стабильно/просто, чуть темнее и контрастнее) ===== */
     body::before{
       content:"";
       position: fixed;
       inset: 0;
       z-index: -2;
       background:
-        radial-gradient(980px 760px at 28% 18%, rgba(98,123,255,0.38), transparent 64%),
-        radial-gradient(980px 760px at 82% 72%, rgba(186,108,255,0.34), transparent 66%),
-        radial-gradient(760px 620px at 58% 44%, rgba(86,206,255,0.14), transparent 68%),
-        radial-gradient(1200px 900px at 50% 115%, rgba(0,0,0,0.72), transparent 62%);
+        radial-gradient(980px 760px at 28% 18%, rgba(98,123,255,0.36), transparent 66%),
+        radial-gradient(980px 760px at 82% 72%, rgba(186,108,255,0.30), transparent 68%),
+        radial-gradient(760px 620px at 58% 44%, rgba(86,206,255,0.13), transparent 70%),
+        radial-gradient(1200px 900px at 50% 115%, rgba(0,0,0,0.74), transparent 62%);
       filter: blur(12px);
       transform: translateZ(0);
       animation: opalBg 12.5s ease-in-out infinite alternate;
@@ -33,7 +33,7 @@
       100% { transform: translate3d(0,-16px,0) scale(1.08); filter: blur(16px); }
     }
 
-    /* Виньетка + “сцена” темнее */
+    /* Виньетка (важно для “неона”) */
     body::after{
       content:"";
       position: fixed;
@@ -41,12 +41,11 @@
       z-index: -1;
       background:
         radial-gradient(1200px 900px at 50% 35%, rgba(255,255,255,0.06), transparent 60%),
-        radial-gradient(1100px 820px at 50% 80%, rgba(0,0,0,0.62), transparent 62%),
-        radial-gradient(1400px 1100px at 50% 50%, rgba(0,0,0,0.55), transparent 70%);
+        radial-gradient(1100px 820px at 50% 80%, rgba(0,0,0,0.64), transparent 62%),
+        radial-gradient(1400px 1100px at 50% 50%, rgba(0,0,0,0.56), transparent 70%);
       pointer-events: none;
     }
 
-    /* ===== Home layout ===== */
     .opal-hero {
       display: flex;
       flex-direction: column;
@@ -56,7 +55,7 @@
       padding-bottom: 14px;
     }
 
-    /* Glass upgrade + верхний highlight (как на мокапе) */
+    /* Glass + верхний highlight */
     .opal-card.card{
       position: relative;
       background: rgba(255,255,255,0.075);
@@ -97,7 +96,7 @@
       flex-shrink: 0;
     }
 
-    /* Halo вокруг кольца */
+    /* Halo */
     .opal-ring-wrap::before{
       content:"";
       position: absolute;
@@ -105,16 +104,16 @@
       border-radius: 999px;
       background:
         radial-gradient(circle at 50% 50%,
-          rgba(167,139,250,0.24),
-          rgba(98,123,255,0.15) 46%,
+          rgba(167,139,250,0.20),
+          rgba(96,165,250,0.16) 46%,
           transparent 72%);
       filter: blur(14px);
-      opacity: 0.88;
+      opacity: 0.86;
       animation: opalHalo 3.9s ease-in-out infinite;
       pointer-events: none;
     }
     @keyframes opalHalo{
-      0%,100%{ transform: scale(1); opacity: 0.74; }
+      0%,100%{ transform: scale(1); opacity: 0.72; }
       50%{ transform: scale(1.05); opacity: 0.96; }
     }
 
@@ -123,7 +122,7 @@
       height: 100%;
       transform: rotate(-90deg);
       display: block;
-      filter: drop-shadow(0 28px 58px rgba(124,124,255,0.26));
+      filter: drop-shadow(0 28px 58px rgba(96,165,250,0.22));
     }
 
     .opal-ring-bg {
@@ -133,17 +132,17 @@
     }
     html[data-theme="light"] .opal-ring-bg { stroke: rgba(11,16,32,0.10); }
 
-    /* ✅ Base ring: всегда видно, но тише (чтобы не “пластик”) */
+    /* Base ring: всегда видно, но тише */
     .opal-ring-base{
       fill: none;
       stroke: url(#opalRingGrad);
       stroke-width: 10;
       stroke-linecap: round;
-      opacity: 0.16;
+      opacity: 0.14;
       filter: url(#opalRingGlowSoft);
     }
 
-    /* Glow ring: широкий bloom */
+    /* Bloom/glow слой */
     .opal-ring-glow {
       fill: none;
       stroke: url(#opalRingGrad);
@@ -152,16 +151,16 @@
       stroke-dasharray: 628;
       stroke-dashoffset: 628;
       opacity: 0.34;
-      transition: stroke-dashoffset 650ms ease;
+      transition: stroke-dashoffset 650ms ease, opacity 260ms ease;
       filter: url(#opalRingGlow);
       animation: opalGlowPulse 3.8s ease-in-out infinite;
     }
     @keyframes opalGlowPulse{
-      0%,100%{ opacity: 0.26; }
-      50%{ opacity: 0.46; }
+      0%,100%{ opacity: 0.24; }
+      50%{ opacity: 0.44; }
     }
 
-    /* Main progress */
+    /* Основная дуга */
     .opal-ring-fg {
       fill: none;
       stroke: url(#opalRingGrad);
@@ -169,24 +168,24 @@
       stroke-linecap: round;
       stroke-dasharray: 628;
       stroke-dashoffset: 628;
-      transition: stroke-dashoffset 650ms ease;
+      transition: stroke-dashoffset 650ms ease, opacity 260ms ease;
       filter: url(#opalRingGlowSoft);
     }
 
-    /* ✅ Core: тонкая яркая “сердцевина” — ключ к рефу */
+    /* Core “трубка света” */
     .opal-ring-core{
       fill: none;
       stroke: url(#opalRingCoreGrad);
-      stroke-width: 6;
+      stroke-width: 5.5;
       stroke-linecap: round;
       stroke-dasharray: 628;
       stroke-dashoffset: 628;
-      transition: stroke-dashoffset 650ms ease;
+      transition: stroke-dashoffset 650ms ease, opacity 260ms ease;
       filter: url(#opalCoreGlow);
-      opacity: 0.95;
+      opacity: 0.98;
     }
 
-    /* Центр — глубина + inner shadow */
+    /* Центр — глубина */
     .opal-ring-center::before{
       content:"";
       position:absolute;
@@ -194,11 +193,11 @@
       border-radius: 999px;
       background:
         radial-gradient(circle at 50% 40%,
-          rgba(20,22,40,0.25),
-          rgba(0,0,0,0.55) 70%,
-          rgba(0,0,0,0.72));
+          rgba(20,22,40,0.22),
+          rgba(0,0,0,0.58) 70%,
+          rgba(0,0,0,0.74));
       box-shadow:
-        inset 0 10px 26px rgba(0,0,0,0.45),
+        inset 0 10px 26px rgba(0,0,0,0.48),
         inset 0 -10px 22px rgba(255,255,255,0.04);
       opacity: 0.98;
       pointer-events:none;
@@ -218,7 +217,7 @@
       font-weight: 1000;
       letter-spacing: -1px;
       line-height: 1;
-      text-shadow: 0 10px 32px rgba(0,0,0,0.60);
+      text-shadow: 0 10px 32px rgba(0,0,0,0.62);
       position: relative;
     }
 
@@ -232,7 +231,7 @@
       position: relative;
     }
 
-    /* ✅ Hotspot: просто и стабильно (вращаем группу CSS) */
+    /* Hotspot: стабильный CSS rotate */
     .opal-hotspot-rotator{
       transform-origin: 110px 110px;
       animation: hotspotSpin 6.2s linear infinite;
@@ -366,12 +365,12 @@
         <div class="opal-ring-wrap">
           <svg class="opal-ring" viewBox="0 0 220 220" aria-hidden="true">
             <defs>
-              <!-- Rotating gradient (стабильно, просто) -->
+              <!-- ✅ ВАЖНО: порядок цветов = Blue → Indigo → Purple (как реф) -->
               <linearGradient id="opalRingGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-                <stop offset="0%"   stop-color="var(--accent-primary)"></stop>
-                <stop offset="42%"  stop-color="var(--accent-secondary)"></stop>
-                <stop offset="78%"  stop-color="var(--accent-tertiary)"></stop>
-                <stop offset="100%" stop-color="var(--accent-primary)"></stop>
+                <stop offset="0%"   stop-color="var(--accent-tertiary)"></stop>   <!-- blue -->
+                <stop offset="44%"  stop-color="var(--accent-primary)"></stop>    <!-- indigo -->
+                <stop offset="78%"  stop-color="var(--accent-secondary)"></stop>  <!-- purple -->
+                <stop offset="100%" stop-color="var(--accent-tertiary)"></stop>   <!-- back to blue -->
 
                 <animateTransform
                   attributeName="gradientTransform"
@@ -382,12 +381,12 @@
                   repeatCount="indefinite"/>
               </linearGradient>
 
-              <!-- Core gradient: чуть “белее” для сердцевины -->
+              <!-- Core: почти белая трубка, но с лёгким холодным оттенком -->
               <linearGradient id="opalRingCoreGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-                <stop offset="0%"  stop-color="rgba(235,245,255,0.95)"></stop>
-                <stop offset="45%" stop-color="rgba(255,255,255,0.92)"></stop>
-                <stop offset="80%" stop-color="rgba(245,236,255,0.92)"></stop>
-                <stop offset="100%" stop-color="rgba(235,245,255,0.95)"></stop>
+                <stop offset="0%"   stop-color="rgba(240,248,255,0.96)"></stop>
+                <stop offset="45%"  stop-color="rgba(255,255,255,0.92)"></stop>
+                <stop offset="80%"  stop-color="rgba(245,236,255,0.90)"></stop>
+                <stop offset="100%" stop-color="rgba(240,248,255,0.96)"></stop>
 
                 <animateTransform
                   attributeName="gradientTransform"
@@ -400,16 +399,16 @@
 
               <!-- Soft glow for base/fg -->
               <filter id="opalRingGlowSoft" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="b"></feGaussianBlur>
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4.2" result="b"></feGaussianBlur>
                 <feMerge>
                   <feMergeNode in="b"></feMergeNode>
                   <feMergeNode in="SourceGraphic"></feMergeNode>
                 </feMerge>
               </filter>
 
-              <!-- Strong glow for bloom layer -->
-              <filter id="opalRingGlow" x="-110%" y="-110%" width="320%" height="320%" color-interpolation-filters="sRGB">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"></feGaussianBlur>
+              <!-- Strong bloom -->
+              <filter id="opalRingGlow" x="-120%" y="-120%" width="340%" height="340%" color-interpolation-filters="sRGB">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur"></feGaussianBlur>
                 <feColorMatrix
                   in="blur"
                   type="matrix"
@@ -417,7 +416,7 @@
                     1 0 0 0 0
                     0 1 0 0 0
                     0 0 1 0 0
-                    0 0 0 0.75 0"
+                    0 0 0 0.72 0"
                   result="glow"></feColorMatrix>
                 <feMerge>
                   <feMergeNode in="glow"></feMergeNode>
@@ -425,9 +424,9 @@
                 </feMerge>
               </filter>
 
-              <!-- Core glow: маленький, “дорогой” -->
+              <!-- Core glow -->
               <filter id="opalCoreGlow" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur"></feGaussianBlur>
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2.1" result="blur"></feGaussianBlur>
                 <feMerge>
                   <feMergeNode in="blur"></feMergeNode>
                   <feMergeNode in="SourceGraphic"></feMergeNode>
@@ -435,18 +434,17 @@
               </filter>
 
               <!-- Hotspot glow -->
-              <filter id="opalHotspotGlow" x="-200%" y="-200%" width="500%" height="500%" color-interpolation-filters="sRGB">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="hb"></feGaussianBlur>
+              <filter id="opalHotspotGlow" x="-220%" y="-220%" width="560%" height="560%" color-interpolation-filters="sRGB">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5.2" result="hb"></feGaussianBlur>
                 <feMerge>
                   <feMergeNode in="hb"></feMergeNode>
                   <feMergeNode in="SourceGraphic"></feMergeNode>
                 </feMerge>
               </filter>
 
-              <!-- Hotspot radial -->
-              <radialGradient id="opalHotspotFill" cx="50%" cy="50%" r="60%">
+              <radialGradient id="opalHotspotFill" cx="50%" cy="50%" r="62%">
                 <stop offset="0%" stop-color="rgba(255,255,255,1)"></stop>
-                <stop offset="35%" stop-color="rgba(220,236,255,0.95)"></stop>
+                <stop offset="38%" stop-color="rgba(220,236,255,0.92)"></stop>
                 <stop offset="100%" stop-color="rgba(220,236,255,0)"></stop>
               </radialGradient>
             </defs>
@@ -456,17 +454,15 @@
             <!-- Always-on base ring -->
             <circle class="opal-ring-base" cx="110" cy="110" r="100"></circle>
 
-            <!-- Progress layers -->
+            <!-- Progress layers (будут скрываться при 0%) -->
             <circle id="opal-ring-glow" class="opal-ring-glow" cx="110" cy="110" r="100"></circle>
             <circle id="opal-ring-fg" class="opal-ring-fg" cx="110" cy="110" r="100"></circle>
             <circle id="opal-ring-core" class="opal-ring-core" cx="110" cy="110" r="100"></circle>
 
-            <!-- ✅ Hotspot: отдельная вращающаяся группа -->
+            <!-- ✅ Один hotspot (меньше, ближе к рефу) -->
             <g class="opal-hotspot-rotator">
-              <!-- ставим точку наверху окружности -->
-              <circle cx="110" cy="10" r="10" fill="url(#opalHotspotFill)" filter="url(#opalHotspotGlow)" opacity="0.95"></circle>
-              <!-- маленькое яркое ядро -->
-              <circle cx="110" cy="10" r="3.2" fill="rgba(255,255,255,0.95)" opacity="0.95"></circle>
+              <circle cx="110" cy="10" r="7.4" fill="url(#opalHotspotFill)" filter="url(#opalHotspotGlow)" opacity="0.88"></circle>
+              <circle cx="110" cy="10" r="2.6" fill="rgba(255,255,255,0.92)" opacity="0.92"></circle>
             </g>
           </svg>
 
@@ -516,8 +512,8 @@
 
               <defs>
                 <linearGradient id="opalChartGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-                  <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
-                  <stop offset="55%" stop-color="var(--accent-tertiary)"></stop>
+                  <stop offset="0%" stop-color="var(--accent-tertiary)"></stop>
+                  <stop offset="55%" stop-color="var(--accent-secondary)"></stop>
                   <stop offset="100%" stop-color="var(--accent-primary)"></stop>
 
                   <animateTransform
@@ -530,14 +526,14 @@
                 </linearGradient>
 
                 <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--accent-tertiary)" stop-opacity="0.85"></stop>
-                  <stop offset="100%" stop-color="var(--accent-tertiary)" stop-opacity="0"></stop>
+                  <stop offset="0%" stop-color="var(--accent-secondary)" stop-opacity="0.78"></stop>
+                  <stop offset="100%" stop-color="var(--accent-secondary)" stop-opacity="0"></stop>
                 </linearGradient>
 
                 <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
-                  <stop offset="55%" stop-color="var(--accent-tertiary)"></stop>
-                  <stop offset="100%" stop-color="var(--accent-primary)"></stop>
+                  <stop offset="0%" stop-color="var(--accent-tertiary)"></stop>
+                  <stop offset="55%" stop-color="var(--accent-primary)"></stop>
+                  <stop offset="100%" stop-color="var(--accent-secondary)"></stop>
                 </linearGradient>
               </defs>
             </svg>
@@ -610,6 +606,17 @@
       catch(_) { return []; }
     }
 
+    function setProgressLayersVisible(isVisible){
+      const glow = document.getElementById('opal-ring-glow');
+      const fg = document.getElementById('opal-ring-fg');
+      const core = document.getElementById('opal-ring-core');
+
+      const v = isVisible ? '1' : '0';
+      if (glow) glow.style.opacity = v;
+      if (fg) fg.style.opacity = v;
+      if (core) core.style.opacity = v;
+    }
+
     function updateRing(percent) {
       const glow = document.getElementById('opal-ring-glow');
       const fg = document.getElementById('opal-ring-fg');
@@ -619,15 +626,25 @@
       const r = 100;
       const c = 2 * Math.PI * r;
 
-      // микро-дуга для “жизни” даже при 0% (base ring всё равно виден)
-      const p = clamp(percent, 0.8, 100);
+      const raw = Number(percent) || 0;
+
+      // ✅ при 0% скрываем прогресс-дугу полностью (убираем “вторую лампочку”)
+      if (raw <= 0) {
+        setProgressLayersVisible(false);
+        if (label) label.textContent = `0%`;
+        return;
+      }
+
+      setProgressLayersVisible(true);
+
+      const p = clamp(raw, 0, 100);
       const offset = c * (1 - p/100);
 
       if (glow) { glow.style.strokeDasharray = String(c); glow.style.strokeDashoffset = String(offset); }
       if (fg)   { fg.style.strokeDasharray   = String(c); fg.style.strokeDashoffset   = String(offset); }
       if (core) { core.style.strokeDasharray = String(c); core.style.strokeDashoffset = String(offset); }
 
-      if (label) label.textContent = `${Math.round(percent)}%`;
+      if (label) label.textContent = `${Math.round(raw)}%`;
     }
 
     function buildMiniChart(values) {
@@ -703,7 +720,7 @@
       if (daysEl) daysEl.textContent = `${days}/7`;
 
       const WEEK_GOAL = 5;
-      const pct = (workouts / WEEK_GOAL) * 100;
+      const pct = workouts > 0 ? (workouts / WEEK_GOAL) * 100 : 0;
       updateRing(pct);
 
       const weights = loadWeightHistory();
