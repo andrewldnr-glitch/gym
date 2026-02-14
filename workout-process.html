@@ -28,10 +28,12 @@
     <div id="workout-list" class="workouts-grid">
       <p style="text-align:center; padding: 20px;">Загрузка...</p>
     </div>
-    
+
     <!-- Кнопка завершения тренировки (внизу) -->
     <div style="padding: 20px 0; margin-top: auto;">
-        <button class="start-course-btn" onclick="finishWorkoutSession()" style="background: #333; color: #fff;">Завершить тренировку</button>
+      <button id="finish-btn" class="start-course-btn" onclick="finishWorkoutSession()" style="background: #333; color: #fff;">
+        Завершить тренировку
+      </button>
     </div>
   </div>
 
@@ -43,113 +45,151 @@
       <h2 class="modal-title">Название</h2>
       <p class="modal-desc" style="color: #aaa; margin-bottom: 20px;">Описание</p>
       <div class="modal-info-blocks">
-         <div class="info-block"><span class="label">Вес</span><span class="value modal-weight">-</span></div>
-         <div class="info-block"><span class="label">Повторы</span><span class="value modal-reps">-</span></div>
+        <div class="info-block"><span class="label">Вес</span><span class="value modal-weight">-</span></div>
+        <div class="info-block"><span class="label">Повторы</span><span class="value modal-reps">-</span></div>
       </div>
       <div class="modal-advice-box"><p class="label">Совет:</p><p class="modal-advice" style="color: var(--accent-secondary);">-</p></div>
       <div class="timer-container">
-          <button id="action-btn" class="start-btn" onclick="handleWorkoutAction(this)">Начать подход 1</button>
-          <div id="timer-block" class="timer-display" style="display:none; flex-direction: column; align-items: center;">
-              <span style="color: #aaa; font-size: 0.9rem; margin-bottom: 10px;">Отдых</span>
-              <div style="position: relative; width: 150px; height: 150px;">
-                  <svg class="timer-svg" viewBox="0 0 100 100"><circle class="timer-bg" cx="50" cy="50" r="45"></circle><circle class="timer-circle" cx="50" cy="50" r="45"></circle></svg>
-                  <span id="timer-text" class="timer-text">60</span>
-              </div>
+        <button id="action-btn" class="start-btn" onclick="handleWorkoutAction(this)">Начать подход 1</button>
+        <div id="timer-block" class="timer-display" style="display:none; flex-direction: column; align-items: center;">
+          <span style="color: #aaa; font-size: 0.9rem; margin-bottom: 10px;">Отдых</span>
+          <div style="position: relative; width: 150px; height: 150px;">
+            <svg class="timer-svg" viewBox="0 0 100 100">
+              <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
+              <circle class="timer-circle" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <span id="timer-text" class="timer-text">60</span>
           </div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- ВАЖНО: api.js ДО app.js -->
   <script src="js/api.js"></script>
-<script src="js/app.js"></script>
+  <script src="js/app.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Особая логика инициализации для этого процесса
-        const source = localStorage.getItem('currentWorkoutSource');
-        
-        if (source === 'course') {
-            const courseId = localStorage.getItem('currentCourseId');
-            const dayIndex = parseInt(localStorage.getItem('currentWorkoutDayIndex'));
-            const level = localStorage.getItem('userLevel') || 'beginner';
-            
-            const course = COURSES_DATABASE.find(c => c.id === courseId);
-            if (course && course.schedule[dayIndex]) {
-                const dayData = course.schedule[dayIndex];
-                document.getElementById('page-title').innerText = dayData.name;
-                
-                // Отрисовываем конкретные упражнения из плана
-                renderWorkoutListByIds('workout-list', dayData.exercises, level);
-            } else {
-                window.location.href = 'courses.html';
-            }
+      const source = localStorage.getItem('currentWorkoutSource');
+
+      if (source !== 'course') {
+        window.location.href = 'courses.html';
+        return;
+      }
+
+      const courseId = localStorage.getItem('currentCourseId');
+      const dayIndexRaw = localStorage.getItem('currentWorkoutDayIndex');
+      const dayIndex = parseInt(dayIndexRaw || '0', 10);
+      const level = localStorage.getItem('userLevel') || 'beginner';
+
+      try {
+        const course = (typeof COURSES_DATABASE !== 'undefined')
+          ? COURSES_DATABASE.find(c => c.id === courseId)
+          : null;
+
+        if (course && course.schedule && course.schedule[dayIndex]) {
+          const dayData = course.schedule[dayIndex];
+          document.getElementById('page-title').innerText = dayData.name || 'Тренировка';
+          renderWorkoutListByIds('workout-list', dayData.exercises, level);
         } else {
-            // Если зашли случайно, кидаем на курсы
-            window.location.href = 'courses.html';
+          window.location.href = 'courses.html';
         }
+      } catch (e) {
+        console.warn('Init workout-process failed:', e);
+        window.location.href = 'courses.html';
+      }
     });
 
     function exitWorkout() {
-        if(confirm("Вы уверены? Прогресс текущей тренировки не сохранится.")) {
-            window.location.href = 'courses.html';
+      if (confirm("Вы уверены? Прогресс текущей тренировки не сохранится.")) {
+        window.location.href = 'courses.html';
+      }
+    }
+
+    // Защита от двойного нажатия
+    let __finishing = false;
+
+    async function finishWorkoutSession() {
+      if (__finishing) return;
+      __finishing = true;
+
+      const btn = document.getElementById('finish-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+        btn.textContent = 'Сохраняем...';
+      }
+
+      const courseId = localStorage.getItem('currentCourseId');
+      const dayIndex = parseInt(localStorage.getItem('currentWorkoutDayIndex') || '0', 10);
+      const level = localStorage.getItem('userLevel') || 'beginner';
+
+      // payload — полезная инфа для истории
+      let payload = {};
+      try {
+        const course = (typeof COURSES_DATABASE !== 'undefined')
+          ? COURSES_DATABASE.find(c => c.id === courseId)
+          : null;
+
+        const dayData = course?.schedule?.[dayIndex];
+        payload = {
+          title: dayData?.name || 'Тренировка',
+          courseId,
+          dayIndex,
+          level
+        };
+      } catch (_) {}
+
+      const finishedAtIso = new Date().toISOString();
+
+      // 1) Локально (кеш)
+      try {
+        const key = 'trainingHistory';
+        const hist = JSON.parse(localStorage.getItem(key) || '[]');
+        hist.push({
+          date: finishedAtIso,
+          source: 'course',
+          course_id: courseId,
+          day_index: dayIndex,
+          level,
+          payload
+        });
+        localStorage.setItem(key, JSON.stringify(hist));
+      } catch (e) {
+        console.warn('Local trainingHistory save failed:', e);
+      }
+
+      // 2) Supabase
+      try {
+        if (typeof window.apiSyncWorkout === 'function') {
+          await window.apiSyncWorkout({
+            finished_at: finishedAtIso,
+            source: 'course',
+            course_id: courseId,
+            day_index: dayIndex,
+            level,
+            payload
+          });
+          console.log('[sync] workout ok', { courseId, dayIndex, level });
+        } else {
+          console.warn('[sync] apiSyncWorkout is not a function (js/api.js not loaded?)');
         }
+      } catch (e) {
+        console.warn('[sync] workout failed:', e);
+        // Не блокируем пользователя — локальная запись уже есть
+      }
+
+      try {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+          window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+        }
+      } catch (_) {}
+
+      alert("Тренировка завершена! Отличная работа.");
+      localStorage.removeItem('currentWorkoutSource');
+      window.location.href = 'courses.html';
     }
-    
-   async function finishWorkoutSession() {
-  // Контекст текущей тренировки (у тебя уже используется на загрузке страницы)
-  const courseId = localStorage.getItem('currentCourseId');
-  const dayIndex = parseInt(localStorage.getItem('currentWorkoutDayIndex') || '0', 10);
-  const level = localStorage.getItem('userLevel') || 'beginner';
-
-  // Попробуем вытащить название дня из COURSES_DATABASE
-  let payload = {};
-  try {
-    const course = COURSES_DATABASE.find(c => c.id === courseId);
-    const dayData = course?.schedule?.[dayIndex];
-    payload = {
-      title: dayData?.name || 'Тренировка',
-      courseId,
-      dayIndex,
-      level
-    };
-  } catch (_) {}
-
-  // 1) Локально добавим запись (чтобы UI работал даже если сеть плохая)
-  try {
-    const key = 'trainingHistory';
-    const hist = JSON.parse(localStorage.getItem(key) || '[]');
-    hist.push({
-      date: new Date().toISOString(),
-      source: 'course',
-      course_id: courseId,
-      day_index: dayIndex,
-      level,
-      payload
-    });
-    localStorage.setItem(key, JSON.stringify(hist));
-  } catch (_) {}
-
-  // 2) В Supabase
-  try {
-    if (typeof apiSyncWorkout === 'function') {
-      await apiSyncWorkout({
-        finished_at: new Date().toISOString(),
-        source: 'course',
-        course_id: courseId,
-        day_index: dayIndex,
-        level,
-        payload
-      });
-    }
-  } catch (e) {
-    console.warn('Workout sync failed:', e);
-    // Не блокируем пользователя — локальная запись уже есть
-  }
-
-  alert("Тренировка завершена! Отличная работа.");
-  localStorage.removeItem('currentWorkoutSource');
-  window.location.href = 'courses.html';
-}
   </script>
 </body>
 </html>
