@@ -238,7 +238,7 @@ let workoutState = {
 // === 4. ФУНКЦИИ ИНТЕРФЕЙСА (ОТРИСОВКА) ===
 // ==========================================
 
-// Отрисовка списка разовых тренировок
+// 4.1 Отрисовка списка разовых тренировок (trainings.html)
 function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -274,7 +274,7 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     container.innerHTML = html;
 }
 
-// Отрисовка списка курсов
+// 4.2 Отрисовка списка курсов (courses.html)
 function renderCoursesList(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -298,12 +298,7 @@ function renderCoursesList(containerId) {
     container.innerHTML = html;
 }
 
-// Открытие курса
-function openCourseDetail(courseId) {
-    window.location.href = `course-detail.html?id=${courseId}`;
-}
-
-// Отрисовка списка по ID (для курса)
+// 4.3 Отрисовка списка по ID (для workout-process.html)
 function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -338,14 +333,80 @@ function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
 }
 
 // ==========================================
-// === 5. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
+// === 5. ЛОГИКА КУРСОВ ===
+// ==========================================
+
+function openCourseDetail(courseId) {
+    window.location.href = `course-detail.html?id=${courseId}`;
+}
+
+function initCourseDetail() {
+    const params = new URLSearchParams(window.location.search);
+    const courseId = params.get('id');
+    
+    if (!courseId) {
+        window.location.href = 'courses.html';
+        return;
+    }
+    
+    const course = COURSES_DATABASE.find(c => c.id === courseId);
+    if (!course) {
+        document.getElementById('course-content').innerHTML = '<p>Курс не найден</p>';
+        return;
+    }
+    
+    const container = document.getElementById('course-content');
+    let daysHtml = '';
+    
+    course.schedule.forEach((day, index) => {
+        daysHtml += `
+        <div class="day-card" onclick="startCourseDay('${course.id}', ${index})">
+            <div class="day-info">
+                <h3>День ${index + 1}: ${day.name}</h3>
+                <p>${day.exercises.length} упражнений</p>
+            </div>
+            <span class="day-arrow">▶</span>
+        </div>`;
+    });
+
+    container.innerHTML = `
+        <div class="course-detail-header">
+            <h1>${course.title}</h1>
+            <p>${course.description}</p>
+            <div class="course-stats">
+                <span><b>Сложность:</b> ${course.level === 'beginner' ? 'Начальный' : 'Продвинутый'}</span>
+                <span><b>Длительность:</b> ${course.duration}</span>
+            </div>
+        </div>
+        <div class="course-rules">
+            <div class="rule-item">
+                <h4>📅 Как тренироваться</h4>
+                <p>Тренируйтесь 3 раза в неделю. Отдых между тренировками — 1-2 дня.</p>
+            </div>
+        </div>
+        <h2 style="margin-top: 30px; margin-bottom: 15px;">Расписание</h2>
+        <div class="days-list">
+            ${daysHtml}
+        </div>
+    `;
+}
+
+function startCourseDay(courseId, dayIndex) {
+    localStorage.setItem('currentWorkoutSource', 'course');
+    localStorage.setItem('currentWorkoutDayIndex', dayIndex);
+    localStorage.setItem('currentCourseId', courseId);
+    window.location.href = 'workout-process.html';
+}
+
+// ==========================================
+// === 6. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
 // ==========================================
 
 function showExerciseDetail(exerciseId, level) {
     const exercise = EXERCISE_DATABASE.find(ex => ex.id === exerciseId);
     if (!exercise) return;
     
-    const levelData = exercise.levels[level];
+    const levelData = exercise.levels[level] || exercise.levels['beginner'];
     const modal = document.getElementById('exercise-modal');
     
     if (!modal) {
@@ -353,20 +414,17 @@ function showExerciseDetail(exerciseId, level) {
         return;
     }
 
-    // Сброс состояния
     if (workoutState.timerInterval) clearInterval(workoutState.timerInterval);
     workoutState.currentSet = 1;
     workoutState.totalSets = exercise.sets || 3;
     workoutState.restTime = levelData.restTime || 60;
 
-    // Заполнение данных
     modal.querySelector('.modal-title').innerText = exercise.name;
     modal.querySelector('.modal-desc').innerText = exercise.description;
     modal.querySelector('.modal-weight').innerText = levelData.weight;
     modal.querySelector('.modal-reps').innerText = levelData.reps;
     modal.querySelector('.modal-advice').innerText = levelData.advice;
     
-    // Сброс интерфейса
     updateSetsCounter();
     
     const startBtn = document.getElementById('action-btn');
@@ -423,7 +481,6 @@ function startRestTimer(button) {
 
     if (!timerBlock || !timerText || !timerCircle) {
         console.error('Ошибка: Не найдены элементы таймера!');
-        alert('Ошибка таймера. Проверьте консоль.');
         return;
     }
 
@@ -497,7 +554,7 @@ function closeExerciseModal() {
 }
 
 // ==========================================
-// === 6. ЛОГИКА ВЕСА И ГРАФИКА ===
+// === 7. ЛОГИКА ВЕСА И ГРАФИКА ===
 // ==========================================
 
 const WEIGHT_KEY = 'weightHistory';
@@ -581,25 +638,13 @@ function updateWeightChart(history) {
                     tension: 0.4
                 }]
             },
-            options:labels,
-                datasets: [{
-                    label: 'Вес (кг)',
-                    data: data,
-                    borderColor: '#00E676',
-                    backgroundColor: 'rgba(0, 230, 118, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { grid: { color: 'rgba(255,255,255, 0.1)' }, ticks: { color: '#aaa' } },
-                    x: { display: 0,
-                    }
+                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#aaa' } },
+                    x: { grid: { display: false }, ticks: { color: '#aaa' } }
                 }
             }
         });
@@ -607,122 +652,9 @@ function updateWeightChart(history) {
 }
 
 // ==========================================
-// === 7. ЛОГИКА СТРАНИЦА КУРСА ===
-            }
-
-// Отрисовка списка по ID (для курсов)
-function renderWorkoutByIds(containerId, exerciseIds) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    if (!exerciseIds || exerciseIds.length === 0) {
-                container.innerHTML = `<div class="empty-state"><p>Нет упражнений.</p></div>`;
-                return;
-            }
-
-            let html = '';
-            exerciseIds.forEach(id => {
-                const exercise = EXERCISE_DATABASE.find(ex => ex.id === id);
-                if (exercise) {
-                    const levelData = exercise.levels.beginner]; // Упрощение для курса
-                    html += `
-                    <div class="workout-card" onclick="showExerciseDetail('${id}', 'beginner')">
-                        <div class="workout-icon">${exercise.icon}</div>
-                        <div class="workout-details">
-                            <h3>${exercise.name}</h3>
-                            <div class="workout-tags">
-                                <span class="tag weight">${levelData.weight}</span>
-                            </p>
-                            <p class="workout-advice">${levelData.reps}</p>
-                        </div>
-                        <div class="workout-action">▶</div>
-                    </div>`;
-                }
-            });
-            container.innerHTML = html;
-        }
-
-// Инициализация страницы курса
-function initCourseDetail() {
-    const params = new URLSearchParams(window.location.search);
-    const courseId = params.get('id');
-    
-    if (!courseId) {
-        window.location.href = 'courses.html';
-        const course = COURSES_DATABASE.find(c => FIND_DATABASE.find(c => c.id);
-        { return; }
-        
-        const course = course.level === 'beginner_gym';
-        
-        if (!course) return;
-        
-        let level === 'success');
-            <p>${course.schedule.map(day => {
-            const dayData = course.schedule.find(d => {
-            const container = document.getElementById('course-content');
-            if (!container) {
-                const html = '';
-                course.schedule.forEach((day, index) => {
-                    html += `
-                    <div class="day-card" onclick="startCourseDay('${index})">
-                        <h3>День ${index + 1}: ${day.name}</h3>
-                    <p>${day.exercises.length} упр.</p></div>`;
-                });
-                container.innerHTML = `
-                    <h1>${course.title}</h1>
-                    <p>${course.description}</p>
-                    <div style="margin:20px 0; color:#888">
-                        <span>Сложность: ${course.level === 'beginner' ? 'Начальный' : 'Продвинутый'}</span>
-                    </div>
-                    <h2>Расписание</h2>
-                    ${html}`;
-            }
-        });
-    }
-
-function startCourseDay(dayIndex) {
-    const courseId = new URLSearchParams(window.location.search).get('id');
-    localStorage.setItem('currentWorkoutSource', 'course');
-    localStorage.setItem('currentWorkoutDayIndex', dayIndex);
-    localStorage.setItem('currentCourseId', courseId);
-    window.location.href = 'workout-process.html';
-}
-
-// Функция для отрисовки списка по ID (для процесса тренировки)
-function renderWorkoutListByIds(containerId, ids, level) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    if (ids.length === 0) {
-        container.innerHTML = '<div class="empty-state"><p>Список пуст</p></div>';
-        return;
-    }
-
-    let html = '';
-    ids.forEach(id => {
-        const ex = EXERCISE_DATABASE.find(e => e.id === id);
-        if (ex) {
-            const data = ex.levels[level] || ex.levels['beginner'];
-            html += `
-            <div class="workout-card" onclick="showExerciseDetail('${id}', '${level}')">
-                <div class="workout-icon">${ex.icon}</div>
-                <div class="workout-details">
-                    <h3>${ex.name}</h3>
-                    <div class="workout-tags">
-                        <span class="tag weight">${data.weight}</span>
-                        <span class="tag reps">${ex.sets || 3}x${data.reps}</span>
-                    </div>
-                    <p class="workout-advice">${data.advice}</p>
-                </div>
-                <div class="workout-action">▶</div>
-            </div>`;
-        }
-    });
-    container.innerHTML = html;
-}
-
-// ==========================================
-// === 7. ЗАПУСК ===
+// === 8. ЗАПУСК ПРИЛОЖЕНИЯ ===
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', initWeightModule);
+document.addEventListener('DOMContentLoaded', () => {
+    initWeightModule(); 
+});
