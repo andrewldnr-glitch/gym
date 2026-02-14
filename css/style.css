@@ -1,17 +1,93 @@
-/* css/style.css */
+/* css/style.css
+   ✅ ШАГ 1: Система тем (Light/Dark) на CSS-переменных
+   Как использовать:
+   - На <html> ставь атрибут: data-theme="dark" или data-theme="light"
+   - Если атрибута нет — по умолчанию будет "dark" (как сейчас)
+*/
+
+/* =========================================================
+   1) ТЕМЫ
+   ========================================================= */
+
+/* По умолчанию — текущая тёмная тема */
 :root {
-  --bg-primary: #0A0A0C;
-  --bg-secondary: #141416;
-  --bg-card: rgba(28, 28, 30, 0.6);
-  --accent-primary: #FF6B35;
-  --accent-secondary: #31C48D;
-  --accent-tertiary: #3B82F6;
-  --text-primary: #FFFFFF;
-  --text-secondary: #8E8E93;
-  --border-light: rgba(255, 255, 255, 0.1);
+  /* Технические */
   --card-radius: 20px;
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* ========== Новые семантические токены (основа тем) ========== */
+  --c-bg-primary: #0A0A0C;
+  --c-bg-secondary: #141416;
+  --c-surface: rgba(28, 28, 30, 0.6);
+  --c-text-primary: #FFFFFF;
+  --c-text-secondary: #8E8E93;
+  --c-border: rgba(255, 255, 255, 0.1);
+
+  --c-accent-1: #FF6B35;
+  --c-accent-2: #31C48D;
+  --c-accent-3: #3B82F6;
+
+  /* Фон (оверлей/картинка) */
+  --bg-overlay-top: rgba(10, 10, 12, 0.55);
+  --bg-overlay-bottom: rgba(10, 10, 12, 0.55);
+  --bg-image-url: url('../assets/images/background.png');
+
+  /* ========== Legacy aliases (чтобы ничего не ломать) ========== */
+  --bg-primary: var(--c-bg-primary);
+  --bg-secondary: var(--c-bg-secondary);
+  --bg-card: var(--c-surface);
+  --card-bg: var(--bg-card); /* у тебя в CSS местами используется var(--card-bg) */
+
+  --accent-primary: var(--c-accent-1);
+  --accent-secondary: var(--c-accent-2);
+  --accent-tertiary: var(--c-accent-3);
+
+  --text-primary: var(--c-text-primary);
+  --text-secondary: var(--c-text-secondary);
+  --border-light: var(--c-border);
 }
+
+/* Светлая тема */
+html[data-theme="light"] {
+  --c-bg-primary: #F7F8FC;
+  --c-bg-secondary: #FFFFFF;
+  --c-surface: rgba(255, 255, 255, 0.75);
+
+  --c-text-primary: #0F1220;
+  --c-text-secondary: rgba(15, 18, 32, 0.55);
+  --c-border: rgba(15, 18, 32, 0.10);
+
+  /* OPAL-ish пастельные акценты (не “кричащие”) */
+  --c-accent-1: #6C63FF;  /* индиго/фиолетовый */
+  --c-accent-2: #35C7A4;  /* мягкий мятный */
+  --c-accent-3: #4B9BFF;  /* спокойный синий */
+
+  /* Фон: светлее оверлей (картинку оставляем, чтобы не ломать текущий фон) */
+  --bg-overlay-top: rgba(247, 248, 252, 0.78);
+  --bg-overlay-bottom: rgba(247, 248, 252, 0.78);
+}
+
+/* Тёмная тема (явно) — совпадает с текущей */
+html[data-theme="dark"] {
+  --c-bg-primary: #0A0A0C;
+  --c-bg-secondary: #141416;
+  --c-surface: rgba(28, 28, 30, 0.6);
+
+  --c-text-primary: #FFFFFF;
+  --c-text-secondary: #8E8E93;
+  --c-border: rgba(255, 255, 255, 0.1);
+
+  --c-accent-1: #FF6B35;
+  --c-accent-2: #31C48D;
+  --c-accent-3: #3B82F6;
+
+  --bg-overlay-top: rgba(10, 10, 12, 0.55);
+  --bg-overlay-bottom: rgba(10, 10, 12, 0.55);
+}
+
+/* =========================================================
+   2) БАЗА
+   ========================================================= */
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -21,8 +97,8 @@ body {
 
   background-color: var(--bg-primary);
   background-image:
-    linear-gradient(rgba(10, 10, 12, 0.55), rgba(10, 10, 12, 0.55)),
-    url('../assets/images/background.png');
+    linear-gradient(var(--bg-overlay-top), var(--bg-overlay-bottom)),
+    var(--bg-image-url);
 
   background-size: cover;
   background-position: center;
@@ -32,6 +108,9 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+
+  /* Мягкие переключения темы */
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -42,67 +121,180 @@ h3 { font-size: 1.2rem; margin: 10px 0 15px; font-weight: 600; }
 p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 
 .card {
-  background: var(--bg-card); border-radius: var(--card-radius); padding: 16px; margin-bottom: 12px;
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: 16px;
+  margin-bottom: 12px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  cursor: pointer; transition: all 0.2s ease; text-decoration: none; color: inherit; display: block;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 .card:hover { transform: translateY(-2px); background: rgba(35, 35, 40, 0.7); }
-.card-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+html[data-theme="light"] .card:hover { background: rgba(255, 255, 255, 0.85); }
+
+.card-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .card-desc { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; }
 
-.card-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
+.card-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
 .badge-easy { background: rgba(49, 196, 141, 0.15); color: var(--accent-secondary); }
 .badge-medium { background: rgba(59, 130, 246, 0.15); color: var(--accent-tertiary); }
 .badge-hard { background: rgba(255, 107, 53, 0.15); color: var(--accent-primary); }
 .badge-group { background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); font-weight: 500; margin-left: 8px; }
+html[data-theme="light"] .badge-group { background: rgba(15, 18, 32, 0.06); }
 
 .levels-grid { display: grid; gap: 15px; margin-top: 20px; }
 .level-card {
   background: linear-gradient(145deg, rgba(35, 35, 40, 0.8), rgba(20, 20, 22, 0.9));
-  border-radius: var(--card-radius); padding: 24px 20px; text-align: left; font-weight: 600; font-size: 1.2rem;
-  cursor: pointer; transition: all 0.2s; border: 1px solid transparent; display: flex; align-items: center; gap: 15px;
-  text-decoration: none; color: var(--text-primary);
-  position: relative; z-index: 1;
+  border-radius: var(--card-radius);
+  padding: 24px 20px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-decoration: none;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+}
+html[data-theme="light"] .level-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+  border: 1px solid rgba(15,18,32,0.08);
+  box-shadow: 0 10px 20px rgba(15,18,32,0.06);
 }
 .level-card:hover { border-color: var(--accent-primary); box-shadow: 0 0 15px rgba(255, 107, 53, 0.2); }
-.level-icon { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: rgba(255, 255, 255, 0.05); }
+html[data-theme="light"] .level-card:hover { box-shadow: 0 0 15px rgba(108, 99, 255, 0.16); }
+
+.level-icon {
+  width: 50px; height: 50px; border-radius: 15px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+html[data-theme="light"] .level-icon { background: rgba(15,18,32,0.06); }
+
 .level-info span { display: block; font-size: 0.85rem; font-weight: 400; color: var(--text-secondary); margin-top: 4px; }
 
-.btn-main { width: 100%; padding: 16px; background: linear-gradient(90deg, var(--accent-primary), #FF8F5A); color: #fff; border: none; border-radius: 16px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
+.btn-main {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(90deg, var(--accent-primary), #FF8F5A);
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+}
+html[data-theme="light"] .btn-main {
+  background: linear-gradient(90deg, var(--accent-primary), rgba(108, 99, 255, 0.75));
+  box-shadow: 0 10px 25px rgba(108, 99, 255, 0.18);
+}
 .btn-main:active { transform: scale(0.98); }
 
-.btn-back { background: none; border: none; color: var(--text-secondary); font-size: 1rem; cursor: pointer; padding: 5px 0; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 5px; transition: color 0.2s; }
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 5px 0;
+  margin-bottom: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s;
+}
 .btn-back:hover { color: var(--text-primary); }
 
-/* Tab Bar */
+/* =========================================================
+   Tab Bar
+   ========================================================= */
+
 .tab-bar {
   position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
-  background: rgba(20, 20, 22, 0.95); backdrop-filter: blur(20px);
+  background: rgba(20, 20, 22, 0.95);
+  backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-light);
   display: flex; justify-content: space-around; align-items: center;
-  padding-bottom: 10px; z-index: 100;
+  padding-bottom: 10px;
+  z-index: 100;
   pointer-events: none;
 }
+html[data-theme="light"] .tab-bar {
+  background: rgba(255, 255, 255, 0.85);
+  border-top: 1px solid rgba(15,18,32,0.08);
+}
+
 .tab-item {
   display: flex; flex-direction: column; align-items: center;
-  color: var(--text-secondary); text-decoration: none;
+  color: var(--text-secondary);
+  text-decoration: none;
   font-size: 0.75rem; font-weight: 500; gap: 4px;
-  transition: color 0.2s; width: 60px;
+  transition: color 0.2s;
+  width: 60px;
   pointer-events: auto;
 }
 .tab-item.active { color: var(--accent-primary); }
 .tab-icon { width: 24px; height: 24px; margin-bottom: 2px; }
 
-/* Stats */
-.stat-item { background: var(--bg-card); padding: 20px; border-radius: var(--card-radius); margin-bottom: 12px; border: 1px solid rgba(255, 255, 255, 0.05); }
+/* =========================================================
+   Stats
+   ========================================================= */
+
+.stat-item {
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: var(--card-radius);
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+html[data-theme="light"] .stat-item { border: 1px solid rgba(15,18,32,0.08); }
+
 .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--accent-primary); margin: 5px 0; }
 .stat-label { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Training Screens */
-.workout-screen { display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 70vh; text-align: center; padding-top: 20px; }
+/* =========================================================
+   Training Screens
+   ========================================================= */
+
+.workout-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  height: 70vh; text-align: center; padding-top: 20px;
+}
 .intro-screen { text-align: left; padding: 10px 0; }
-.intro-title { font-size: 1rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+.intro-title {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
 .intro-exercise-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light); }
 .intro-exercise-item:last-child { border-bottom: none; }
 .intro-number { font-size: 1.2rem; font-weight: 700; color: var(--accent-primary); width: 30px; }
@@ -112,7 +304,15 @@ p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 .timer-circle-container { position: relative; width: 220px; height: 220px; margin: 20px auto; }
 .timer-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .timer-bg { fill: none; stroke: var(--border-light); stroke-width: 8; }
-.timer-progress { fill: none; stroke: var(--accent-primary); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 0; transition: stroke-dashoffset 0.1s linear; }
+.timer-progress {
+  fill: none;
+  stroke: var(--accent-primary);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 628;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.1s linear;
+}
 .rest-mode .timer-progress { stroke: var(--accent-secondary); }
 .ready-mode .timer-progress { stroke: var(--accent-tertiary); }
 
@@ -126,15 +326,24 @@ p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
 .control-buttons { display: flex; gap: 15px; width: 100%; margin-top: auto; }
 .btn-control { flex: 1; padding: 16px; border-radius: 16px; font-size: 1rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
 .btn-skip { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
+html[data-theme="light"] .btn-skip { background: rgba(15,18,32,0.06); color: var(--text-primary); }
 .btn-action { background: var(--accent-primary); color: white; box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3); }
 
 body.has-tab-bar .container { padding-bottom: 100px; }
 
-/* Info Page */
+/* =========================================================
+   Info Page
+   ========================================================= */
+
 .info-card {
-  background: var(--bg-card); border-radius: var(--card-radius); padding: 20px; margin-bottom: 15px;
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: 20px;
+  margin-bottom: 15px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+html[data-theme="light"] .info-card { border: 1px solid rgba(15,18,32,0.08); }
+
 .info-card h3 { margin-top: 0; margin-bottom: 10px; font-size: 1.1rem; color: var(--text-primary); }
 .info-card p { font-size: 0.95rem; line-height: 1.6; }
 .info-list { list-style: none; padding: 0; margin: 0; }
@@ -142,7 +351,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 .info-list li::before { content: "•"; position: absolute; left: -5px; color: var(--accent-primary); }
 .accent-text { font-weight: 600; }
 
-/* Splash Screen */
+/* =========================================================
+   Splash Screen
+   ========================================================= */
+
 .splash-screen {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background-color: var(--bg-primary);
@@ -158,6 +370,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   margin-bottom: 24px;
   box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
 }
+html[data-theme="light"] .splash-logo {
+  background: linear-gradient(135deg, var(--accent-primary), rgba(108, 99, 255, 0.75));
+  box-shadow: 0 10px 30px rgba(108, 99, 255, 0.18);
+}
 .splash-logo svg { width: 48px; height: 48px; color: white; }
 .splash-title { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 30px; }
 .loader { display: flex; gap: 6px; }
@@ -167,7 +383,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 .loader-dot:nth-child(3) { background-color: var(--accent-tertiary); }
 @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
 
-/* --- Дневник веса --- */
+/* =========================================================
+   Дневник веса
+   ========================================================= */
+
 .weight-section {
   margin-top: 30px;
   padding-top: 20px;
@@ -203,6 +422,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+html[data-theme="light"] .chart-container { border: 1px solid rgba(15,18,32,0.08); }
 
 .input-weight-group {
   display: flex;
@@ -220,6 +440,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-size: 1.2rem;
   text-align: center;
 }
+html[data-theme="light"] .input-weight {
+  background: rgba(15,18,32,0.05);
+  color: var(--text-primary);
+}
 
 .btn-add-weight {
   padding: 0 25px;
@@ -231,7 +455,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   cursor: pointer;
   transition: transform 0.1s;
 }
-
 .btn-add-weight:active { transform: scale(0.95); }
 
 .weight-history-item {
@@ -241,6 +464,8 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border-bottom: 1px solid rgba(255,255,255,0.05);
   font-size: 0.95rem;
 }
+html[data-theme="light"] .weight-history-item { border-bottom: 1px solid rgba(15,18,32,0.06); }
+
 .weight-history-item:last-child { border-bottom: none; }
 .weight-val { font-weight: 600; color: var(--text-primary); }
 .date-val { color: var(--text-secondary); }
@@ -248,7 +473,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 .diff-plus { color: var(--accent-primary); }
 .diff-minus { color: var(--accent-secondary); }
 
-/* --- Достижения --- */
+/* =========================================================
+   Достижения
+   ========================================================= */
+
 .achievements-section {
   margin-top: 30px;
   padding-top: 20px;
@@ -275,12 +503,14 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   opacity: 0.4;
   transition: all 0.3s;
 }
+html[data-theme="light"] .badge-item { border: 1px solid rgba(15,18,32,0.08); }
 
 .badge-item.active {
   opacity: 1;
   border-color: var(--accent-primary);
   box-shadow: 0 0 10px rgba(255, 107, 53, 0.2);
 }
+html[data-theme="light"] .badge-item.active { box-shadow: 0 0 10px rgba(108, 99, 255, 0.16); }
 
 .badge-icon { font-size: 1.8rem; margin-bottom: 5px; }
 
@@ -295,7 +525,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-weight: 600;
 }
 
-/* --- Стили для кнопки "Поделиться" --- */
+/* =========================================================
+   Кнопка "Поделиться"
+   ========================================================= */
+
 .btn-share-result {
   width: 100%;
   padding: 16px 20px;
@@ -318,7 +551,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 }
 .btn-share-result:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3); }
 
-/* --- Стили страницы тренировок --- */
+/* =========================================================
+   Страница тренировок
+   ========================================================= */
+
 .level-badge {
   background: var(--accent-primary);
   color: #000;
@@ -350,6 +586,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   transition: all 0.2s;
   white-space: nowrap;
 }
+html[data-theme="light"] .filter-btn {
+  background: rgba(15,18,32,0.05);
+  border: 1px solid rgba(15,18,32,0.10);
+}
 
 .filter-btn.active {
   background: var(--accent-primary);
@@ -370,7 +610,12 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: transform 0.2s, box-shadow 0.2s;
 }
+html[data-theme="light"] .workout-card {
+  border: 1px solid rgba(15,18,32,0.08);
+  box-shadow: 0 10px 20px rgba(15,18,32,0.06);
+}
 .workout-card:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.08); }
+html[data-theme="light"] .workout-card:active { background: rgba(15,18,32,0.04); }
 
 .workout-icon {
   width: 60px;
@@ -382,6 +627,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   justify-content: center;
   flex-shrink: 0;
 }
+html[data-theme="light"] .workout-icon { background: rgba(15,18,32,0.06); }
 
 .workout-icon img { width: 40px; height: 40px; object-fit: contain; }
 
@@ -401,6 +647,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.3);
 }
+html[data-theme="light"] .tag { background: rgba(15,18,32,0.06); }
 
 .tag.weight { color: var(--accent-secondary); }
 .tag.reps { color: var(--accent-tertiary); }
@@ -420,8 +667,9 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 .back-btn { font-size: 0.9rem; margin-bottom: 5px; display: inline-block; }
 
 /* =========================================================
-   МОДАЛКА УПРАЖНЕНИЯ — ПО ЦЕНТРУ
+   МОДАЛКА УПРАЖНЕНИЯ — ПО ЦЕНТРУ + таймер/кнопка
    ========================================================= */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -442,6 +690,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 
   padding: 18px;
 }
+html[data-theme="light"] .modal-overlay { background: rgba(15,18,32,0.55); }
 
 .modal-overlay.active {
   opacity: 1;
@@ -464,6 +713,12 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+html[data-theme="light"] .modal-content {
+  background: rgba(255,255,255,0.92);
+  color: var(--text-primary);
+  box-shadow: 0 25px 55px rgba(15,18,32,0.18);
+  border: 1px solid rgba(15,18,32,0.08);
 }
 
 .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
@@ -490,6 +745,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border-radius: 12px;
   text-align: center;
 }
+html[data-theme="light"] .info-block { background: rgba(15,18,32,0.05); }
 
 .info-block .label {
   display: block;
@@ -498,6 +754,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   margin-bottom: 5px;
   text-transform: uppercase;
 }
+html[data-theme="light"] .info-block .label { color: var(--text-secondary); }
 
 .info-block .value {
   display: block;
@@ -505,6 +762,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-weight: 700;
   color: #fff;
 }
+html[data-theme="light"] .info-block .value { color: var(--text-primary); }
 
 .modal-advice-box {
   background: rgba(0, 230, 118, 0.1);
@@ -513,10 +771,9 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border-radius: 0 12px 12px 0;
   margin-bottom: 16px;
 }
+html[data-theme="light"] .modal-advice-box { background: rgba(108,99,255,0.08); }
 
-/* =========================================================
-   ✅ КРОССПЛАТФОРМЕННО: таймер НЕ "наезжает" на кнопку
-   ========================================================= */
+/* ✅ Кроссплатформенно: таймер НЕ наезжает на кнопку */
 .timer-container {
   display: flex;
   flex-direction: column;
@@ -527,7 +784,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   gap: 14px;
 }
 
-/* Это #timer-block.timer-display */
 .timer-display {
   width: 100%;
   height: auto;
@@ -537,16 +793,15 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding-bottom: 12px; /* гарантируем место под кнопку */
+  padding-bottom: 12px;
 }
 
-/* Внутренний обёрточный div с inline-style (position:relative; width:150px; height:150px;) */
 .timer-display > div {
   width: 170px !important;
   height: 170px !important;
   max-width: 170px;
   max-height: 170px;
-  margin: 2px auto 10px auto; /* ⬅️ вот этот отступ решает “наезд” */
+  margin: 2px auto 10px auto;
   position: relative;
   flex-shrink: 0;
 }
@@ -563,6 +818,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   stroke: #333;
   stroke-width: 8;
 }
+html[data-theme="light"] .timer-bg { stroke: rgba(15,18,32,0.12); }
 
 .timer-circle {
   fill: none;
@@ -584,8 +840,8 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   line-height: 1;
   color: #fff;
 }
+html[data-theme="light"] .timer-text { color: var(--text-primary); }
 
-/* Кнопка "Начать/Завершить" */
 .start-btn {
   width: 100%;
   padding: 18px;
@@ -600,7 +856,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 }
 .start-btn:active { transform: scale(0.95); }
 
-/* Кнопка пропуска отдыха (класс должен быть на кнопке) */
 .rest-skip-btn {
   width: 100%;
   padding: 14px 16px;
@@ -612,9 +867,16 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   cursor: pointer;
   margin-top: 6px;
 }
+html[data-theme="light"] .rest-skip-btn {
+  border: 1px solid rgba(15,18,32,0.10);
+  background: rgba(15,18,32,0.05);
+}
 .rest-skip-btn:active { transform: scale(0.98); }
 
-/* --- Стили Главного Меню --- */
+/* =========================================================
+   Главное меню
+   ========================================================= */
+
 .main-menu { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
 
 .menu-card {
@@ -629,6 +891,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   transition: transform 0.2s;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+html[data-theme="light"] .menu-card { border: 1px solid rgba(15,18,32,0.08); }
 .menu-card:active { transform: scale(0.98); }
 
 .menu-icon-bg {
@@ -643,6 +906,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 .menu-icon-bg svg { width: 40px; height: 40px; stroke: #000; }
 
 .menu-icon-bg.light { background: rgba(255, 255, 255, 0.1); }
+html[data-theme="light"] .menu-icon-bg.light { background: rgba(15,18,32,0.06); }
 .menu-icon-bg.light svg { stroke: var(--accent-primary); }
 
 .menu-content {
@@ -655,9 +919,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 }
 
 .menu-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-
 .menu-content h2 { font-size: 1.1rem; margin: 0; line-height: 1.2; }
-
 .menu-content p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; line-height: 1.4; }
 
 .menu-arrow {
@@ -679,7 +941,10 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-weight: 700;
 }
 
-/* --- Стили карточек курсов --- */
+/* =========================================================
+   Курсы
+   ========================================================= */
+
 .course-card {
   background: var(--card-bg);
   border-radius: 16px;
@@ -689,6 +954,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   cursor: pointer;
   transition: transform 0.2s;
 }
+html[data-theme="light"] .course-card { border: 1px solid rgba(15,18,32,0.08); }
 .course-card:active { transform: scale(0.98); }
 
 .course-header {
@@ -734,9 +1000,11 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   cursor: pointer;
 }
 
-/* --- Стили страницы курса --- */
-.course-detail-header { margin-bottom: 25px; }
+/* =========================================================
+   Страница курса
+   ========================================================= */
 
+.course-detail-header { margin-bottom: 25px; }
 .course-detail-header h1 { font-size: 1.5rem; margin-bottom: 10px; }
 
 .course-stats {
@@ -754,12 +1022,15 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   padding: 15px;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+html[data-theme="light"] .course-rules { border: 1px solid rgba(15,18,32,0.08); }
 
 .rule-item {
   margin-bottom: 15px;
   padding-bottom: 15px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
+html[data-theme="light"] .rule-item { border-bottom: 1px solid rgba(15,18,32,0.06); }
+
 .rule-item:last-child {
   margin-bottom: 0;
   padding-bottom: 0;
@@ -767,7 +1038,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 }
 
 .rule-item h4 { color: var(--accent-primary); margin-bottom: 5px; font-size: 0.95rem; }
-
 .rule-item p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; }
 
 /* Карточки дней */
@@ -789,10 +1059,11 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: background 0.2s;
 }
+html[data-theme="light"] .day-card { border: 1px solid rgba(15,18,32,0.08); }
+
 .day-card:active { background: rgba(255, 255, 255, 0.08); }
+html[data-theme="light"] .day-card:active { background: rgba(15,18,32,0.04); }
 
 .day-info h3 { font-size: 1rem; margin-bottom: 3px; }
-
 .day-info p { font-size: 0.8rem; color: var(--text-secondary); }
-
 .day-arrow { color: var(--accent-primary); font-size: 0.9rem; }
