@@ -36,6 +36,11 @@
   --accent-secondary: #a78bfa; /* purple */
   --accent-tertiary: #60a5fa;  /* blue */
 
+  /* Feedback (UI states) */
+  --ui-warning: #FF9500;
+  --ui-success: #00E676;
+  --ui-danger:  #FF4444;
+
   /* OPAL background */
   --bg-gradient:
     radial-gradient(1200px 900px at 20% -10%, rgba(124, 124, 255, 0.30), transparent 55%),
@@ -50,7 +55,7 @@
   --icon-muted: rgba(255,255,255,0.70);
 }
 
-/* LIGHT overrides */
+/* LIGHT overrides (single source of truth) */
 html[data-theme="light"]{
   --bg-primary: #f6f7fb;
   --bg-secondary: #ffffff;
@@ -76,44 +81,11 @@ html[data-theme="light"]{
     linear-gradient(180deg, #ffffff 0%, #f6f7fb 55%, #f3f5fb 100%);
 
   --icon-muted: rgba(11, 16, 32, 0.65);
-}
 
-
-html[data-theme="light"],
-body[data-theme="light"] {
-  --bg-primary: #f6f7fb;
-  --bg-secondary: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.78);
-
-  --text-primary: #0b1020;
-  --text-secondary: rgba(11, 16, 32, 0.60);
-
-  --border-light: rgba(11, 16, 32, 0.08);
-
-  --accent-primary: #6b7cff;
-  --accent-secondary: #b38bff;
-  --accent-tertiary: #60a5fa;
-
-  --shadow-soft: 0 18px 50px rgba(16, 24, 40, 0.12);
-  --shadow-card: 0 10px 30px rgba(16, 24, 40, 0.10);
-  --shadow-elev: 0 8px 24px rgba(16, 24, 40, 0.08);
-
-  --bg-gradient:
-    radial-gradient(1200px 900px at 20% -10%, rgba(107,124,255,0.26), transparent 55%),
-    radial-gradient(900px 700px at 90% 10%, rgba(179,139,255,0.20), transparent 55%),
-    radial-gradient(900px 700px at 60% 120%, rgba(96,165,250,0.16), transparent 60%),
-    linear-gradient(180deg, #ffffff 0%, #f6f7fb 55%, #f3f5fb 100%);
-
+  /* Optional surfaces */
   --surface-1: rgba(255,255,255,0.78);
   --surface-2: rgba(255,255,255,0.92);
   --surface-3: rgba(255,255,255,0.98);
-
-  --icon-muted: rgba(11, 16, 32, 0.65);
-}
-
-html[data-theme="dark"],
-body[data-theme="dark"] {
-  /* explicit, but defaults already dark */
 }
 
 /* =========================================================
@@ -177,6 +149,31 @@ hr {
 }
 
 /* =========================================================
+   2.1) PAGE HELPERS
+   ========================================================= */
+
+.page-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-header h1{
+  margin-top: 8px;
+}
+
+.loading-state{
+  text-align: center;
+  padding: 20px;
+}
+
+.footer-cta{
+  padding: 20px 0;
+  margin-top: auto;
+}
+
+/* =========================================================
    3) CARDS / SURFACES (OPAL floating cards)
    ========================================================= */
 
@@ -204,9 +201,12 @@ hr {
   display: block;
 }
 
-.card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-soft);
+/* Hover only for real hover devices */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+  }
 }
 
 .card-title {
@@ -327,6 +327,36 @@ hr {
 }
 .btn-share-result:active { transform: scale(0.985); }
 
+/* Unified button states (used by JS) */
+.btn-state-primary{
+  background: var(--cta-gradient) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 28px rgba(124,124,255,0.22);
+}
+
+.btn-state-warning{
+  background: linear-gradient(135deg, rgba(255,149,0,1) 0%, rgba(255,68,68,0.92) 100%) !important;
+  color: #111 !important;
+  box-shadow: 0 12px 28px rgba(255,149,0,0.22);
+}
+
+.btn-state-neutral{
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid var(--border-light) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-elev);
+}
+
+html[data-theme="light"] .btn-state-neutral{
+  background: rgba(11,16,32,0.04) !important;
+}
+
+/* Loading/disabled helper */
+.is-loading{
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 /* =========================================================
    5) TAB BAR (translucent OPAL dock)
    ========================================================= */
@@ -346,11 +376,9 @@ hr {
   align-items: center;
   padding-bottom: 10px;
   z-index: 100;
-  pointer-events: none;
 }
 
-html[data-theme="light"] .tab-bar,
-body[data-theme="light"] .tab-bar {
+html[data-theme="light"] .tab-bar{
   background: rgba(255,255,255,0.72);
 }
 
@@ -365,7 +393,6 @@ body[data-theme="light"] .tab-bar {
   gap: 4px;
   transition: color 0.2s;
   width: 64px;
-  pointer-events: auto;
 }
 
 .tab-item.active { color: var(--accent-primary); }
@@ -577,8 +604,7 @@ body.has-tab-bar .container { padding-bottom: 110px; }
   outline: none;
 }
 
-html[data-theme="light"] .input-weight,
-body[data-theme="light"] .input-weight {
+html[data-theme="light"] .input-weight{
   background: rgba(11,16,32,0.04);
 }
 
@@ -665,8 +691,7 @@ body[data-theme="light"] .input-weight {
   padding: 18px;
 }
 
-html[data-theme="light"] .modal-overlay,
-body[data-theme="light"] .modal-overlay {
+html[data-theme="light"] .modal-overlay{
   background: rgba(11,16,32,0.35);
 }
 
@@ -711,7 +736,18 @@ body[data-theme="light"] .modal-overlay {
   letter-spacing: -0.5px;
 }
 
-.modal-desc { margin-bottom: 14px; }
+.modal-desc{
+  margin-bottom: 20px;
+  color: var(--text-secondary);
+}
+
+.sets-counter{
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--accent-primary);
+  margin-bottom: 10px;
+  font-weight: 900;
+}
 
 .modal-info-blocks {
   display: flex;
@@ -788,21 +824,23 @@ body[data-theme="light"] .modal-overlay {
   padding-bottom: 8px;
 }
 
-.timer-display > div {
-  width: 170px !important;
-  height: 170px !important;
-  max-width: 170px;
-  max-height: 170px;
-  margin: 2px auto 8px auto;
+.timer-label{
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  font-weight: 800;
+}
+
+.timer-frame{
   position: relative;
-  flex-shrink: 0;
+  width: 150px;
+  height: 150px;
 }
 
 .timer-svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); }
 .timer-bg { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 8; }
 
-html[data-theme="light"] .timer-bg,
-body[data-theme="light"] .timer-bg {
+html[data-theme="light"] .timer-bg{
   stroke: rgba(11,16,32,0.10);
 }
 
@@ -815,6 +853,15 @@ body[data-theme="light"] .timer-bg {
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 1s linear, stroke 0.3s;
   filter: drop-shadow(0 0 10px rgba(124,124,255,0.25));
+}
+
+.timer-circle.is-ok{
+  stroke: var(--ui-success);
+  filter: drop-shadow(0 0 10px rgba(0,230,118,0.25));
+}
+.timer-circle.is-danger{
+  stroke: var(--ui-danger);
+  filter: drop-shadow(0 0 10px rgba(255,68,68,0.22));
 }
 
 .timer-text {
@@ -839,8 +886,7 @@ body[data-theme="light"] .timer-bg {
   font-weight: 900;
   cursor: pointer;
 }
-html[data-theme="light"] .rest-skip-btn,
-body[data-theme="light"] .rest-skip-btn {
+html[data-theme="light"] .rest-skip-btn{
   background: rgba(11,16,32,0.04);
 }
 
@@ -959,8 +1005,7 @@ body[data-theme="light"] .rest-skip-btn {
   background-color: rgba(255,255,255,0.55);
   animation: bounce 1.4s infinite ease-in-out both;
 }
-html[data-theme="light"] .loader-dot,
-body[data-theme="light"] .loader-dot {
+html[data-theme="light"] .loader-dot{
   background-color: rgba(11,16,32,0.35);
 }
 .loader-dot:nth-child(1) { animation-delay: -0.32s; background-color: var(--accent-primary); }
@@ -986,6 +1031,7 @@ body[data-theme="light"] .loader-dot {
     drop-shadow(0 0 10px rgba(124,124,255,0.35))
     drop-shadow(0 0 22px rgba(167,139,250,0.22))
     drop-shadow(0 0 36px rgba(96,165,250,0.18));
+  animation: opalGlowPulse 4.5s ease-in-out infinite;
 }
 
 /* В светлой теме делаем свечение мягче */
@@ -1013,8 +1059,4 @@ html[data-theme="light"] .opal-ring-fg {
 @keyframes opalGlowPulse {
   0%, 100% { opacity: 0.92; }
   50%      { opacity: 1; }
-}
-
-.opal-ring-fg {
-  animation: opalGlowPulse 4.5s ease-in-out infinite;
 }
