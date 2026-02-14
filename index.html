@@ -272,16 +272,40 @@
               <path id="opal-weight-line" d="" fill="none" stroke="url(#lineGrad)" stroke-width="3" stroke-linecap="round"></path>
 
               <defs>
-                <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="var(--accent-tertiary)"></stop>
-                  <stop offset="60%" stop-color="var(--accent-secondary)"></stop>
-                  <stop offset="100%" stop-color="var(--accent-primary)"></stop>
-                </linearGradient>
-                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
-                  <stop offset="100%" stop-color="transparent"></stop>
-                </linearGradient>
-              </defs>
+  <!-- Анимируем вращение градиента -->
+  <linearGradient id="opalGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+    <stop offset="0%" stop-color="#7C3AED"></stop>   <!-- фиолетовый -->
+    <stop offset="55%" stop-color="#38BDF8"></stop>  <!-- голубой -->
+    <stop offset="100%" stop-color="#A78BFA"></stop> <!-- сиреневый -->
+
+    <animateTransform
+      attributeName="gradientTransform"
+      type="rotate"
+      from="0 0.5 0.5"
+      to="360 0.5 0.5"
+      dur="8s"
+      repeatCount="indefinite" />
+  </linearGradient>
+
+  <!-- Мягкое свечение по кругу -->
+  <filter id="opalGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+    <feColorMatrix
+      in="blur"
+      type="matrix"
+      values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 0.85 0"
+      result="glow" />
+    <feMerge>
+      <feMergeNode in="glow"/>
+      <feMergeNode in="SourceGraphic"/>
+    </feMerge>
+  </filter>
+</defs>
+
             </svg>
           </div>
 
