@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Программы</title>
+
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/courses.css">
+
+  <!-- Lucide CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     if (window.Telegram && window.Telegram.WebApp) {
@@ -13,31 +19,56 @@
     }
   </script>
 </head>
-<body class="has-tab-bar">
 
+<body class="has-tab-bar">
   <div class="container">
-    <header>
-      <h1>Программы</h1>
+
+    <header class="page-header">
+      <div>
+        <h1 class="page-title">Программы</h1>
+        <p class="page-subtitle">Выберите план и тренируйтесь по расписанию.</p>
+      </div>
     </header>
 
     <!-- Контейнер, куда скрипт вставит курсы -->
     <div id="courses-container" class="courses-grid">
-      <p style="text-align: center; color: #888;">Загрузка...</p>
+      <div class="loading-state">
+        <p>Загрузка...</p>
+      </div>
     </div>
+
   </div>
+
+  <!-- Tab Bar -->
+  <nav class="tab-bar">
+    <a href="index.html" class="tab-item">
+      <i data-lucide="home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="profile.html" class="tab-item">
+      <i data-lucide="bar-chart-3"></i>
+      <span>Статистика</span>
+    </a>
+    <a href="info.html" class="tab-item">
+      <i data-lucide="sparkles"></i>
+      <span>Инструменты</span>
+    </a>
+  </nav>
 
   <!-- Подключение общего скрипта -->
   <script src="js/app.js"></script>
-  
-  <!-- Запуск отрисовки курсов -->
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Проверяем, есть ли функция, и вызываем
+      try { if (window.lucide) lucide.createIcons(); } catch (_) {}
+
       if (typeof renderCoursesList === 'function') {
         renderCoursesList('courses-container');
+      } else {
+        const c = document.getElementById('courses-container');
+        if (c) c.innerHTML = '<div class="loading-state"><p>Не удалось загрузить список программ.</p></div>';
       }
     });
   </script>
-
 </body>
 </html>
