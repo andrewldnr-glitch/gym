@@ -19,7 +19,6 @@ body {
   margin: 0; padding: 0;
   font-family: var(--font-family);
 
-  /* Настройки фона */
   background-color: var(--bg-primary);
   background-image:
     linear-gradient(rgba(10, 10, 12, 0.55), rgba(10, 10, 12, 0.55)),
@@ -194,7 +193,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   font-weight: 400;
 }
 
-/* Контейнер графика */
 .chart-container {
   position: relative;
   height: 200px;
@@ -206,7 +204,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Поле ввода веса */
 .input-weight-group {
   display: flex;
   gap: 10px;
@@ -330,7 +327,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3);
 }
 
-/* --- Стили для модальных окон (старые .modal - оставлены для совместимости) --- */
+/* --- Стили для модальных окон (старые .modal) --- */
 .modal {
   display: none;
   position: fixed;
@@ -344,7 +341,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 
 .modal.active { display: flex; }
 
-/* --- Стили страницы тренировок --- */
+/* --- Стили для страницы тренировок --- */
 .level-badge {
   background: var(--accent-primary);
   color: #000;
@@ -465,8 +462,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 }
 
 /* =========================================================
-   ✅ ИСПРАВЛЕНО: модалка упражнения теперь по центру экрана
-   + скролл внутри, если контента много
+   ✅ Модалка упражнения — по центру
    ========================================================= */
 .modal-overlay {
   position: fixed;
@@ -477,7 +473,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   backdrop-filter: blur(10px);
 
   display: flex;
-  align-items: center;      /* было flex-end */
+  align-items: center;
   justify-content: center;
 
   z-index: 100;
@@ -506,7 +502,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   transition: transform 0.25s ease;
   box-shadow: 0 15px 45px rgba(0,0,0,0.55);
 
-  overflow-y: auto; /* скролл внутри */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -561,17 +557,30 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   border-left: 3px solid var(--accent-primary);
   padding: 15px;
   border-radius: 0 12px 12px 0;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
-/* Таймер */
+/* =========================================================
+   ✅ ИСПРАВЛЕНО: таймер и кнопка пропуска — не перекрываются
+   ========================================================= */
 .timer-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 0 0;
+  width: 100%;
   flex-direction: column;
+  align-items: stretch;     /* важно: растягиваем кнопку на всю ширину */
+  justify-content: center;
+  padding: 10px 0 0;
   gap: 12px;
+}
+
+/* timer-block (в HTML это div#timer-block.timer-display) */
+.timer-display {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  align-self: center;       /* круг по центру */
+  flex-shrink: 0;
+  margin: 0 auto;           /* страховка для центровки */
 }
 
 .start-btn {
@@ -588,12 +597,6 @@ body.has-tab-bar .container { padding-bottom: 100px; }
 }
 
 .start-btn:active { transform: scale(0.95); }
-
-.timer-display {
-  position: relative;
-  width: 150px;
-  height: 150px;
-}
 
 .timer-svg {
   width: 100%;
@@ -627,7 +630,7 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   color: #fff;
 }
 
-/* ✅ Кнопка пропуска отдыха */
+/* Кнопка пропуска отдыха */
 .rest-skip-btn {
   width: 100%;
   padding: 14px 16px;
@@ -637,7 +640,9 @@ body.has-tab-bar .container { padding-bottom: 100px; }
   color: var(--text-primary);
   font-weight: 700;
   cursor: pointer;
+  margin-top: 2px;          /* небольшой отступ */
 }
+
 .rest-skip-btn:active { transform: scale(0.98); }
 
 /* --- Стили Главного Меню --- */
