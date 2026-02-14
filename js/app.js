@@ -275,6 +275,7 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
 }
 
 // 4.2 Отрисовка списка курсов (courses.html)
+// ИСПРАВЛЕНО: Передаем ID через URL, а не через localStorage
 function renderCoursesList(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -282,7 +283,7 @@ function renderCoursesList(containerId) {
     let html = '';
     COURSES_DATABASE.forEach(course => {
         html += `
-        <div class="course-card" onclick="openCourseDetail('${course.id}')">
+        <div class="course-card" onclick="window.location.href='course-detail.html?id=${course.id}'">
             <div class="course-header">
                 <h2>${course.title}</h2>
                 <span class="course-badge">${course.level === 'beginner' ? 'Новичок' : 'Продвинутый'}</span>
@@ -336,14 +337,28 @@ function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
 // ==========================================
 
 function openCourseDetail(courseId) {
-    localStorage.setItem('selectedCourseId', courseId);
-    window.location.href = 'course-detail.html';
+    // Резервная функция, если вызывается напрямую
+    window.location.href = `course-detail.html?id=${courseId}`;
 }
 
+// ИСПРАВЛЕНО: Читаем ID из URL в первую очередь
 function initCourseDetail() {
-    const courseId = localStorage.getItem('selectedCourseId');
-    
+    // 1. Пробуем получить ID из URL
+    const urlParams = new URLSearchParams(window.location.search);
+    let courseId = urlParams.get('id');
+
+    // 2. Если в URL нет, пробуем localStorage (старый метод)
     if (!courseId) {
+        try {
+            courseId = localStorage.getItem('selectedCourseId');
+        } catch (e) {
+            console.warn("LocalStorage недоступен");
+        }
+    }
+
+    // 3. Если ID нет совсем — уход
+    if (!courseId) {
+        console.error("ID курса не найден");
         window.location.href = 'courses.html';
         return;
     }
@@ -391,9 +406,14 @@ function initCourseDetail() {
 }
 
 function startCourseDay(courseId, dayIndex) {
-    localStorage.setItem('currentWorkoutSource', 'course');
-    localStorage.setItem('currentWorkoutDayIndex', dayIndex);
-    localStorage.setItem('currentCourseId', courseId);
+    // ИСПРАВЛЕНО: Оборачиваем в try-catch, чтобы переход сработал даже при ошибках памяти
+    try {
+        localStorage.setItem('currentWorkoutSource', 'course');
+        localStorage.setItem('currentWorkoutDayIndex', dayIndex);
+        localStorage.setItem('currentCourseId', courseId);
+    } catch (e) {
+        console.warn("Не удалось сохранить прогресс в память");
+    }
     window.location.href = 'workout-process.html';
 }
 
@@ -559,16 +579,17 @@ function closeExerciseModal() {
 const WEIGHT_KEY = 'weightHistory';
 
 function getWeightHistory() {
-    const data = localStorage.getItem(WEIGHT_KEY);
-    if (data) {
-        try { return JSON.parse(data); } 
-        catch (e) { return []; }
-    }
+    try {
+        const data = localStorage.getItem(WEIGHT_KEY);
+        if (data) return JSON.parse(data);
+    } catch (e) { return []; }
     return [];
 }
 
 function saveWeightHistory(history) {
-    localStorage.setItem(WEIGHT_KEY, JSON.stringify(history));
+    try {
+        localStorage.setItem(WEIGHT_KEY, JSON.stringify(history));
+    } catch (e) { console.warn("Ошибка сохранения веса"); }
 }
 
 function updateDashboardStats(history) {
