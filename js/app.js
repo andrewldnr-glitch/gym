@@ -292,7 +292,7 @@ function renderCoursesList(containerId) {
                 <span><span class="icon">📅</span> ${course.duration}</span>
                 <span><span class="icon">🏋️</span> ${course.schedule.length} дня в неделю</span>
             </div>
-            <button class="start-course-btn">Начать курс</button>
+            <!-- Убрали отдельную кнопку, клик работает по всей карточке -->
         </div>`;
     });
     container.innerHTML = html;
