@@ -1,12 +1,11 @@
 /* css/style.css — OPAL-inspired Light/Dark themes */
 
 /* =========================================================
-   1) THEME TOKENS (OPAL-LIKE)
-   - Default theme: DARK
-   - Toggle by setting: <html data-theme="light"> or "dark"
+   OPAL THEME TOKENS (single source of truth)
+   Toggle: <html data-theme="light"> / "dark"
    ========================================================= */
 
-:root {
+:root{
   --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   /* Radii */
@@ -17,7 +16,7 @@
   /* Spacing */
   --container-padding: 20px;
 
-  /* Shadows (soft/premium) */
+  /* Shadows */
   --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.35);
   --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.28);
   --shadow-elev: 0 8px 24px rgba(0, 0, 0, 0.22);
@@ -25,7 +24,7 @@
   /* Borders */
   --border-light: rgba(255, 255, 255, 0.10);
 
-  /* Core palette (will be overridden by theme blocks) */
+  /* Core palette (default DARK) */
   --bg-primary: #0b0d18;
   --bg-secondary: #0f1222;
   --bg-card: rgba(255, 255, 255, 0.06);
@@ -37,24 +36,48 @@
   --accent-secondary: #a78bfa; /* purple */
   --accent-tertiary: #60a5fa;  /* blue */
 
-  /* OPAL gradients */
+  /* OPAL background */
   --bg-gradient:
     radial-gradient(1200px 900px at 20% -10%, rgba(124, 124, 255, 0.30), transparent 55%),
     radial-gradient(900px 700px at 90% 10%, rgba(167, 139, 250, 0.24), transparent 55%),
     radial-gradient(900px 700px at 60% 120%, rgba(96, 165, 250, 0.18), transparent 60%),
     linear-gradient(180deg, #070914 0%, #0b0d18 35%, #090b16 100%);
 
-  /* CTA gradient */
+  /* CTA */
   --cta-gradient: linear-gradient(135deg, rgba(124,124,255,1) 0%, rgba(167,139,250,1) 55%, rgba(96,165,250,1) 100%);
-
-  /* Component surfaces */
-  --surface-1: rgba(255,255,255,0.06);
-  --surface-2: rgba(255,255,255,0.10);
-  --surface-3: rgba(255,255,255,0.14);
 
   /* Misc */
   --icon-muted: rgba(255,255,255,0.70);
 }
+
+/* LIGHT overrides */
+html[data-theme="light"]{
+  --bg-primary: #f6f7fb;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.78);
+
+  --text-primary: #0b1020;
+  --text-secondary: rgba(11, 16, 32, 0.60);
+
+  --border-light: rgba(11, 16, 32, 0.08);
+
+  --accent-primary: #6b7cff;
+  --accent-secondary: #b38bff;
+  --accent-tertiary: #60a5fa;
+
+  --shadow-soft: 0 18px 50px rgba(16, 24, 40, 0.12);
+  --shadow-card: 0 10px 30px rgba(16, 24, 40, 0.10);
+  --shadow-elev: 0 8px 24px rgba(16, 24, 40, 0.08);
+
+  --bg-gradient:
+    radial-gradient(1200px 900px at 20% -10%, rgba(107,124,255,0.26), transparent 55%),
+    radial-gradient(900px 700px at 90% 10%, rgba(179,139,255,0.20), transparent 55%),
+    radial-gradient(900px 700px at 60% 120%, rgba(96,165,250,0.16), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #f6f7fb 55%, #f3f5fb 100%);
+
+  --icon-muted: rgba(11, 16, 32, 0.65);
+}
+
 
 html[data-theme="light"],
 body[data-theme="light"] {
@@ -99,7 +122,7 @@ body[data-theme="dark"] {
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-body {
+body{
   margin: 0;
   padding: 0;
   font-family: var(--font-family);
@@ -107,7 +130,6 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 
-  /* OPAL gradient background */
   background: var(--bg-gradient);
   background-attachment: fixed;
   background-repeat: no-repeat;
@@ -949,115 +971,4 @@ body[data-theme="light"] .loader-dot {
   0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
   40% { transform: scale(1); opacity: 1; }
 }
-/* =========================================================
-   OPAL THEMES (Light / Dark) — overrides via data-theme
-   Вставить В КОНЕЦ css/style.css
-   ========================================================= */
 
-:root{
-  /* чуть добавим радиусы как в OPAL (не ломает старое) */
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-
-  /* тени карточек */
-  --shadow-card: 0 18px 40px rgba(0,0,0,0.18);
-  --shadow-soft: 0 10px 22px rgba(0,0,0,0.14);
-}
-
-/* -------------------------
-   DARK (OPAL-like)
-   ------------------------- */
-html[data-theme="dark"]{
-  --bg-primary: #070A14;
-  --bg-secondary: #0B1026;
-
-  --text-primary: #FFFFFF;
-  --text-secondary: rgba(255,255,255,0.62);
-
-  --border-light: rgba(255,255,255,0.10);
-
-  /* карточки “плавающие” */
-  --bg-card: rgba(255,255,255,0.06);
-  --card-radius: 24px;
-
-  /* OPAL-градиентные акценты */
-  --accent-primary: #8B5CFF;   /* purple */
-  --accent-secondary: #4FD1FF; /* cyan */
-  --accent-tertiary: #31C48D;  /* mint */
-}
-
-/* фон в тёмной теме — как на твоём mock */
-html[data-theme="dark"] body{
-  background-image:
-    radial-gradient(900px 520px at 25% 10%, rgba(139,92,255,0.35), transparent 62%),
-    radial-gradient(860px 520px at 75% 30%, rgba(79,209,255,0.22), transparent 60%),
-    linear-gradient(180deg, var(--bg-secondary), var(--bg-primary));
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-/* -------------------------
-   LIGHT (OPAL-like)
-   ------------------------- */
-html[data-theme="light"]{
-  --bg-primary: #F6F7FF;
-  --bg-secondary: #FFFFFF;
-
-  --text-primary: #0B1020;
-  --text-secondary: rgba(11,16,32,0.55);
-
-  --border-light: rgba(11,16,32,0.10);
-
-  /* светлые карточки */
-  --bg-card: rgba(255,255,255,0.78);
-  --card-radius: 24px;
-
-  /* более пастельные акценты */
-  --accent-primary: #7C6CFF;
-  --accent-secondary: #7EDBFF;
-  --accent-tertiary: #6EE7C8;
-}
-
-/* фон в светлой теме — мягкий опал */
-html[data-theme="light"] body{
-  background-image:
-    radial-gradient(900px 520px at 25% 10%, rgba(124,108,255,0.18), transparent 62%),
-    radial-gradient(860px 520px at 75% 30%, rgba(126,219,255,0.14), transparent 60%),
-    linear-gradient(180deg, var(--bg-primary), var(--bg-secondary));
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-/* -------------------------
-   Унификация карточек под OPAL
-   ------------------------- */
-html[data-theme="light"] .card,
-html[data-theme="dark"] .card{
-  background: var(--bg-card);
-  border-radius: var(--card-radius);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-/* кнопка главного действия — мягкая, “премиум”, не кислотная */
-html[data-theme="light"] .btn-main,
-html[data-theme="dark"] .btn-main{
-  border-radius: 999px;
-  box-shadow: 0 14px 30px rgba(124,108,255,0.22);
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-}
-
-/* таб-бар под темы */
-html[data-theme="light"] .tab-bar{
-  background: rgba(255,255,255,0.82);
-  border-top: 1px solid rgba(11,16,32,0.08);
-}
-html[data-theme="dark"] .tab-bar{
-  background: rgba(11,16,32,0.55);
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
