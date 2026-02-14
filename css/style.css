@@ -697,3 +697,102 @@ body.has-tab-bar .container { padding-bottom: 100px; }
     font-weight: bold;
     color: #fff;
 }
+/* --- Стили Главного Меню --- */
+
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.menu-card {
+  display: flex;
+  align-items: stretch;
+  background: var(--card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text-primary);
+  position: relative;
+  transition: transform 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.menu-card:active {
+  transform: scale(0.98);
+}
+
+/* Левая часть с иконкой */
+.menu-icon-bg {
+  width: 90px;
+  min-height: 120px;
+  background: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.menu-icon-bg svg {
+  width: 40px;
+  height: 40px;
+  stroke: #000;
+}
+
+.menu-icon-bg.light {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.menu-icon-bg.light svg {
+  stroke: var(--accent-primary);
+}
+
+/* Правая часть с текстом */
+.menu-content {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.menu-content h2 {
+  font-size: 1.1rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.menu-content p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.menu-arrow {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.recommend-badge {
+  background: rgba(0, 230, 118, 0.2);
+  color: var(--accent-primary);
+  font-size: 0.7rem;
+  padding: 3px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
