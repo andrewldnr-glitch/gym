@@ -1,0 +1,226 @@
+/* css/profile.css — OPAL upgrade for Profile (Stats / Achievements) */
+
+.section-title{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 10px;
+}
+
+.section-title__icon{
+  width: 28px;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  background: rgba(255,255,255,0.08);
+  box-shadow: var(--shadow-elev);
+}
+
+html[data-theme="light"] .section-title__icon{
+  background: rgba(11,16,32,0.04);
+}
+
+/* Lucide icons (general) */
+.section-title__icon svg,
+.tab-item svg,
+.badge-icon svg,
+.share-icon svg{
+  width: 20px;
+  height: 20px;
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+}
+
+.tab-item.active svg{
+  stroke: var(--accent-primary);
+}
+
+/* Theme switch card */
+.theme-card{
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.theme-title strong{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 1000;
+}
+
+.theme-title span{
+  display: block;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.theme-segment{
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.theme-segment button{
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.18s ease;
+}
+
+html[data-theme="light"] .theme-segment button{
+  background: rgba(11,16,32,0.04);
+}
+
+.theme-segment button:active{
+  transform: scale(0.99);
+}
+
+/* Support either .active or aria-selected */
+.theme-segment button.active,
+.theme-segment button[aria-selected="true"]{
+  border-color: transparent;
+  background: var(--cta-gradient);
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(124,124,255,0.18);
+}
+
+/* Stats row cleanup */
+.profile-stat{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.profile-stat__right{
+  text-align: right;
+}
+
+.profile-stat__last{
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+/* History */
+.history-title{
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 900;
+}
+
+.history-list{
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+}
+
+html[data-theme="light"] .history-list{
+  background: rgba(11,16,32,0.02);
+}
+
+/* Achievements — visual upgrade */
+.badges-grid{
+  margin-top: 10px;
+}
+
+.badge-item{
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0);
+  transition: transform 0.18s ease, box-shadow 0.22s ease, opacity 0.22s ease;
+}
+
+.badge-item::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(240px 140px at 20% 10%, rgba(124,124,255,0.18), transparent 60%),
+    radial-gradient(240px 140px at 90% 90%, rgba(167,139,250,0.14), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.badge-item.active{
+  opacity: 1;
+  border-color: rgba(124,124,255,0.40);
+  box-shadow: 0 18px 40px rgba(124,124,255,0.16);
+}
+
+.badge-item.active::before{
+  opacity: 1;
+}
+
+@media (hover:hover) and (pointer:fine){
+  .badge-item:hover{
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+    opacity: 1;
+  }
+  .badge-item:hover::before{
+    opacity: 1;
+  }
+}
+
+.badge-icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-light);
+  background: rgba(255,255,255,0.08);
+  box-shadow: var(--shadow-elev);
+}
+
+html[data-theme="light"] .badge-icon{
+  background: rgba(11,16,32,0.04);
+}
+
+.badge-icon svg{
+  width: 24px;
+  height: 24px;
+  stroke: var(--text-secondary);
+  opacity: 0.95;
+}
+
+.badge-item.active .badge-icon svg{
+  stroke: var(--accent-primary);
+  filter:
+    drop-shadow(0 0 6px rgba(124,124,255,0.40))
+    drop-shadow(0 0 14px rgba(167,139,250,0.24));
+}
+
+/* Share button spacing */
+.share-wrap{
+  padding: 10px 0 30px;
+}
+
+.share-icon{
+  display: inline-grid;
+  place-items: center;
+}
+
+.btn-share-result{
+  gap: 10px;
+}
+
+.btn-share-result svg{
+  width: 20px;
+  height: 20px;
+  stroke: #fff;
+}
