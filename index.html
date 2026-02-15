@@ -95,6 +95,54 @@
       margin: 8px auto 2px;
       flex-shrink: 0;
     }
+    
+    /* Неоновое свечение вокруг кольца прогресса */
+    .opal-ring-glow {
+      position: absolute;
+      width: 266px;
+      height: 266px;
+      filter: blur(17.5px);
+      animation: neonGlow 20s linear infinite;
+      z-index: -1;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        #00f 0deg,
+        #00f 90deg,
+        #a0f 180deg,
+        #a0f 270deg,
+        #00f 360deg
+      );
+      top: -15px;
+      left: -15px;
+      opacity: 0.7;
+      mask: radial-gradient(transparent 93px, black 95px);
+      -webkit-mask: radial-gradient(transparent 93px, black 95px);
+      overflow: hidden;
+    }
+    
+    @keyframes neonGlow {
+      0% {
+        transform: rotate(0deg) scale(1);
+        filter: blur(17.5px);
+      }
+      25% {
+        transform: rotate(90deg) scale(1.05);
+        filter: blur(20px);
+      }
+      50% {
+        transform: rotate(180deg) scale(1);
+        filter: blur(17.5px);
+      }
+      75% {
+        transform: rotate(270deg) scale(1.05);
+        filter: blur(20px);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+        filter: blur(17.5px);
+      }
+    }
 
     /* Halo */
     .opal-ring-wrap::before{
@@ -143,7 +191,7 @@
     }
 
     /* Bloom/glow слой */
-    .opal-ring-glow {
+    .opal-ring-glow-svg {
       fill: none;
       stroke: url(#opalRingGrad);
       stroke-width: 16;
@@ -201,6 +249,7 @@
         inset 0 -10px 22px rgba(255,255,255,0.04);
       opacity: 0.98;
       pointer-events:none;
+      display: none; /* Скрытие внутреннего круга */
     }
 
     .opal-ring-center {
@@ -232,13 +281,9 @@
     }
 
     /* Hotspot: стабильный CSS rotate */
+    /* Убираем вращающийся луч света */
     .opal-hotspot-rotator{
-      transform-origin: 110px 110px;
-      animation: hotspotSpin 6.2s linear infinite;
-    }
-    @keyframes hotspotSpin{
-      from{ transform: rotate(0deg); }
-      to{ transform: rotate(360deg); }
+      display: none;
     }
 
     /* ===== Cards ===== */
@@ -363,6 +408,8 @@
 
         <!-- Ring -->
         <div class="opal-ring-wrap">
+          <!-- Неоновое свечение вокруг кольца прогресса -->
+          <div class="opal-ring-glow"></div>
           <svg class="opal-ring" viewBox="0 0 220 220" aria-hidden="true">
             <defs>
               <!-- ✅ ВАЖНО: порядок цветов = Blue → Indigo → Purple (как реф) -->
@@ -455,7 +502,7 @@
             <circle class="opal-ring-base" cx="110" cy="110" r="100"></circle>
 
             <!-- Progress layers (будут скрываться при 0%) -->
-            <circle id="opal-ring-glow" class="opal-ring-glow" cx="110" cy="110" r="100"></circle>
+            <circle id="opal-ring-glow" class="opal-ring-glow-svg" cx="110" cy="110" r="100"></circle>
             <circle id="opal-ring-fg" class="opal-ring-fg" cx="110" cy="110" r="100"></circle>
             <circle id="opal-ring-core" class="opal-ring-core" cx="110" cy="110" r="100"></circle>
 

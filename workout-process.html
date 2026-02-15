@@ -96,30 +96,47 @@
           await window.ensureContentPackLoaded();
         }
       } catch (_) {}
-
+  
+      // Проверяем, что контент-пак загружен перед инициализацией страницы
+      if (typeof window.__contentPackState !== 'undefined' && window.__contentPackState.loaded) {
+        initWorkoutProcessPage();
+      } else {
+        // Если контент-пак не загружен, ждем его загрузки
+        setTimeout(() => {
+          if (typeof window.__contentPackState !== 'undefined' && window.__contentPackState.loaded) {
+            initWorkoutProcessPage();
+          } else {
+            // Если через 100ms контент-пак все еще не загружен, инициализируем страницу в любом случае
+            initWorkoutProcessPage();
+          }
+        }, 100);
+      }
+    });
+  
+    function initWorkoutProcessPage() {
       const source = localStorage.getItem('currentWorkoutSource');
-
+  
       if (source !== 'course') {
         window.location.href = 'courses.html';
         return;
       }
-
+  
       const courseId = localStorage.getItem('currentCourseId');
       const dayIndexRaw = localStorage.getItem('currentWorkoutDayIndex');
       const dayIndex = parseInt(dayIndexRaw || '0', 10);
       const level = localStorage.getItem('userLevel') || 'beginner';
-
+  
       // 1) Пытаемся взять конкретные назначения из localStorage (content pack)
       let items = [];
       try {
         items = JSON.parse(localStorage.getItem('currentWorkoutItems') || '[]');
       } catch (_) { items = []; }
-
+  
       const titleFromLS = localStorage.getItem('currentWorkoutTitle');
       if (titleFromLS) {
         document.getElementById('page-title').innerText = titleFromLS;
       }
-
+  
       try {
         if (Array.isArray(items) && items.length) {
           renderWorkoutListByIds('workout-list', items, level);
@@ -128,7 +145,7 @@
           const course = (typeof COURSES_DATABASE !== 'undefined')
             ? COURSES_DATABASE.find(c => c.id === courseId)
             : null;
-
+  
           if (course && course.schedule && course.schedule[dayIndex]) {
             const dayData = course.schedule[dayIndex];
             document.getElementById('page-title').innerText = dayData.name || 'Тренировка';
@@ -141,7 +158,7 @@
         console.warn('Init workout-process failed:', e);
         window.location.href = 'courses.html';
       }
-
+  
       // Закрытие по клику вне окна
       const modal = document.getElementById('exercise-modal');
       if (modal) {
@@ -149,7 +166,7 @@
           if (e.target === this) closeExerciseModal();
         });
       }
-    });
+    }
 
     function exitWorkout() {
       if (confirm("Вы уверены? Прогресс текущей тренировки не сохранится.")) {

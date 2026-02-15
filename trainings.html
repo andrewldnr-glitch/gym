@@ -65,9 +65,22 @@
           await window.ensureContentPackLoaded();
         }
       } catch (_) {}
-
-      initTrainingPage();
-
+  
+      // Проверяем, что контент-пак загружен перед инициализацией страницы
+      if (typeof window.__contentPackState !== 'undefined' && window.__contentPackState.loaded) {
+        initTrainingPage();
+      } else {
+        // Если контент-пак не загружен, ждем его загрузки
+        setTimeout(() => {
+          if (typeof window.__contentPackState !== 'undefined' && window.__contentPackState.loaded) {
+            initTrainingPage();
+          } else {
+            // Если через 100ms контент-пак все еще не загружен, инициализируем страницу в любом случае
+            initTrainingPage();
+          }
+        }, 100);
+      }
+  
       // Закрытие по клику вне окна (используем closeExerciseModal из app.js)
       const modal = document.getElementById('exercise-modal');
       if (modal) {
