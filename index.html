@@ -26,7 +26,8 @@
         radial-gradient(1200px 900px at 50% 115%, rgba(0,0,0,0.74), transparent 62%);
       filter: blur(12px);
       transform: translateZ(0);
-      animation: opalBg 12.5s ease-in-out infinite alternate;
+      animation: opalBg 8s ease-in-out infinite alternate;
+      will-change: transform;
     }
     @keyframes opalBg{
       0%   { transform: translate3d(0,0,0) scale(1); filter: blur(12px); }
@@ -102,7 +103,8 @@
       width: 266px;
       height: 266px;
       filter: blur(17.5px);
-      animation: neonGlow 20s linear infinite;
+      animation: neonGlow 15s linear infinite;
+      will-change: transform;
       z-index: -1;
       border-radius: 50%;
       background: conic-gradient(
