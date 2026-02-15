@@ -1296,4 +1296,7 @@ function getWeightHistory() {
 
 document.addEventListener('DOMContentLoaded', () => {
   // Инициализации по страницам пусть делают сами страницы.
+  setTimeout(function() {
+    // Инициализация анимаций
+  }, 100);
 });
