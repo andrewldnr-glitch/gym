@@ -9,6 +9,8 @@ let currentExerciseIndex = 0;
 let timerInterval = null;
 let currentMode = 'intro';
 
+let __playlistContextKey = '';
+
 const screens = {
     intro: document.getElementById('screen-intro'),
     workout: document.getElementById('screen-workout'),
@@ -77,6 +79,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const trainingId = parseInt(params.get('id'));
   if (!trainingId) { window.location.href = 'index.html'; return; }
+
+  __playlistContextKey = `training:${trainingId}`;
+
+  // Музыка: плейлисты (Яндекс Музыка)
+  try {
+    if (window.Playlists && typeof window.Playlists.mountWidget === 'function') {
+      window.Playlists.mountWidget('playlist-widget', { contextKey: __playlistContextKey, compact: false });
+    }
+  } catch (e) {
+    console.warn('[training] playlists mount failed:', e);
+  }
+
   const data = await loadTrainingsData();
   if (!data) return;
   
@@ -303,6 +317,20 @@ function finishWorkout() {
 
 function goHome() { window.location.href = 'index.html'; }
 
+
+
+// Открыть текущий плейлист (кнопка 🎵)
+function openTrainingPlaylist() {
+  try {
+    if (!__playlistContextKey) return;
+    if (window.Playlists && typeof window.Playlists.openForContext === 'function') {
+      const ok = window.Playlists.openForContext(__playlistContextKey);
+      if (!ok) alert('Выберите плейлист в блоке «Музыка» перед началом тренировки.');
+    }
+  } catch (e) {
+    console.warn('openTrainingPlaylist failed:', e);
+  }
+}
 function switchScreen(screenName) {
   Object.keys(screens).forEach(key => {
     if (screens[key]) {
