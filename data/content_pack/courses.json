@@ -1,0 +1,16 @@
+[
+  {
+    "course_id": "c_sample_fullbody_6w",
+    "title_ru": "Full Body MVP — 6 недель",
+    "goal": "general_fitness",
+    "level": "beginner",
+    "duration_weeks": 6,
+    "days_per_week": 3,
+    "split_type": "full_body_3day",
+    "substitution_policy": {
+      "ru": "Если занято оборудование — выбирайте замену с тем же паттерном движения и близкими мышцами."
+    },
+    "updated_at": "2026-02-15",
+    "content_version": "0.1"
+  }
+]

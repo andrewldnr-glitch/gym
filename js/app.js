@@ -30,10 +30,384 @@ if (typeof window.initApp !== 'function') {
 }
 
 // ==========================================
+// === 0.1 CONTENT PACK (Exercises & Programs) ===
+// ==========================================
+//
+// Поддерживаем внешний контентный пакет данных (упражнения + программы) в JSON.
+// Если файлов нет (404) — приложение продолжает работать на встроенной базе.
+//
+// Ожидаемые файлы:
+//   data/content_pack/exercises.json
+//   data/content_pack/courses.json
+//   data/content_pack/course_sessions.json   (optional)
+//   data/content_pack/prescriptions.json     (optional)
+//
+// Форматы поддерживаемые в courses.json:
+//   1) массив courses[] (как в схеме content pack)
+//   2) bundle объект { course, sessions, prescriptions, ... }
+
+const __CONTENT_PACK_BASE = 'data/content_pack';
+let __contentPackState = {
+  loaded: false,
+  used: false,
+  loading: null,
+};
+
+async function __fetchJson(path) {
+  const res = await fetch(`${__CONTENT_PACK_BASE}/${path}`, { cache: 'no-store' });
+  if (!res.ok) {
+    const err = new Error(`Failed to load ${path}: ${res.status}`);
+    // @ts-ignore
+    err.__status = res.status;
+    throw err;
+  }
+  return res.json();
+}
+
+async function __fetchText(path) {
+  const res = await fetch(`${__CONTENT_PACK_BASE}/${path}`, { cache: 'no-store' });
+  if (!res.ok) {
+    const err = new Error(`Failed to load ${path}: ${res.status}`);
+    // @ts-ignore
+    err.__status = res.status;
+    throw err;
+  }
+  return res.text();
+}
+
+// Небольшой CSV-парсер (подходит для наших экспортов; поддерживает кавычки)
+function __parseCsv(text) {
+  const lines = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line || !line.trim()) continue;
+    const row = [];
+    let cur = '';
+    let inQ = false;
+    for (let j = 0; j < line.length; j++) {
+      const ch = line[j];
+      if (inQ) {
+        if (ch === '"') {
+          if (line[j + 1] === '"') { cur += '"'; j++; }
+          else inQ = false;
+        } else {
+          cur += ch;
+        }
+      } else {
+        if (ch === ',') { row.push(cur); cur = ''; }
+        else if (ch === '"') { inQ = true; }
+        else { cur += ch; }
+      }
+    }
+    row.push(cur);
+    out.push(row);
+  }
+  return out;
+}
+
+function __csvToObjects(text) {
+  const rows = __parseCsv(text);
+  if (!rows.length) return [];
+  const header = rows[0].map(h => String(h || '').trim());
+  const objs = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const obj = {};
+    header.forEach((h, idx) => {
+      obj[h] = (r[idx] ?? '').toString().trim();
+    });
+    objs.push(obj);
+  }
+  return objs;
+}
+
+function __equipmentToRuShort(equipmentArr) {
+  const map = {
+    barbell: 'Штанга',
+    dumbbell: 'Гантели',
+    kettlebell: 'Гиря',
+    cable: 'Блок',
+    machine_selectorized: 'Тренажёр',
+    machine_plate_loaded: 'Тренажёр',
+    smith_machine: 'Смит',
+    bodyweight: 'Вес тела',
+    band: 'Резинка',
+    bench: 'Скамья',
+    rack: 'Рама',
+    pullup_bar: 'Турник',
+    dip_bars: 'Брусья',
+    trap_bar: 'Трэп-гриф',
+    landmine: 'Лэндмайн',
+    sled: 'Санки',
+    other: 'Другое',
+  };
+
+  const arr = Array.isArray(equipmentArr) ? equipmentArr : [];
+  const ru = arr.map(k => map[k] || k).filter(Boolean);
+  if (ru.length === 0) return 'Оборудование';
+  if (ru.length <= 2) return ru.join(' + ');
+  return `${ru[0]} + ${ru[1]}…`;
+}
+
+function __inferMuscleGroupFromExercise(ex) {
+  const pattern = String(ex?.movement_pattern || '').toLowerCase();
+  const primary = (ex?.primary_muscles || []).join(' ').toLowerCase();
+
+  if (pattern === 'push_horizontal') return 'chest';
+  if (pattern === 'pull_vertical' || pattern === 'pull_horizontal') return 'back';
+  if (pattern === 'push_vertical') return 'shoulders';
+  if (pattern === 'squat' || pattern === 'hinge' || pattern === 'lunge' || pattern === 'calf' || pattern === 'carry') return 'legs';
+  if (pattern.startsWith('core_')) return 'abs';
+  if (pattern === 'cardio') return 'cardio';
+  if (pattern === 'mobility') return 'mobility';
+
+  // isolation/other — пробуем угадать по мышцам
+  if (primary.includes('pector')) return 'chest';
+  if (primary.includes('lat') || primary.includes('rhombo') || primary.includes('trap')) return 'back';
+  if (primary.includes('quad') || primary.includes('glute') || primary.includes('hamstring') || primary.includes('calf')) return 'legs';
+  if (primary.includes('deltoid') || primary.includes('shoulder')) return 'shoulders';
+  if (primary.includes('biceps') || primary.includes('triceps') || primary.includes('forearm')) return 'arms';
+  if (primary.includes('abdom')) return 'abs';
+
+  return 'other';
+}
+
+function __defaultRepsForExercise(ex) {
+  const pattern = String(ex?.movement_pattern || '').toLowerCase();
+  if (pattern.startsWith('core_')) return '30–45 сек';
+  if (pattern === 'cardio') return '10–20 мин';
+  if (pattern === 'mobility') return '6–10 мин';
+  if (pattern === 'isolation' || pattern === 'calf') return '10–15';
+  if (pattern === 'squat' || pattern === 'hinge') return '6–10';
+  return '8–12';
+}
+
+function __firstOrDash(arr) {
+  return Array.isArray(arr) && arr.length ? String(arr[0]) : '-';
+}
+
+function __iconForGroup(group) {
+  const map = {
+    chest: '💪',
+    back: '🏋️',
+    legs: '🦵',
+    shoulders: '🏋️',
+    arms: '💪',
+    abs: '🧱',
+    cardio: '🏃',
+    mobility: '🤸',
+    other: '🏋️',
+  };
+  return map[group] || '🏋️';
+}
+
+function __toInternalExercise(ex) {
+  const muscle = __inferMuscleGroupFromExercise(ex);
+  const reps = __defaultRepsForExercise(ex);
+  const rest = Number(ex?.recommended_rest_sec || 60);
+  const equip = __equipmentToRuShort(ex?.equipment);
+  const tempo = ex?.tempo_recommendation ? `Темп ${ex.tempo_recommendation}` : '';
+  const cue = __firstOrDash(ex?.execution_cues);
+
+  const mkLevel = (rirText) => ({
+    weight: equip,
+    reps,
+    restTime: rest,
+    advice: [rirText, tempo, cue].filter(Boolean).join(' • '),
+  });
+
+  return {
+    id: ex.id,
+    name: ex.name_ru || ex.name_en || ex.id,
+    muscle,
+    icon: __iconForGroup(muscle),
+    description: (ex.primary_muscles?.length ? `Основные: ${ex.primary_muscles.join(', ')}` : ex.movement_pattern || 'Упражнение'),
+    sets: 3,
+    levels: {
+      beginner: mkLevel('RIR 3–4'),
+      intermediate: mkLevel('RIR 2–3'),
+      pro: mkLevel('RIR 1–2'),
+    },
+    __pack: ex,
+  };
+}
+
+function __buildCourseVm(course, sessions, prescriptions) {
+  const courseId = course.course_id || course.id;
+  const title = course.title_ru || course.title || courseId;
+  const level = course.level || 'beginner';
+  const duration = course.duration_weeks ? `${course.duration_weeks} недель` : (course.duration || '');
+  const desc = course.substitution_policy?.ru || course.description || course.goal || '';
+
+  const sess = (Array.isArray(sessions) ? sessions : []).filter(s => (s.course_id || s.courseId) === courseId);
+  const presc = Array.isArray(prescriptions) ? prescriptions : [];
+
+  // если sessions не дали — пытаемся использовать уже "schedule" в курсе
+  let schedule = [];
+  if (sess.length) {
+    schedule = sess.map(s => {
+      const items = presc
+        .filter(p => p.template_id === s.template_id)
+        .sort((a, b) => (a.order_in_session || 0) - (b.order_in_session || 0))
+        .map(p => ({
+          exercise_id: p.exercise_id,
+          order_in_session: p.order_in_session,
+          sets: p.sets,
+          reps_min: p.reps_min,
+          reps_max: p.reps_max,
+          target_rir: p.target_rir,
+          rest_sec: p.rest_sec,
+          tempo: p.tempo,
+          notes_ru: p.notes_ru,
+          progression_rule_id: p.progression_rule_id,
+        }));
+      return {
+        name: s.title_ru || `Тренировка ${s.week_rotation_code || ''}`.trim(),
+        exercises: items,
+        template_id: s.template_id,
+        focus: s.focus,
+      };
+    });
+  } else if (Array.isArray(course.schedule)) {
+    schedule = course.schedule;
+  }
+
+  return {
+    id: courseId,
+    title,
+    subtitle: course.split_type || '',
+    description: String(desc || '').slice(0, 180),
+    duration,
+    goal: course.goal || '',
+    level,
+    schedule,
+    __pack: course,
+  };
+}
+
+async function ensureContentPackLoaded() {
+  if (__contentPackState.loaded) return __contentPackState.used;
+  if (__contentPackState.loading) return __contentPackState.loading;
+
+  __contentPackState.loading = (async () => {
+    try {
+      const exercises = await __fetchJson('exercises.json');
+
+      // courses.json может быть массивом или bundle-объектом
+      let coursesRaw = null;
+      try {
+        coursesRaw = await __fetchJson('courses.json');
+      } catch (e) {
+        console.warn('[content-pack] courses.json not found:', e);
+      }
+
+      let courses = [];
+      let sessions = [];
+      let prescriptions = [];
+
+      if (coursesRaw && !Array.isArray(coursesRaw) && typeof coursesRaw === 'object' && coursesRaw.course) {
+        // bundle
+        courses = [coursesRaw.course];
+        sessions = coursesRaw.sessions || [];
+        prescriptions = coursesRaw.prescriptions || [];
+      } else if (Array.isArray(coursesRaw)) {
+        courses = coursesRaw;
+        // пытаемся подхватить нормализованные файлы
+        try {
+          sessions = await __fetchJson('course_sessions.json');
+        } catch (_) {
+          // fallback: sessions.csv
+          try {
+            const csv = await __fetchText('sessions.csv');
+            const rows = __csvToObjects(csv);
+            const toNum = (v) => {
+              if (v === null || v === undefined || v === '') return null;
+              const n = Number(String(v).replace(',', '.'));
+              return Number.isFinite(n) ? n : null;
+            };
+            sessions = rows.map(r => ({
+              template_id: r.template_id || r.id || '',
+              course_id: r.course_id || '',
+              title_ru: r.title_ru || r.title || '',
+              week_rotation_code: r.week_rotation_code || r.rotation || '',
+              estimated_duration_min: toNum(r.estimated_duration_min) || 0,
+              focus: r.focus || '',
+            }));
+          } catch (_) {
+            sessions = [];
+          }
+        }
+        try {
+          prescriptions = await __fetchJson('prescriptions.json');
+        } catch (_) {
+          // fallback: prescriptions.csv (есть в экспорте content pack)
+          try {
+            const csv = await __fetchText('prescriptions.csv');
+            const rows = __csvToObjects(csv);
+            const toNum = (v) => {
+              if (v === null || v === undefined || v === '') return null;
+              const n = Number(String(v).replace(',', '.'));
+              return Number.isFinite(n) ? n : null;
+            };
+            prescriptions = rows.map(r => ({
+              prescription_id: r.prescription_id || r.id || '',
+              template_id: r.template_id || '',
+              exercise_id: r.exercise_id || '',
+              order_in_session: toNum(r.order_in_session) || 0,
+              sets: toNum(r.sets) || 0,
+              reps_min: toNum(r.reps_min),
+              reps_max: toNum(r.reps_max),
+              target_rir: toNum(r.target_rir),
+              rest_sec: toNum(r.rest_sec) || 0,
+              tempo: r.tempo || '',
+              progression_rule_id: r.progression_rule_id || '',
+              notes_ru: r.notes_ru || r.notes || '',
+            }));
+          } catch (_) {
+            prescriptions = [];
+          }
+        }
+      }
+
+      // Если курсы не загрузились — всё равно можем использовать базу упражнений
+      const packExercises = Array.isArray(exercises) ? exercises : [];
+      const internalExercises = packExercises.map(__toInternalExercise);
+
+      // Индекс для удобства (замены, отображение)
+      window.__exercisePackIndex = new Map(packExercises.map(e => [e.id, e]));
+
+      EXERCISE_DATABASE = internalExercises;
+
+      if (Array.isArray(courses) && courses.length && Array.isArray(sessions) && Array.isArray(prescriptions) && sessions.length && prescriptions.length) {
+        COURSES_DATABASE = courses.map(c => __buildCourseVm(c, sessions, prescriptions));
+      }
+
+      __contentPackState.used = true;
+      console.log('[content-pack] loaded', { exercises: internalExercises.length, courses: (COURSES_DATABASE || []).length });
+    } catch (e) {
+      // Типичный сценарий: нет файлов (404) — игнорируем
+      const status = e && e.__status;
+      if (status !== 404) console.warn('[content-pack] load failed:', e);
+      __contentPackState.used = false;
+    } finally {
+      __contentPackState.loaded = true;
+    }
+
+    return __contentPackState.used;
+  })();
+
+  return __contentPackState.loading;
+}
+
+// Экспортируем, чтобы страницы могли await перед рендером.
+window.ensureContentPackLoaded = ensureContentPackLoaded;
+
+// ==========================================
 // === 1. БАЗА ДАННЫХ УПРАЖНЕНИЙ ===
 // ==========================================
 
-const EXERCISE_DATABASE = [
+let EXERCISE_DATABASE = [
   // --- ГРУДЬ ---
   {
     id: 'pushups',
@@ -228,7 +602,7 @@ const EXERCISE_DATABASE = [
 // === 2. БАЗА КУРСОВ ===
 // ==========================================
 
-const COURSES_DATABASE = [
+let COURSES_DATABASE = [
   {
     id: 'beginner_gym',
     title: 'Программа для начинающих',
@@ -293,12 +667,19 @@ function refreshLucideIcons() {
 // ==========================================
 
 // 5.1 Отрисовка списка разовых тренировок (trainings.html)
-function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
+function renderWorkoutList(containerId, muscleGroup, level = 'beginner', searchTerm = '') {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   let filtered = EXERCISE_DATABASE;
-  if (muscleGroup !== 'all') filtered = EXERCISE_DATABASE.filter(ex => ex.muscle === muscleGroup);
+  if (muscleGroup !== 'all') {
+    filtered = EXERCISE_DATABASE.filter(ex => ex.muscle === muscleGroup);
+  }
+
+  const q = String(searchTerm || '').trim().toLowerCase();
+  if (q) {
+    filtered = filtered.filter(ex => String(ex.name || '').toLowerCase().includes(q));
+  }
 
   if (filtered.length === 0) {
     container.innerHTML = `<div class="empty-state loading-state"><p>Тренировок нет.</p></div>`;
@@ -310,7 +691,7 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
     const levelData = exercise.levels[level] || exercise.levels['beginner'];
 
     html += `
-      <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
+      <div class="workout-card" data-exercise-id="${exercise.id}" data-level="${level}">
         <div class="workout-icon">${exercise.icon}</div>
         <div class="workout-details">
           <h3>${exercise.name}</h3>
@@ -325,6 +706,18 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
   });
 
   container.innerHTML = html;
+
+  // Делегируем клик (чтобы не держать onclick строки)
+  if (!container.__clickBound) {
+    container.addEventListener('click', (e) => {
+      const card = e.target.closest('.workout-card');
+      if (!card) return;
+      const exId = card.dataset.exerciseId;
+      const lvl = card.dataset.level || (localStorage.getItem('userLevel') || 'beginner');
+      showExerciseDetail(exId, lvl);
+    });
+    container.__clickBound = true;
+  }
 }
 
 // 5.2 Отрисовка списка курсов (courses.html)
@@ -360,39 +753,72 @@ function renderCoursesList(containerId) {
   refreshLucideIcons(); // ✅ чтобы иконки появились после вставки HTML
 }
 
-// 5.3 Отрисовка списка по ID (для workout-process.html)
-function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
+// 5.3 Отрисовка списка по ID / назначениям (для workout-process.html)
+function renderWorkoutListByIds(containerId, exerciseItems, level = 'beginner') {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  if (!exerciseIds || exerciseIds.length === 0) {
+  if (!exerciseItems || exerciseItems.length === 0) {
     container.innerHTML = `<div class="empty-state loading-state"><p>Список пуст.</p></div>`;
     return;
   }
 
   let html = '';
-  exerciseIds.forEach(id => {
+  exerciseItems.forEach((it, idx) => {
+    const id = (typeof it === 'string') ? it : (it.exercise_id || it.id);
+    const override = (typeof it === 'object' && it) ? it : null;
     const exercise = EXERCISE_DATABASE.find(ex => ex.id === id);
     if (!exercise) return;
 
     const levelData = exercise.levels[level] || exercise.levels['beginner'];
 
+    const sets = override?.sets || exercise.sets || 3;
+    const reps = (override && (override.reps_min || override.reps_max))
+      ? `${override.reps_min || ''}${override.reps_min && override.reps_max ? '–' : ''}${override.reps_max || ''}`
+      : levelData.reps;
+
+    const adviceParts = [
+      levelData.advice,
+      override?.tempo ? `Темп ${override.tempo}` : '',
+      typeof override?.target_rir === 'number' ? `RIR ${override.target_rir}` : '',
+      override?.notes_ru || ''
+    ].filter(Boolean);
+
     html += `
-      <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
+      <div class="workout-card" data-exercise-id="${exercise.id}" data-level="${level}" data-override-index="${idx}">
         <div class="workout-icon">${exercise.icon}</div>
         <div class="workout-details">
           <h3>${exercise.name}</h3>
           <div class="workout-tags">
             <span class="tag weight">${levelData.weight}</span>
-            <span class="tag reps">${exercise.sets || 3}x${levelData.reps}</span>
+            <span class="tag reps">${sets}x${reps}</span>
           </div>
-          <p class="workout-advice">${levelData.advice}</p>
+          <p class="workout-advice">${adviceParts.join(' • ')}</p>
         </div>
         <div class="workout-action"><span>▶</span></div>
       </div>`;
   });
 
   container.innerHTML = html;
+
+  // Сохраняем текущие назначения (для детального окна)
+  window.__lastRenderedWorkoutItems = Array.isArray(exerciseItems) ? exerciseItems : [];
+
+  // Делегируем клик
+  if (!container.__clickBound) {
+    container.addEventListener('click', (e) => {
+      const card = e.target.closest('.workout-card');
+      if (!card) return;
+      const exId = card.dataset.exerciseId;
+      const lvl = card.dataset.level || (localStorage.getItem('userLevel') || 'beginner');
+      const overrideIndex = Number(card.dataset.overrideIndex);
+      const override = Array.isArray(window.__lastRenderedWorkoutItems)
+        ? window.__lastRenderedWorkoutItems[overrideIndex]
+        : null;
+      showExerciseDetail(exId, lvl, (typeof override === 'object' ? override : null));
+    });
+    container.__clickBound = true;
+  }
 }
 
 // ==========================================
@@ -472,17 +898,123 @@ function startCourseDay(courseId, dayIndex) {
     localStorage.setItem('currentWorkoutSource', 'course');
     localStorage.setItem('currentWorkoutDayIndex', dayIndex);
     localStorage.setItem('currentCourseId', courseId);
+
+    // ✅ Сохраняем конкретные назначения (если есть) — это нужно для content pack,
+    // чтобы на workout-process.html показать сеты/повторы/отдых/темп из prescriptions.
+    const course = COURSES_DATABASE.find(c => c.id === courseId);
+    const dayData = course?.schedule?.[dayIndex];
+    if (dayData) {
+      localStorage.setItem('currentWorkoutTitle', dayData.name || 'Тренировка');
+      localStorage.setItem('currentWorkoutItems', JSON.stringify(dayData.exercises || []));
+    }
   } catch (e) {
     console.warn("Не удалось сохранить прогресс в память");
   }
   window.location.href = 'workout-process.html';
 }
 
+function __escapeHtml(str) {
+  return String(str ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function __renderList(items, limit = 6) {
+  const arr = Array.isArray(items) ? items.slice(0, limit) : [];
+  if (!arr.length) return '<p class="muted">—</p>';
+  return `<ul class="modal-list">${arr.map(s => `<li>${__escapeHtml(s)}</li>`).join('')}</ul>`;
+}
+
+function renderExercisePackDetails(modal, exercise, override) {
+  const pack = exercise?.__pack;
+  let root = modal.querySelector('.exercise-pack-details');
+
+  if (!pack) {
+    if (root) root.remove();
+    return;
+  }
+
+  if (!root) {
+    root = document.createElement('div');
+    root.className = 'exercise-pack-details';
+    // вставляем после блока "Совет" и до таймера
+    const advice = modal.querySelector('.modal-advice-box');
+    const timer = modal.querySelector('.timer-container');
+    if (timer) {
+      (advice ? advice.parentNode : modal).insertBefore(root, timer);
+    } else {
+      modal.querySelector('.modal-content')?.appendChild(root);
+    }
+  }
+
+  // Замены: пытаемся показать названия (если у нас есть индекс)
+  const subs = Array.isArray(pack.substitutions) ? pack.substitutions : [];
+  const subNames = subs
+    .map(s => {
+      const exId = s?.exercise_id;
+      if (!exId) return null;
+      const internal = EXERCISE_DATABASE.find(e => e.id === exId);
+      return internal?.name || window.__exercisePackIndex?.get(exId)?.name_ru || window.__exercisePackIndex?.get(exId)?.name_en || exId;
+    })
+    .filter(Boolean);
+
+  const equip = __equipmentToRuShort(pack.equipment);
+  const pattern = pack.movement_pattern ? String(pack.movement_pattern) : '';
+
+  const prescriptionHtml = override ? `
+    <div class="modal-block">
+      <div class="modal-block__title">Назначение</div>
+      <div class="modal-block__body">
+        <div class="kv"><span class="k">Сеты</span><span class="v">${__escapeHtml(override.sets ?? exercise.sets ?? 3)}</span></div>
+        <div class="kv"><span class="k">Повторы</span><span class="v">${__escapeHtml((override.reps_min || override.reps_max) ? `${override.reps_min || ''}${override.reps_min && override.reps_max ? '–' : ''}${override.reps_max || ''}` : '')}</span></div>
+        <div class="kv"><span class="k">Отдых</span><span class="v">${__escapeHtml(override.rest_sec ? `${override.rest_sec} сек` : '')}</span></div>
+        <div class="kv"><span class="k">Темп</span><span class="v">${__escapeHtml(override.tempo || '')}</span></div>
+        <div class="kv"><span class="k">RIR</span><span class="v">${__escapeHtml(typeof override.target_rir === 'number' ? override.target_rir : '')}</span></div>
+      </div>
+    </div>
+  ` : '';
+
+  root.innerHTML = `
+    <div class="modal-block">
+      <div class="modal-block__title">Параметры</div>
+      <div class="modal-block__body">
+        <div class="kv"><span class="k">Паттерн</span><span class="v">${__escapeHtml(pattern || '—')}</span></div>
+        <div class="kv"><span class="k">Оборудование</span><span class="v">${__escapeHtml(equip)}</span></div>
+        <div class="kv"><span class="k">Темп</span><span class="v">${__escapeHtml(pack.tempo_recommendation || '—')}</span></div>
+      </div>
+    </div>
+    ${prescriptionHtml}
+    <details class="modal-details" open>
+      <summary>Техника</summary>
+      ${__renderList(pack.execution_cues, 6)}
+    </details>
+    <details class="modal-details">
+      <summary>Настройка</summary>
+      ${__renderList(pack.setup_steps, 5)}
+    </details>
+    <details class="modal-details">
+      <summary>Частые ошибки</summary>
+      ${__renderList(pack.common_mistakes, 5)}
+    </details>
+    <details class="modal-details">
+      <summary>Безопасность</summary>
+      ${__renderList(pack.safety_notes, 4)}
+    </details>
+    <details class="modal-details">
+      <summary>Замены</summary>
+      ${__renderList(subNames, 6)}
+    </details>
+  `;
+}
+
 // ==========================================
 // === 7. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
 // ==========================================
 
-function showExerciseDetail(exerciseId, level) {
+function showExerciseDetail(exerciseId, level, override = null) {
   const exercise = EXERCISE_DATABASE.find(ex => ex.id === exerciseId);
   if (!exercise) return;
 
@@ -494,14 +1026,30 @@ function showExerciseDetail(exerciseId, level) {
   workoutState.timerInterval = null;
 
   workoutState.currentSet = 1;
-  workoutState.totalSets = exercise.sets || 3;
-  workoutState.restTime = levelData.restTime || 60;
+  workoutState.totalSets = (override && override.sets) ? override.sets : (exercise.sets || 3);
+  workoutState.restTime = (override && (override.rest_sec || override.restTime))
+    ? Number(override.rest_sec || override.restTime)
+    : (levelData.restTime || 60);
 
   modal.querySelector('.modal-title').innerText = exercise.name;
   modal.querySelector('.modal-desc').innerText = exercise.description;
+  const repsText = (override && (override.reps_min || override.reps_max))
+    ? `${override.reps_min || ''}${override.reps_min && override.reps_max ? '–' : ''}${override.reps_max || ''}`
+    : levelData.reps;
+
+  const adviceParts = [
+    levelData.advice,
+    override?.tempo ? `Темп ${override.tempo}` : '',
+    typeof override?.target_rir === 'number' ? `RIR ${override.target_rir}` : '',
+    override?.notes_ru || ''
+  ].filter(Boolean);
+
   modal.querySelector('.modal-weight').innerText = levelData.weight;
-  modal.querySelector('.modal-reps').innerText = levelData.reps;
-  modal.querySelector('.modal-advice').innerText = levelData.advice;
+  modal.querySelector('.modal-reps').innerText = repsText;
+  modal.querySelector('.modal-advice').innerText = adviceParts.join(' • ');
+
+  // ✅ Доп. контент из content pack (техника/ошибки/безопасность/замены)
+  try { renderExercisePackDetails(modal, exercise, override); } catch (_) { /* no-op */ }
 
   updateSetsCounter();
 

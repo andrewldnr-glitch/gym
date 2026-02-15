@@ -90,7 +90,13 @@
 
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        if (typeof window.ensureContentPackLoaded === 'function') {
+          await window.ensureContentPackLoaded();
+        }
+      } catch (_) {}
+
       const source = localStorage.getItem('currentWorkoutSource');
 
       if (source !== 'course') {
@@ -103,17 +109,33 @@
       const dayIndex = parseInt(dayIndexRaw || '0', 10);
       const level = localStorage.getItem('userLevel') || 'beginner';
 
+      // 1) Пытаемся взять конкретные назначения из localStorage (content pack)
+      let items = [];
       try {
-        const course = (typeof COURSES_DATABASE !== 'undefined')
-          ? COURSES_DATABASE.find(c => c.id === courseId)
-          : null;
+        items = JSON.parse(localStorage.getItem('currentWorkoutItems') || '[]');
+      } catch (_) { items = []; }
 
-        if (course && course.schedule && course.schedule[dayIndex]) {
-          const dayData = course.schedule[dayIndex];
-          document.getElementById('page-title').innerText = dayData.name || 'Тренировка';
-          renderWorkoutListByIds('workout-list', dayData.exercises, level);
+      const titleFromLS = localStorage.getItem('currentWorkoutTitle');
+      if (titleFromLS) {
+        document.getElementById('page-title').innerText = titleFromLS;
+      }
+
+      try {
+        if (Array.isArray(items) && items.length) {
+          renderWorkoutListByIds('workout-list', items, level);
         } else {
-          window.location.href = 'courses.html';
+          // fallback: старый формат (берём по courseId/dayIndex)
+          const course = (typeof COURSES_DATABASE !== 'undefined')
+            ? COURSES_DATABASE.find(c => c.id === courseId)
+            : null;
+
+          if (course && course.schedule && course.schedule[dayIndex]) {
+            const dayData = course.schedule[dayIndex];
+            document.getElementById('page-title').innerText = dayData.name || 'Тренировка';
+            renderWorkoutListByIds('workout-list', dayData.exercises, level);
+          } else {
+            window.location.href = 'courses.html';
+          }
         }
       } catch (e) {
         console.warn('Init workout-process failed:', e);
@@ -131,6 +153,11 @@
 
     function exitWorkout() {
       if (confirm("Вы уверены? Прогресс текущей тренировки не сохранится.")) {
+        try {
+          localStorage.removeItem('currentWorkoutSource');
+          localStorage.removeItem('currentWorkoutItems');
+          localStorage.removeItem('currentWorkoutTitle');
+        } catch (_) {}
         window.location.href = 'courses.html';
       }
     }
@@ -153,6 +180,9 @@
       const dayIndex = parseInt(localStorage.getItem('currentWorkoutDayIndex') || '0', 10);
       const level = localStorage.getItem('userLevel') || 'beginner';
 
+      let itemsCount = 0;
+      try { itemsCount = JSON.parse(localStorage.getItem('currentWorkoutItems') || '[]').length; } catch (_) {}
+
       // payload — полезная инфа для истории
       let payload = {};
       try {
@@ -162,10 +192,11 @@
 
         const dayData = course?.schedule?.[dayIndex];
         payload = {
-          title: dayData?.name || 'Тренировка',
+          title: localStorage.getItem('currentWorkoutTitle') || dayData?.name || 'Тренировка',
           courseId,
           dayIndex,
-          level
+          level,
+          itemsCount
         };
       } catch (_) {}
 
@@ -216,6 +247,8 @@
 
       alert("Тренировка завершена! Отличная работа.");
       localStorage.removeItem('currentWorkoutSource');
+      localStorage.removeItem('currentWorkoutItems');
+      localStorage.removeItem('currentWorkoutTitle');
       window.location.href = 'courses.html';
     }
   </script>

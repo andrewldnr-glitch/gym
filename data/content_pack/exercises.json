@@ -1,0 +1,372 @@
+[
+  {
+    "id": "barbell-bench-press",
+    "name_en": "Barbell Bench Press",
+    "name_ru": "Жим штанги лёжа",
+    "movement_pattern": "push_horizontal",
+    "primary_muscles": [
+      "Pectoralis Major"
+    ],
+    "secondary_muscles": [
+      "Triceps Brachii",
+      "Anterior Deltoid"
+    ],
+    "equipment": [
+      "barbell",
+      "bench",
+      "rack"
+    ],
+    "difficulty": "intermediate",
+    "setup_steps": [
+      "Сведите и опустите лопатки («плечи назад-вниз»).",
+      "Стопы устойчиво на полу, корпус стабилен.",
+      "Хват: предплечья близки к вертикали внизу.",
+      "Сделайте 1–2 разминочных подхода."
+    ],
+    "execution_cues": [
+      "Лопатки стабильны, плечи не тянутся к ушам.",
+      "Опускайте штангу под контролем к нижней части груди.",
+      "Запястья нейтрально, локти контролируемо.",
+      "Выжимайте к позиции над плечом.",
+      "Корпус и ноги держат опору."
+    ],
+    "common_mistakes": [
+      "Потеря позиции лопаток.",
+      "Провал запястий назад.",
+      "Отскок от груди/рывок.",
+      "Слишком широкий хват.",
+      "Чрезмерный прогиб без контроля."
+    ],
+    "safety_notes": [
+      "Используйте страховочные стойки/страховку.",
+      "Не увеличивайте вес, если теряется контроль техники.",
+      "Острая боль — сигнал остановиться."
+    ],
+    "contraindications_generic": [
+      "Острая боль во время движения.",
+      "Недавняя травма или операция — нужна консультация специалиста.",
+      "Сильное головокружение/плохое самочувствие — прекратите тренировку."
+    ],
+    "tempo_recommendation": "2-1-1",
+    "breathing_cues": "Вдох перед опусканием, выдох на усилии.",
+    "ROM_notes": "Амплитуда индивидуальна: сохраняйте контроль плеч и лопаток.",
+    "recommended_rest_sec": 120,
+    "progression_options": [
+      "Double progression",
+      "Малые шаги по весу"
+    ],
+    "regressions": [
+      "Жим гантелей",
+      "Отжимания от возвышения"
+    ],
+    "substitutions": [
+      {
+        "exercise_id": "dumbbell-bench-press",
+        "reason_ru": "Похожий паттерн, проще траектория.",
+        "confidence": "heuristic"
+      }
+    ],
+    "tags": [
+      "mvp_core",
+      "compound",
+      "chest"
+    ],
+    "media_suggestion": "Сбоку (траектория), сверху у головы (локти).",
+    "sources": [
+      {
+        "title": "ExRx Bench Press",
+        "url": "https://lowrisk2.exrx.net/WeightExercises/PectoralSternal/BBBenchPress"
+      }
+    ],
+    "evidence_status": "verified"
+  },
+  {
+    "id": "barbell-back-squat",
+    "name_en": "Barbell Back Squat",
+    "name_ru": "Приседания со штангой",
+    "movement_pattern": "squat",
+    "primary_muscles": [
+      "Quadriceps",
+      "Gluteus Maximus"
+    ],
+    "secondary_muscles": [
+      "Erector Spinae",
+      "Calves"
+    ],
+    "equipment": [
+      "barbell",
+      "rack"
+    ],
+    "difficulty": "intermediate",
+    "setup_steps": [
+      "Выставьте стойки и страховку.",
+      "Стопы примерно на ширине плеч, носки слегка наружу.",
+      "Нейтральная спина, корпус напряжён.",
+      "Сделайте 1–2 разминочных подхода."
+    ],
+    "execution_cues": [
+      "Колени по линии носков.",
+      "Опора на всю стопу.",
+      "Контроль глубины, без падения вниз.",
+      "Подъём: толкайте пол, сохраняйте линию коленей."
+    ],
+    "common_mistakes": [
+      "Округление спины.",
+      "Колени заваливаются внутрь.",
+      "Пятки отрываются.",
+      "Пружинирование внизу без контроля."
+    ],
+    "safety_notes": [
+      "Начинайте с веса, который позволяет технику.",
+      "Используйте страховочные упоры.",
+      "Острая боль — прекратите и при необходимости обратитесь к специалисту."
+    ],
+    "contraindications_generic": [
+      "Острая боль во время движения.",
+      "Недавняя травма или операция — нужна консультация специалиста."
+    ],
+    "tempo_recommendation": "2-1-2",
+    "breathing_cues": "Вдох перед повторением, выдох в конце подъёма.",
+    "ROM_notes": "Работайте в контролируемой амплитуде.",
+    "recommended_rest_sec": 120,
+    "progression_options": [
+      "Double progression",
+      "Малые шаги по весу"
+    ],
+    "regressions": [
+      "Гоблет-присед",
+      "Жим ногами"
+    ],
+    "substitutions": [
+      {
+        "exercise_id": "goblet-squat",
+        "reason_ru": "Более простой вариант для техники.",
+        "confidence": "heuristic"
+      }
+    ],
+    "tags": [
+      "mvp_core",
+      "compound",
+      "legs"
+    ],
+    "media_suggestion": "Сбоку (глубина), 45° спереди (колени).",
+    "sources": [
+      {
+        "title": "ExRx Squat",
+        "url": "https://lowrisk2.exrx.net/WeightExercises/GluteusMaximus/BBSquat"
+      }
+    ],
+    "evidence_status": "verified"
+  },
+  {
+    "id": "barbell-deadlift",
+    "name_en": "Barbell Deadlift",
+    "name_ru": "Становая тяга (классика)",
+    "movement_pattern": "hinge",
+    "primary_muscles": [
+      "Gluteus Maximus",
+      "Hamstrings"
+    ],
+    "secondary_muscles": [
+      "Erector Spinae",
+      "Forearms"
+    ],
+    "equipment": [
+      "barbell"
+    ],
+    "difficulty": "intermediate",
+    "setup_steps": [
+      "Стопы на ширине таза, гриф над серединой стопы.",
+      "Сделайте хип-хинж: таз назад, спина нейтрально.",
+      "Гриф близко к ногам.",
+      "Разминочные подходы."
+    ],
+    "execution_cues": [
+      "Держите спину нейтрально и корпус напряжённым.",
+      "Ведите гриф вдоль ног.",
+      "Вверху не переразгибайтесь.",
+      "Опускайте под контролем."
+    ],
+    "common_mistakes": [
+      "Округление спины.",
+      "Гриф далеко от тела.",
+      "Рывок вместо контроля.",
+      "Переразгибание вверху."
+    ],
+    "safety_notes": [
+      "Приоритет — нейтральная спина и контроль.",
+      "Прогрессируйте постепенно.",
+      "При боли — прекратите и обратитесь к специалисту."
+    ],
+    "contraindications_generic": [
+      "Острая боль во время движения."
+    ],
+    "tempo_recommendation": "3-1-1",
+    "breathing_cues": "Вдох перед повторением, выдох на подъёме.",
+    "ROM_notes": "Не жертвуйте техникой ради амплитуды.",
+    "recommended_rest_sec": 150,
+    "progression_options": [
+      "Double progression"
+    ],
+    "regressions": [
+      "Румынская тяга",
+      "Тяга с гантелями"
+    ],
+    "substitutions": [
+      {
+        "exercise_id": "trap-bar-deadlift",
+        "reason_ru": "Более вертикальная позиция и проще техника.",
+        "confidence": "heuristic"
+      }
+    ],
+    "tags": [
+      "mvp_core",
+      "compound",
+      "hinge"
+    ],
+    "media_suggestion": "Сбоку (нейтраль), 45° сзади (таз/колени).",
+    "sources": [
+      {
+        "title": "ExRx Deadlift",
+        "url": "https://lowrisk2.exrx.net/WeightExercises/ErectorSpinae/BBDeadlift"
+      }
+    ],
+    "evidence_status": "verified"
+  },
+  {
+    "id": "lat-pulldown",
+    "name_en": "Lat Pulldown",
+    "name_ru": "Тяга верхнего блока",
+    "movement_pattern": "pull_vertical",
+    "primary_muscles": [
+      "Latissimus Dorsi"
+    ],
+    "secondary_muscles": [
+      "Biceps Brachii"
+    ],
+    "equipment": [
+      "cable"
+    ],
+    "difficulty": "beginner",
+    "setup_steps": [
+      "Настройте высоту сиденья/упоров.",
+      "Выберите хват без дискомфорта.",
+      "Корпус стабилен, без раскачки."
+    ],
+    "execution_cues": [
+      "Начинайте с опускания плеч (лопатки вниз).",
+      "Тяните локтями вниз, не кистями.",
+      "Контролируйте верхнюю точку."
+    ],
+    "common_mistakes": [
+      "Рывок корпусом.",
+      "Плечи к ушам вверху.",
+      "Частичная амплитуда."
+    ],
+    "safety_notes": [
+      "Избегайте дискомфорта в плечах.",
+      "Не используйте инерцию."
+    ],
+    "contraindications_generic": [
+      "Острая боль во время движения."
+    ],
+    "tempo_recommendation": "2-1-2",
+    "breathing_cues": "Вдох вверху, выдох на тяге вниз.",
+    "ROM_notes": "Полное вытяжение вверху при контроле плеч.",
+    "recommended_rest_sec": 120,
+    "progression_options": [
+      "Добавлять вес при сохранении техники"
+    ],
+    "regressions": [
+      "Ассистированные подтягивания"
+    ],
+    "substitutions": [
+      {
+        "exercise_id": "assisted-pull-up",
+        "reason_ru": "Похожее движение.",
+        "confidence": "heuristic"
+      }
+    ],
+    "tags": [
+      "mvp_core",
+      "back",
+      "beginner_friendly"
+    ],
+    "media_suggestion": "Сбоку (корпус), спереди (симметрия).",
+    "sources": [
+      {
+        "title": "ExRx Pulldown",
+        "url": "https://lowrisk2.exrx.net/WeightExercises/LatissimusDorsi/CBFrontPulldown"
+      }
+    ],
+    "evidence_status": "verified"
+  },
+  {
+    "id": "front-plank",
+    "name_en": "Front Plank",
+    "name_ru": "Планка (передняя)",
+    "movement_pattern": "core_anti_extension",
+    "primary_muscles": [
+      "Transverse Abdominis"
+    ],
+    "secondary_muscles": [
+      "Rectus Abdominis",
+      "Gluteus Maximus"
+    ],
+    "equipment": [
+      "bodyweight"
+    ],
+    "difficulty": "beginner",
+    "setup_steps": [
+      "Локти под плечами (или ладони под плечами).",
+      "Рёбра вниз, пресс и ягодицы напряжены."
+    ],
+    "execution_cues": [
+      "Тело в прямой линии.",
+      "Не проваливайте поясницу.",
+      "Дышите ровно."
+    ],
+    "common_mistakes": [
+      "Провал таза.",
+      "Поднятые плечи.",
+      "Слишком долго ценой формы."
+    ],
+    "safety_notes": [
+      "Останавливайтесь, если форма теряется.",
+      "При боли/дискомфорте прекратите."
+    ],
+    "contraindications_generic": [
+      "Острая боль во время движения."
+    ],
+    "tempo_recommendation": "isometric",
+    "breathing_cues": "Ровное дыхание без задержек.",
+    "ROM_notes": "Изометрия: качество важнее времени.",
+    "recommended_rest_sec": 60,
+    "progression_options": [
+      "Увеличивать время малым шагом"
+    ],
+    "regressions": [
+      "Планка с колен"
+    ],
+    "substitutions": [
+      {
+        "exercise_id": "dead-bug",
+        "reason_ru": "Анти-экстензия, проще контроль.",
+        "confidence": "heuristic"
+      }
+    ],
+    "tags": [
+      "mvp_core",
+      "core",
+      "beginner_friendly"
+    ],
+    "media_suggestion": "Сбоку (поясница/таз).",
+    "sources": [
+      {
+        "title": "ExRx Plank",
+        "url": "https://lowrisk2.exrx.net/WeightExercises/RectusAbdominis/BWFrontPlank"
+      }
+    ],
+    "evidence_status": "verified"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "template_id": "c_sample_fullbody_6w_A",
+    "course_id": "c_sample_fullbody_6w",
+    "title_ru": "Тренировка A",
+    "week_rotation_code": "A",
+    "estimated_duration_min": 50,
+    "focus": "full_body"
+  },
+  {
+    "template_id": "c_sample_fullbody_6w_B",
+    "course_id": "c_sample_fullbody_6w",
+    "title_ru": "Тренировка B",
+    "week_rotation_code": "B",
+    "estimated_duration_min": 50,
+    "focus": "full_body"
+  },
+  {
+    "template_id": "c_sample_fullbody_6w_C",
+    "course_id": "c_sample_fullbody_6w",
+    "title_ru": "Тренировка C",
+    "week_rotation_code": "C",
+    "estimated_duration_min": 55,
+    "focus": "full_body"
+  }
+]
