@@ -1,0 +1,177 @@
+/* css/playlists.css — widgets + management page for workout playlists */
+
+.music-card {
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.music-card--compact .music-card__hint {
+  font-size: 0.82rem;
+}
+
+.music-card__header{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.music-card__title{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.music-card__icon{
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid var(--border-light);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 18px;
+}
+
+html[data-theme="light"] .music-card__icon{
+  background: rgba(11,16,32,0.04);
+}
+
+.music-card__title-text{
+  display:flex;
+  flex-direction:column;
+  gap: 2px;
+}
+
+.music-card__title-main{
+  font-weight: 900;
+  letter-spacing: -0.2px;
+}
+
+.music-card__title-sub{
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.music-card__controls{
+  display:flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.music-select{
+  flex: 1;
+  height: 46px;
+  border-radius: 16px;
+  padding: 0 12px;
+  border: 1px solid var(--border-light);
+  background: rgba(255,255,255,0.10);
+  color: var(--text-primary);
+  font-weight: 800;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+html[data-theme="light"] .music-select{
+  background: rgba(11,16,32,0.04);
+}
+
+.music-open-btn,
+.music-add-btn{
+  height: 46px;
+  min-width: 86px;
+  border-radius: 999px;
+  border: none;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 0 14px;
+}
+
+.music-add-btn{
+  min-width: 46px;
+  width: 46px;
+  padding: 0;
+}
+
+.music-card__hint{
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+/* Management page */
+
+.playlist-form{
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.playlist-management-spacer{ height: 10px; }
+
+.playlist-item{
+  padding: 16px;
+}
+
+.playlist-item__head{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.playlist-item__name{
+  font-weight: 900;
+  letter-spacing: -0.2px;
+}
+
+.playlist-item__badge{
+  font-size: 0.82rem;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+html[data-theme="light"] .playlist-item__badge{
+  background: rgba(11,16,32,0.04);
+}
+
+.playlist-item__url{
+  word-break: break-word;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+.playlist-item__actions{
+  display:grid;
+  gap: 10px;
+}
+
+/* Optional floating music button */
+.music-fab{
+  position: fixed;
+  right: 18px;
+  bottom: 98px; /* above tab-bar */
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 20px;
+  z-index: 120;
+}
+
+body:not(.has-tab-bar) .music-fab{
+  bottom: 24px;
+}
