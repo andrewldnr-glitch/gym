@@ -166,14 +166,53 @@
           payload: w.payload
         }))
       ));
-
       // weightHistory
+      // Нормализуем дату к YYYY-MM-DD и аккуратно мерджим с локальными/несинхронизированными значениями
       const weights = Array.isArray(data.weights) ? data.weights : [];
-      const chronological = weights.slice().reverse().map(x => ({
-        date: x.measured_at,
+      const normalizeDateToDay = (v) => {
+        const s = String(v || "");
+        return s.includes("T") ? s.split("T")[0] : s;
+      };
+
+      const remoteChronological = weights.slice().reverse().map(x => ({
+        date: normalizeDateToDay(x.measured_at),
         weight: Number(x.weight)
       }));
-      localStorage.setItem('weightHistory', JSON.stringify(chronological));
+
+      const localChronological = safeParse(localStorage.getItem("weightHistory") || "[]", []);
+      const pending = safeParse(localStorage.getItem("pendingWeightSync") || "[]", []);
+
+      const byDate = new Map();
+
+      // 1) Remote
+      remoteChronological.forEach(it => {
+        if (!it || !it.date) return;
+        byDate.set(it.date, Number(it.weight));
+      });
+
+      // 2) Local (только если remote отсутствует)
+      if (Array.isArray(localChronological)) {
+        localChronological.forEach(it => {
+          const d = normalizeDateToDay(it && it.date);
+          if (!d) return;
+          if (!byDate.has(d)) byDate.set(d, Number(it.weight));
+        });
+      }
+
+      // 3) Pending (всегда переопределяет)
+      if (Array.isArray(pending)) {
+        pending.forEach(it => {
+          const d = normalizeDateToDay(it && it.date);
+          if (!d) return;
+          byDate.set(d, Number(it.weight));
+        });
+      }
+
+      const merged = Array.from(byDate.entries())
+        .map(([date, weight]) => ({ date, weight }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      localStorage.setItem("weightHistory", JSON.stringify(merged));
     }
 
     // --- 2) Запуск UI
@@ -191,6 +230,7 @@
         console.warn('Supabase bootstrap failed, using local cache:', e);
       } finally {
         runUi();
+        try { if (typeof window.flushPendingWeightSync === "function") window.flushPendingWeightSync(); } catch (_) {}
       }
     });
 
