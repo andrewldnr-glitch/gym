@@ -1301,3 +1301,323 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 100);
 
 });
++// ==========================================
++// === 10. ACTIVITY RINGS (Apple Watch style) ===
++// ==========================================
++;(() => {
++  'use strict';
++
++  const STYLE_ID = 'activity-rings-style';
++
++  function clamp(v, min = 0, max = 1) {
++    const n = Number(v);
++    if (!Number.isFinite(n)) return min;
++    return Math.min(max, Math.max(min, n));
++  }
++
++  function safeJsonParse(str, fallback) {
++    try { return JSON.parse(str); } catch (_) { return fallback; }
++  }
++
++  function toLocalYmd(d) {
++    const y = d.getFullYear();
++    const m = String(d.getMonth() + 1).padStart(2, '0');
++    const day = String(d.getDate()).padStart(2, '0');
++    return `${y}-${m}-${day}`;
++  }
++
++  // Monday-start week (RU/Europe convention)
++  function getWeekBounds(now = new Date()) {
++    const d = new Date(now);
++    d.setHours(0, 0, 0, 0);
++    const day = d.getDay(); // Sun=0..Sat=6
++    const mondayIndex = (day + 6) % 7; // Mon=0..Sun=6
++    const start = new Date(d);
++    start.setDate(start.getDate() - mondayIndex);
++    const end = new Date(start);
++    end.setDate(end.getDate() + 7);
++    return { start, end };
++  }
++
++  function parseEntryDate(entry) {
++    const v = entry?.date || entry?.finishedAt || entry?.completedAt || entry?.ts || entry?.timestamp || null;
++    if (!v) return null;
++    const d = new Date(v);
++    if (!Number.isNaN(d.getTime())) return d;
++    // Fallback: YYYY-MM-DD
++    const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
++    if (!m) return null;
++    const dd = new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`);
++    return Number.isNaN(dd.getTime()) ? null : dd;
++  }
++
++  function readHistory() {
++    const keys = ['trainingHistory', 'workoutHistory', 'workoutSessions', 'trainingSessions', 'history'];
++    for (const key of keys) {
++      try {
++        const raw = localStorage.getItem(key);
++        if (!raw) continue;
++        const arr = safeJsonParse(raw, null);
++        if (Array.isArray(arr)) return arr;
++      } catch (_) {}
++    }
++    return [];
++  }
++
++  function readGoals() {
++    // Allow user overrides via localStorage.activityGoals
++    // { weeklyActiveMinutes: 150, weeklyWorkouts: 5, dailyActiveMinutes: 10, weekDaysGoal: 7 }
++    const defaults = {
++      weeklyActiveMinutes: 150,
++      weeklyWorkouts: 5,
++      dailyActiveMinutes: 10,
++      weekDaysGoal: 7,
++    };
++    try {
++      const raw = localStorage.getItem('activityGoals');
++      if (!raw) return defaults;
++      const g = safeJsonParse(raw, {});
++      return {
++        weeklyActiveMinutes: Number(g.weeklyActiveMinutes) || defaults.weeklyActiveMinutes,
++        weeklyWorkouts: Number(g.weeklyWorkouts) || defaults.weeklyWorkouts,
++        dailyActiveMinutes: Number(g.dailyActiveMinutes) || defaults.dailyActiveMinutes,
++        weekDaysGoal: Number(g.weekDaysGoal) || defaults.weekDaysGoal,
++      };
++    } catch (_) {
++      return defaults;
++    }
++  }
++
++  function computeWeekStats() {
++    const goals = readGoals();
++    const { start, end } = getWeekBounds();
++    const history = readHistory();
++
++    const weekEntries = [];
++    for (const e of history) {
++      const d = parseEntryDate(e);
++      if (!d) continue;
++      if (d >= start && d < end) weekEntries.push({ e, d });
++    }
++
++    const workouts = weekEntries.length;
++
++    // Sum activity per entry (prefer explicit activeSeconds / durationSeconds, fallback to 10 min)
++    const DEFAULT_ACTIVE_SECONDS = 10 * 60;
++    let activeSecondsTotal = 0;
++    const activeByDaySeconds = new Map();
++
++    for (const { e, d } of weekEntries) {
++      const activeSec = Number(e?.activeSeconds ?? e?.active_seconds ?? e?.activeSec) || 0;
++      const activeMin = Number(e?.activeMinutes ?? e?.active_minutes) || 0;
++      const durationSec = Number(e?.durationSeconds ?? e?.duration_seconds ?? e?.totalSeconds ?? e?.total_seconds) || 0;
++
++      const activeSeconds =
++        activeSec || (activeMin ? Math.round(activeMin * 60) : 0) || durationSec || DEFAULT_ACTIVE_SECONDS;
++
++      activeSecondsTotal += activeSeconds;
++      const k = toLocalYmd(d);
++      activeByDaySeconds.set(k, (activeByDaySeconds.get(k) || 0) + activeSeconds);
++    }
++
++    const activeMinutes = Math.max(0, Math.round(activeSecondsTotal / 60));
++
++    let goalDays = 0;
++    for (const sec of activeByDaySeconds.values()) {
++      if ((sec / 60) >= goals.dailyActiveMinutes) goalDays += 1;
++    }
++    goalDays = Math.min(goalDays, goals.weekDaysGoal);
++
++    const pActive = clamp(activeMinutes / goals.weeklyActiveMinutes);
++    const pWorkouts = clamp(workouts / goals.weeklyWorkouts);
++    const pDays = clamp(goalDays / goals.weekDaysGoal);
++
++    const composite = Math.round(((pActive + pWorkouts + pDays) / 3) * 100);
++
++    return {
++      goals,
++      workouts,
++      activeMinutes,
++      goalDays,
++      progress: { active: pActive, workouts: pWorkouts, days: pDays, composite },
++    };
++  }
++
++  function ensureStyles() {
++    if (document.getElementById(STYLE_ID)) return;
++    const style = document.createElement('style');
++    style.id = STYLE_ID;
++    style.textContent = `
++/* Apple Watch-like Activity Rings (OPAL) */
++.opal-ring.activity-rings-host{
++  position:relative;
++  width:min(260px, 92vw);
++  aspect-ratio:1/1;
++  margin:12px auto 6px;
++  display:grid;
++  place-items:center;
++  padding:0;
++}
++.opal-ring.activity-rings-host .activity-rings-svg{ width:100%; height:100%; display:block; }
++.opal-ring.activity-rings-host .activity-rings-center{
++  position:absolute; inset:0;
++  display:flex; flex-direction:column;
++  align-items:center; justify-content:center;
++  text-align:center;
++  pointer-events:none;
++}
++.opal-ring.activity-rings-host .activity-week-label{ font-size:12px; opacity:.85; margin-bottom:2px; }
++.opal-ring.activity-rings-host .activity-week-percent{ font-size:34px; font-weight:800; line-height:1; letter-spacing:-.02em; }
++.opal-ring.activity-rings-host .activity-week-sub{ font-size:12px; opacity:.7; margin-top:4px; }
++.opal-ring.activity-rings-host .ring-track{ fill:none; stroke:rgba(255,255,255,.08); }
++[data-theme="light"] .opal-ring.activity-rings-host .ring-track{ stroke:rgba(0,0,0,.08); }
++.opal-ring.activity-rings-host .ring-progress{
++  fill:none;
++  stroke-linecap:round;
++  transition:stroke-dashoffset 900ms cubic-bezier(.2,.8,.2,1);
++  filter:drop-shadow(0 0 10px rgba(0,0,0,.25));
++}
++.opal-ring.activity-rings-host .ring-1{ stroke:var(--accent-primary, #ff375f); }
++.opal-ring.activity-rings-host .ring-2{ stroke:var(--accent-secondary, #32d74b); }
++.opal-ring.activity-rings-host .ring-3{ stroke:var(--accent-tertiary, #64d2ff); }
++.opal-ring.activity-rings-host .activity-legend{
++  width:100%;
++  max-width:340px;
++  margin-top:10px;
++  display:grid;
++  gap:6px;
++}
++.opal-ring.activity-rings-host .activity-legend-item{
++  display:flex;
++  align-items:center;
++  justify-content:space-between;
++  font-size:12px;
++  opacity:.92;
++}
++.opal-ring.activity-rings-host .activity-legend-left{
++  display:flex;
++  align-items:center;
++  gap:8px;
++}
++.opal-ring.activity-rings-host .legend-dot{
++  width:9px; height:9px; border-radius:50%;
++  background:currentColor;
++  box-shadow:0 0 12px currentColor;
++}
++.opal-ring.activity-rings-host .legend-dot.r1{ color:var(--accent-primary, #ff375f); }
++.opal-ring.activity-rings-host .legend-dot.r2{ color:var(--accent-secondary, #32d74b); }
++.opal-ring.activity-rings-host .legend-dot.r3{ color:var(--accent-tertiary, #64d2ff); }
++.opal-ring.activity-rings-host .activity-legend-value{ font-variant-numeric: tabular-nums; opacity:.9; }
++    `.trim();
++    document.head.appendChild(style);
++  }
++
++  function svgEl(tag) {
++    return document.createElementNS('http://www.w3.org/2000/svg', tag);
++  }
++
++  function renderActivityRings(container, stats) {
++    if (!container) return;
++    container.classList.add('activity-rings-host');
++    container.replaceChildren();
++
++    const svg = svgEl('svg');
++    svg.setAttribute('viewBox', '0 0 200 200');
++    svg.classList.add('activity-rings-svg');
++
++    const g = svgEl('g');
++    g.setAttribute('transform', 'rotate(-90 100 100)');
++    svg.appendChild(g);
++
++    const rings = [
++      { r: 86, w: 14, p: stats.progress.active, cls: 'ring-1' },
++      { r: 68, w: 14, p: stats.progress.workouts, cls: 'ring-2' },
++      { r: 50, w: 14, p: stats.progress.days, cls: 'ring-3' },
++    ];
++
++    for (const ring of rings) {
++      const track = svgEl('circle');
++      track.setAttribute('cx', '100');
++      track.setAttribute('cy', '100');
++      track.setAttribute('r', String(ring.r));
++      track.setAttribute('stroke-width', String(ring.w));
++      track.classList.add('ring-track');
++      g.appendChild(track);
++
++      const prog = svgEl('circle');
++      prog.setAttribute('cx', '100');
++      prog.setAttribute('cy', '100');
++      prog.setAttribute('r', String(ring.r));
++      prog.setAttribute('stroke-width', String(ring.w));
++      prog.classList.add('ring-progress', ring.cls);
++      const c = 2 * Math.PI * ring.r;
++      prog.style.strokeDasharray = String(c);
++      prog.style.strokeDashoffset = String(c * (1 - clamp(ring.p)));
++      g.appendChild(prog);
++    }
++
++    const center = document.createElement('div');
++    center.className = 'activity-rings-center';
++    center.innerHTML = `
++      <div class="activity-week-label">Эта неделя</div>
++      <div class="activity-week-percent">${stats.progress.composite}%</div>
++      <div class="activity-week-sub">цель недели</div>
++    `;
++
++    const legend = document.createElement('div');
++    legend.className = 'activity-legend';
++
++    const legendItems = [
++      {
++        dot: 'r1',
++        label: 'Активное время',
++        value: `${stats.activeMinutes}/${stats.goals.weeklyActiveMinutes}m`,
++      },
++      {
++        dot: 'r2',
++        label: 'Тренировок',
++        value: `${stats.workouts}/${stats.goals.weeklyWorkouts}`,
++      },
++      {
++        dot: 'r3',
++        label: 'Дней с целью',
++        value: `${stats.goalDays}/${stats.goals.weekDaysGoal}`,
++      },
++    ];
++
++    for (const it of legendItems) {
++      const row = document.createElement('div');
++      row.className = 'activity-legend-item';
++      row.innerHTML = `
++        <div class="activity-legend-left">
++          <span class="legend-dot ${it.dot}"></span>
++          <span class="activity-legend-label">${it.label}</span>
++        </div>
++        <span class="activity-legend-value">${it.value}</span>
++      `;
++      legend.appendChild(row);
++    }
++
++    // We keep container background/visuals from OPAL, but replace content with Apple-like rings.
++    container.appendChild(svg);
++    container.appendChild(center);
++    container.appendChild(legend);
++  }
++
++  function mountActivityRings() {
++    const container = document.querySelector('.opal-ring');
++    if (!container) return; // only on pages that have the progress ring
++    ensureStyles();
++    const stats = computeWeekStats();
++    renderActivityRings(container, stats);
++  }
++
++  // Expose for debug/manual refresh
++  window.mountActivityRings = mountActivityRings;
++
++  document.addEventListener('DOMContentLoaded', mountActivityRings);
++  window.addEventListener('storage', (e) => {
++    if (!e || !e.key) return;
++    if (e.key.includes('History') || e.key === 'activityGoals') mountActivityRings();
++  });
++})();
