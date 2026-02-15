@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Тренировка</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/playlists.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     if (window.Telegram && window.Telegram.WebApp) {
@@ -24,7 +25,10 @@
       <div id="level-badge" class="level-badge">Курс</div>
     </header>
 
-    <!-- Контейнер для списка -->
+    <!-- Музыка: плейлисты (Яндекс Музыка) -->
+    <div id="playlist-widget"></div>
+
+<!-- Контейнер для списка -->
     <div id="workout-list" class="workouts-grid">
       <div class="loading-state">
         <p>Загрузка...</p>
@@ -87,9 +91,9 @@
   <script src="js/api.js"></script>
   <script src="js/app.js"></script>
   <script src="js/theme.js"></script>
+  <script src="js/playlists.js"></script>
 
-
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', async () => {
       try {
         if (typeof window.ensureContentPackLoaded === 'function') {
@@ -126,7 +130,18 @@
       const dayIndex = parseInt(dayIndexRaw || '0', 10);
       const level = localStorage.getItem('userLevel') || 'beginner';
   
-      // 1) Пытаемся взять конкретные назначения из localStorage (content pack)
+      
+      // Музыка (плейлист) — сохраняется для конкретной тренировки курса
+      try {
+        if (window.Playlists && typeof window.Playlists.mountWidget === 'function') {
+          const ctxKey = `course::day:`;
+          window.Playlists.mountWidget('playlist-widget', { contextKey: ctxKey, compact: true });
+        }
+      } catch (e) {
+        console.warn('playlist widget mount failed:', e);
+      }
+
+// 1) Пытаемся взять конкретные назначения из localStorage (content pack)
       let items = [];
       try {
         items = JSON.parse(localStorage.getItem('currentWorkoutItems') || '[]');

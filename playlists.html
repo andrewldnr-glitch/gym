@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Плейлисты</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/playlists.css" />
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    try {
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+      }
+    } catch (_) {}
+  </script>
+</head>
+
+<body class="has-tab-bar">
+  <div class="container">
+    <header class="page-header">
+      <div>
+        <a href="profile.html" class="back-btn">← Назад</a>
+        <h1>Плейлисты</h1>
+      </div>
+      <div class="level-badge">Музыка</div>
+    </header>
+
+    <div id="playlists-management"></div>
+
+    <div class="card" style="padding: 16px;">
+      <h3 style="margin: 0 0 10px;">Как добавить плейлист</h3>
+      <p>
+        Откройте плейлист в Яндекс Музыке → нажмите <strong>Поделиться</strong> → <strong>Скопировать ссылку</strong>.
+        Вставьте её сюда.
+      </p>
+    </div>
+  </div>
+
+  <!-- Навигация (как в остальных разделах) -->
+  <nav class="tab-bar">
+    <a href="index.html" class="tab-item">
+      <span>Главная</span>
+    </a>
+
+    <a href="profile.html" class="tab-item">
+      <span>Статистика</span>
+    </a>
+
+    <a href="info.html" class="tab-item">
+      <span>Инструменты</span>
+    </a>
+  </nav>
+
+  <script src="js/theme.js"></script>
+  <script src="js/playlists.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        if (window.Playlists && typeof window.Playlists.mountManagement === 'function') {
+          window.Playlists.mountManagement('playlists-management');
+        }
+      } catch (e) {
+        console.warn('Playlists mount failed:', e);
+      }
+    });
+  </script>
+</body>
+</html>
