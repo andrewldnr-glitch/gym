@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Достижения</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/achievements.css" />
+
+  <!-- ✅ Единая тема для всего приложения -->
+  <script src="js/theme.js"></script>
+
+  <!-- ✅ Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+
+<body>
+  <div class="container">
+
+    <header class="page-header">
+      <div>
+        <a href="profile.html" class="back-btn">← Назад</a>
+        <h1>Достижения</h1>
+      </div>
+    </header>
+
+    <div class="achievements-summary card">
+      <div class="achievements-summary__top">
+        <div class="achievements-summary__title">Открыто</div>
+        <div class="achievements-summary__count">
+          <span id="achievements-unlocked-count">0</span>/<span id="achievements-total-count">0</span>
+        </div>
+      </div>
+
+      <div class="progress-track" aria-hidden="true">
+        <div id="achievements-summary-bar" class="progress-fill"></div>
+      </div>
+
+      <div id="achievements-summary-hint" class="achievements-summary__hint"></div>
+    </div>
+
+    <div class="filter-tabs achievements-filters" role="tablist" aria-label="Achievements filters">
+      <button class="filter-btn active" data-filter="all" type="button">Все</button>
+      <button class="filter-btn" data-filter="workouts" type="button">Тренировки</button>
+      <button class="filter-btn" data-filter="weight" type="button">Вес</button>
+      <button class="filter-btn" data-filter="special" type="button">Особые</button>
+    </div>
+
+    <div id="achievements-board" class="achievements-board"></div>
+
+  </div>
+
+  <script src="js/achievements.js"></script>
+  <script>
+    function setActiveFilterButton(targetBtn) {
+      document.querySelectorAll('.achievements-filters .filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn === targetBtn);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Telegram WebApp init (если внутри TG)
+      try {
+        if (window.Telegram && window.Telegram.WebApp) {
+          window.Telegram.WebApp.ready();
+          window.Telegram.WebApp.expand();
+        }
+      } catch (_) {}
+
+      // 1) Проверяем достижения (unlock)
+      try { if (typeof checkAllAchievements === 'function') checkAllAchievements(); } catch (_) {}
+
+      // 2) Рендер
+      try { if (typeof renderAchievementsSummary === 'function') renderAchievementsSummary(); } catch (_) {}
+      try { if (typeof renderAchievementsBoard === 'function') renderAchievementsBoard({ filter: 'all' }); } catch (_) {}
+
+      // 3) Фильтры
+      document.querySelectorAll('.achievements-filters .filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setActiveFilterButton(btn);
+          const filter = btn.dataset.filter || 'all';
+          try { renderAchievementsBoard({ filter }); } catch (_) {}
+        });
+      });
+
+      // Иконки
+      try { if (window.lucide) lucide.createIcons(); } catch (_) {}
+    });
+  </script>
+</body>
+</html>
