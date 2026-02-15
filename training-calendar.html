@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Календарь тренировок</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/training-calendar.css" />
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="has-tab-bar">
+  <div class="container">
+    <div class="tc-header">
+      <a class="tc-back" href="profile.html" aria-label="Назад">
+        ←
+      </a>
+      <div class="tc-title">
+        <div class="tc-title__main">Календарь тренировок</div>
+        <div class="tc-title__sub">Дневной и недельный бонусы 💎</div>
+      </div>
+      <div class="tc-balance" title="Баланс гемов">
+        <i data-lucide="gem"></i>
+        <span id="tc-gems-balance">0</span>
+      </div>
+    </div>
+
+    <div class="tc-month card">
+      <button class="tc-nav" id="tc-prev" aria-label="Предыдущий месяц">‹</button>
+      <div class="tc-month__label" id="tc-month-label">—</div>
+      <button class="tc-nav" id="tc-next" aria-label="Следующий месяц">›</button>
+    </div>
+
+    <div class="tc-week card">
+      <div class="tc-week__left">
+        <div class="tc-week__title">Неделя</div>
+        <div class="tc-week__meta" id="tc-week-meta">—</div>
+      </div>
+      <div class="tc-week__right">
+        <div class="tc-week__progress" id="tc-week-progress">0/0</div>
+        <button class="btn tc-week__claim" id="tc-claim-week" style="display:none;">Получить +5 💎</button>
+      </div>
+    </div>
+
+    <div class="tc-calendar card">
+      <div class="tc-dow">
+        <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+      </div>
+      <div class="tc-grid" id="tc-grid"></div>
+    </div>
+
+    <div class="tc-day card">
+      <div class="tc-day__header">
+        <div>
+          <div class="tc-day__title" id="tc-day-title">Выберите день</div>
+          <div class="tc-day__sub" id="tc-day-sub">—</div>
+        </div>
+        <button class="btn tc-day__claim" id="tc-claim-day" style="display:none;">Дневной бонус +2 💎</button>
+      </div>
+
+      <div id="tc-day-list" class="tc-day__list">
+        <div class="tc-empty">Пока нет тренировок за выбранный день.</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="tab-bar">
+    <a href="index.html" class="tab-item">
+      <i data-lucide="home"></i>
+      <span>Главная</span>
+    </a>
+
+    <a href="profile.html" class="tab-item active">
+      <i data-lucide="bar-chart-3"></i>
+      <span>Статистика</span>
+    </a>
+
+    <a href="info.html" class="tab-item">
+      <i data-lucide="sparkles"></i>
+      <span>Инструменты</span>
+    </a>
+  </nav>
+
+  <script src="js/gems.js"></script>
+  <script src="js/training-calendar.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      try { if (window.lucide) lucide.createIcons(); } catch (_) {}
+      try { if (typeof window.renderGemsBalance === 'function') window.renderGemsBalance('tc-gems-balance'); } catch (_) {}
+    });
+  </script>
+</body>
+</html>
