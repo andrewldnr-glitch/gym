@@ -32,6 +32,16 @@
       <button class="filter-btn" data-muscle="chest" onclick="filterExercises('chest')">Грудь</button>
       <button class="filter-btn" data-muscle="back" onclick="filterExercises('back')">Спина</button>
       <button class="filter-btn" data-muscle="legs" onclick="filterExercises('legs')">Ноги</button>
+      <button class="filter-btn" data-muscle="shoulders" onclick="filterExercises('shoulders')">Плечи</button>
+      <button class="filter-btn" data-muscle="arms" onclick="filterExercises('arms')">Руки</button>
+      <button class="filter-btn" data-muscle="abs" onclick="filterExercises('abs')">Пресс</button>
+      <button class="filter-btn" data-muscle="cardio" onclick="filterExercises('cardio')">Кардио</button>
+      <button class="filter-btn" data-muscle="mobility" onclick="filterExercises('mobility')">Мобилити</button>
+    </div>
+
+    <!-- Поиск по упражнениям -->
+    <div class="search-bar">
+      <input id="exercise-search" class="input-search" type="search" placeholder="Поиск упражнений..." autocomplete="off" />
     </div>
 
     <!-- Контейнер для списка карточек -->
@@ -49,7 +59,13 @@
 
   <!-- Логика страницы -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        if (typeof window.ensureContentPackLoaded === 'function') {
+          await window.ensureContentPackLoaded();
+        }
+      } catch (_) {}
+
       initTrainingPage();
 
       // Закрытие по клику вне окна (используем closeExerciseModal из app.js)
@@ -75,7 +91,22 @@
       if (badge) badge.textContent = levelNames[currentLevel] || 'Новичок';
 
       // 3. Рисуем список
-      renderWorkoutList('workout-list', 'all', currentLevel);
+      renderWorkoutList('workout-list', 'all', currentLevel, getSearchTerm());
+
+      // 4. Поиск
+      const input = document.getElementById('exercise-search');
+      if (input && !input.__bound) {
+        input.addEventListener('input', () => {
+          const active = document.querySelector('.filter-btn.active')?.dataset?.muscle || 'all';
+          renderWorkoutList('workout-list', active, currentLevel, getSearchTerm());
+        });
+        input.__bound = true;
+      }
+    }
+
+    function getSearchTerm() {
+      const el = document.getElementById('exercise-search');
+      return el ? el.value : '';
     }
 
     // Функция фильтрации при нажатии кнопок
@@ -88,7 +119,7 @@
       });
 
       // Перерисовываем список
-      renderWorkoutList('workout-list', muscleGroup, currentLevel);
+      renderWorkoutList('workout-list', muscleGroup, currentLevel, getSearchTerm());
     }
   </script>
 

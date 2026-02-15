@@ -52,8 +52,14 @@
   <script src="js/app.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       try { if (window.lucide) lucide.createIcons(); } catch (_) {}
+
+      try {
+        if (typeof window.ensureContentPackLoaded === 'function') {
+          await window.ensureContentPackLoaded();
+        }
+      } catch (_) {}
 
       if (typeof initCourseDetail === 'function') {
         initCourseDetail();

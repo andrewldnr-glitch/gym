@@ -1,0 +1,1632 @@
+diff --git a/course-detail.html b/course-detail.html
+index 2ce7720..f7e23f8 100644
+--- a/course-detail.html
++++ b/course-detail.html
+@@ -52,9 +52,15 @@
+   <script src="js/app.js"></script>
+ 
+   <script>
+-    document.addEventListener('DOMContentLoaded', () => {
++    document.addEventListener('DOMContentLoaded', async () => {
+       try { if (window.lucide) lucide.createIcons(); } catch (_) {}
+ 
++      try {
++        if (typeof window.ensureContentPackLoaded === 'function') {
++          await window.ensureContentPackLoaded();
++        }
++      } catch (_) {}
++
+       if (typeof initCourseDetail === 'function') {
+         initCourseDetail();
+       } else {
+diff --git a/courses.html b/courses.html
+index 13dbfcd..10bf2cc 100644
+--- a/courses.html
++++ b/courses.html
+@@ -61,9 +61,15 @@
+ 
+ 
+   <script>
+-    document.addEventListener('DOMContentLoaded', () => {
++    document.addEventListener('DOMContentLoaded', async () => {
+       try { if (window.lucide) lucide.createIcons(); } catch (_) {}
+ 
++      try {
++        if (typeof window.ensureContentPackLoaded === 'function') {
++          await window.ensureContentPackLoaded();
++        }
++      } catch (_) {}
++
+       if (typeof renderCoursesList === 'function') {
+         renderCoursesList('courses-container');
+       } else {
+diff --git a/css/style.css b/css/style.css
+index 2a987b0..7fe3c85 100644
+--- a/css/style.css
++++ b/css/style.css
+@@ -463,6 +463,27 @@ body.has-tab-bar .container { padding-bottom: 110px; }
+   box-shadow: 0 10px 22px rgba(124,124,255,0.18);
+ }
+ 
++.search-bar {
++  margin: 0 0 18px;
++}
++
++.input-search {
++  width: 100%;
++  height: 44px;
++  background: rgba(255,255,255,0.10);
++  border: 1px solid var(--border-light);
++  color: var(--text-primary);
++  padding: 10px 14px;
++  border-radius: 999px;
++  font-size: 1rem;
++  font-weight: 800;
++  outline: none;
++}
++
++html[data-theme="light"] .input-search {
++  background: rgba(11,16,32,0.04);
++}
++
+ .workout-card {
+   padding: 16px;
+   margin-bottom: 14px;
+@@ -789,6 +810,66 @@ html[data-theme="light"] .modal-overlay{
+   margin-bottom: 14px;
+ }
+ 
++/* Content pack details (optional, injected from JS) */
++.exercise-pack-details {
++  margin-bottom: 14px;
++  display: grid;
++  gap: 12px;
++}
++
++.modal-block {
++  background: rgba(255,255,255,0.08);
++  border: 1px solid var(--border-light);
++  padding: 12px;
++  border-radius: var(--radius-md);
++}
++
++.modal-block__title {
++  font-size: 0.72rem;
++  text-transform: uppercase;
++  letter-spacing: 1px;
++  color: var(--text-secondary);
++  font-weight: 900;
++  margin-bottom: 8px;
++}
++
++.kv {
++  display: flex;
++  justify-content: space-between;
++  gap: 10px;
++  padding: 4px 0;
++  border-bottom: 1px solid rgba(255,255,255,0.06);
++}
++.kv:last-child { border-bottom: none; }
++.kv .k { color: var(--text-secondary); font-weight: 800; }
++.kv .v { color: var(--text-primary); font-weight: 900; text-align: right; }
++
++.modal-details {
++  background: rgba(255,255,255,0.06);
++  border: 1px solid var(--border-light);
++  border-radius: var(--radius-md);
++  padding: 10px 12px;
++}
++
++.modal-details summary {
++  cursor: pointer;
++  font-weight: 900;
++  color: var(--text-primary);
++  list-style: none;
++}
++
++.modal-details summary::-webkit-details-marker { display: none; }
++
++.modal-list {
++  margin: 10px 0 0;
++  padding-left: 18px;
++  color: var(--text-secondary);
++}
++
++.modal-list li { margin: 6px 0; }
++
++.muted { color: var(--text-secondary); }
++
+ /* Timer area */
+ .timer-container {
+   display: flex;
+diff --git a/data/content_pack/course_sessions.json b/data/content_pack/course_sessions.json
+new file mode 100644
+index 0000000..afcb793
+--- /dev/null
++++ b/data/content_pack/course_sessions.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "template_id": "c_sample_fullbody_6w_A",
++    "course_id": "c_sample_fullbody_6w",
++    "title_ru": "Тренировка A",
++    "week_rotation_code": "A",
++    "estimated_duration_min": 50,
++    "focus": "full_body"
++  },
++  {
++    "template_id": "c_sample_fullbody_6w_B",
++    "course_id": "c_sample_fullbody_6w",
++    "title_ru": "Тренировка B",
++    "week_rotation_code": "B",
++    "estimated_duration_min": 50,
++    "focus": "full_body"
++  },
++  {
++    "template_id": "c_sample_fullbody_6w_C",
++    "course_id": "c_sample_fullbody_6w",
++    "title_ru": "Тренировка C",
++    "week_rotation_code": "C",
++    "estimated_duration_min": 55,
++    "focus": "full_body"
++  }
++]
+\ No newline at end of file
+diff --git a/data/content_pack/courses.json b/data/content_pack/courses.json
+new file mode 100644
+index 0000000..9191c6c
+--- /dev/null
++++ b/data/content_pack/courses.json
+@@ -0,0 +1,16 @@
++[
++  {
++    "course_id": "c_sample_fullbody_6w",
++    "title_ru": "Full Body MVP — 6 недель",
++    "goal": "general_fitness",
++    "level": "beginner",
++    "duration_weeks": 6,
++    "days_per_week": 3,
++    "split_type": "full_body_3day",
++    "substitution_policy": {
++      "ru": "Если занято оборудование — выбирайте замену с тем же паттерном движения и близкими мышцами."
++    },
++    "updated_at": "2026-02-15",
++    "content_version": "0.1"
++  }
++]
+\ No newline at end of file
+diff --git a/data/content_pack/exercises.json b/data/content_pack/exercises.json
+new file mode 100644
+index 0000000..98dc082
+--- /dev/null
++++ b/data/content_pack/exercises.json
+@@ -0,0 +1,372 @@
++[
++  {
++    "id": "barbell-bench-press",
++    "name_en": "Barbell Bench Press",
++    "name_ru": "Жим штанги лёжа",
++    "movement_pattern": "push_horizontal",
++    "primary_muscles": [
++      "Pectoralis Major"
++    ],
++    "secondary_muscles": [
++      "Triceps Brachii",
++      "Anterior Deltoid"
++    ],
++    "equipment": [
++      "barbell",
++      "bench",
++      "rack"
++    ],
++    "difficulty": "intermediate",
++    "setup_steps": [
++      "Сведите и опустите лопатки («плечи назад-вниз»).",
++      "Стопы устойчиво на полу, корпус стабилен.",
++      "Хват: предплечья близки к вертикали внизу.",
++      "Сделайте 1–2 разминочных подхода."
++    ],
++    "execution_cues": [
++      "Лопатки стабильны, плечи не тянутся к ушам.",
++      "Опускайте штангу под контролем к нижней части груди.",
++      "Запястья нейтрально, локти контролируемо.",
++      "Выжимайте к позиции над плечом.",
++      "Корпус и ноги держат опору."
++    ],
++    "common_mistakes": [
++      "Потеря позиции лопаток.",
++      "Провал запястий назад.",
++      "Отскок от груди/рывок.",
++      "Слишком широкий хват.",
++      "Чрезмерный прогиб без контроля."
++    ],
++    "safety_notes": [
++      "Используйте страховочные стойки/страховку.",
++      "Не увеличивайте вес, если теряется контроль техники.",
++      "Острая боль — сигнал остановиться."
++    ],
++    "contraindications_generic": [
++      "Острая боль во время движения.",
++      "Недавняя травма или операция — нужна консультация специалиста.",
++      "Сильное головокружение/плохое самочувствие — прекратите тренировку."
++    ],
++    "tempo_recommendation": "2-1-1",
++    "breathing_cues": "Вдох перед опусканием, выдох на усилии.",
++    "ROM_notes": "Амплитуда индивидуальна: сохраняйте контроль плеч и лопаток.",
++    "recommended_rest_sec": 120,
++    "progression_options": [
++      "Double progression",
++      "Малые шаги по весу"
++    ],
++    "regressions": [
++      "Жим гантелей",
++      "Отжимания от возвышения"
++    ],
++    "substitutions": [
++      {
++        "exercise_id": "dumbbell-bench-press",
++        "reason_ru": "Похожий паттерн, проще траектория.",
++        "confidence": "heuristic"
++      }
++    ],
++    "tags": [
++      "mvp_core",
++      "compound",
++      "chest"
++    ],
++    "media_suggestion": "Сбоку (траектория), сверху у головы (локти).",
++    "sources": [
++      {
++        "title": "ExRx Bench Press",
++        "url": "https://lowrisk2.exrx.net/WeightExercises/PectoralSternal/BBBenchPress"
++      }
++    ],
++    "evidence_status": "verified"
++  },
++  {
++    "id": "barbell-back-squat",
++    "name_en": "Barbell Back Squat",
++    "name_ru": "Приседания со штангой",
++    "movement_pattern": "squat",
++    "primary_muscles": [
++      "Quadriceps",
++      "Gluteus Maximus"
++    ],
++    "secondary_muscles": [
++      "Erector Spinae",
++      "Calves"
++    ],
++    "equipment": [
++      "barbell",
++      "rack"
++    ],
++    "difficulty": "intermediate",
++    "setup_steps": [
++      "Выставьте стойки и страховку.",
++      "Стопы примерно на ширине плеч, носки слегка наружу.",
++      "Нейтральная спина, корпус напряжён.",
++      "Сделайте 1–2 разминочных подхода."
++    ],
++    "execution_cues": [
++      "Колени по линии носков.",
++      "Опора на всю стопу.",
++      "Контроль глубины, без падения вниз.",
++      "Подъём: толкайте пол, сохраняйте линию коленей."
++    ],
++    "common_mistakes": [
++      "Округление спины.",
++      "Колени заваливаются внутрь.",
++      "Пятки отрываются.",
++      "Пружинирование внизу без контроля."
++    ],
++    "safety_notes": [
++      "Начинайте с веса, который позволяет технику.",
++      "Используйте страховочные упоры.",
++      "Острая боль — прекратите и при необходимости обратитесь к специалисту."
++    ],
++    "contraindications_generic": [
++      "Острая боль во время движения.",
++      "Недавняя травма или операция — нужна консультация специалиста."
++    ],
++    "tempo_recommendation": "2-1-2",
++    "breathing_cues": "Вдох перед повторением, выдох в конце подъёма.",
++    "ROM_notes": "Работайте в контролируемой амплитуде.",
++    "recommended_rest_sec": 120,
++    "progression_options": [
++      "Double progression",
++      "Малые шаги по весу"
++    ],
++    "regressions": [
++      "Гоблет-присед",
++      "Жим ногами"
++    ],
++    "substitutions": [
++      {
++        "exercise_id": "goblet-squat",
++        "reason_ru": "Более простой вариант для техники.",
++        "confidence": "heuristic"
++      }
++    ],
++    "tags": [
++      "mvp_core",
++      "compound",
++      "legs"
++    ],
++    "media_suggestion": "Сбоку (глубина), 45° спереди (колени).",
++    "sources": [
++      {
++        "title": "ExRx Squat",
++        "url": "https://lowrisk2.exrx.net/WeightExercises/GluteusMaximus/BBSquat"
++      }
++    ],
++    "evidence_status": "verified"
++  },
++  {
++    "id": "barbell-deadlift",
++    "name_en": "Barbell Deadlift",
++    "name_ru": "Становая тяга (классика)",
++    "movement_pattern": "hinge",
++    "primary_muscles": [
++      "Gluteus Maximus",
++      "Hamstrings"
++    ],
++    "secondary_muscles": [
++      "Erector Spinae",
++      "Forearms"
++    ],
++    "equipment": [
++      "barbell"
++    ],
++    "difficulty": "intermediate",
++    "setup_steps": [
++      "Стопы на ширине таза, гриф над серединой стопы.",
++      "Сделайте хип-хинж: таз назад, спина нейтрально.",
++      "Гриф близко к ногам.",
++      "Разминочные подходы."
++    ],
++    "execution_cues": [
++      "Держите спину нейтрально и корпус напряжённым.",
++      "Ведите гриф вдоль ног.",
++      "Вверху не переразгибайтесь.",
++      "Опускайте под контролем."
++    ],
++    "common_mistakes": [
++      "Округление спины.",
++      "Гриф далеко от тела.",
++      "Рывок вместо контроля.",
++      "Переразгибание вверху."
++    ],
++    "safety_notes": [
++      "Приоритет — нейтральная спина и контроль.",
++      "Прогрессируйте постепенно.",
++      "При боли — прекратите и обратитесь к специалисту."
++    ],
++    "contraindications_generic": [
++      "Острая боль во время движения."
++    ],
++    "tempo_recommendation": "3-1-1",
++    "breathing_cues": "Вдох перед повторением, выдох на подъёме.",
++    "ROM_notes": "Не жертвуйте техникой ради амплитуды.",
++    "recommended_rest_sec": 150,
++    "progression_options": [
++      "Double progression"
++    ],
++    "regressions": [
++      "Румынская тяга",
++      "Тяга с гантелями"
++    ],
++    "substitutions": [
++      {
++        "exercise_id": "trap-bar-deadlift",
++        "reason_ru": "Более вертикальная позиция и проще техника.",
++        "confidence": "heuristic"
++      }
++    ],
++    "tags": [
++      "mvp_core",
++      "compound",
++      "hinge"
++    ],
++    "media_suggestion": "Сбоку (нейтраль), 45° сзади (таз/колени).",
++    "sources": [
++      {
++        "title": "ExRx Deadlift",
++        "url": "https://lowrisk2.exrx.net/WeightExercises/ErectorSpinae/BBDeadlift"
++      }
++    ],
++    "evidence_status": "verified"
++  },
++  {
++    "id": "lat-pulldown",
++    "name_en": "Lat Pulldown",
++    "name_ru": "Тяга верхнего блока",
++    "movement_pattern": "pull_vertical",
++    "primary_muscles": [
++      "Latissimus Dorsi"
++    ],
++    "secondary_muscles": [
++      "Biceps Brachii"
++    ],
++    "equipment": [
++      "cable"
++    ],
++    "difficulty": "beginner",
++    "setup_steps": [
++      "Настройте высоту сиденья/упоров.",
++      "Выберите хват без дискомфорта.",
++      "Корпус стабилен, без раскачки."
++    ],
++    "execution_cues": [
++      "Начинайте с опускания плеч (лопатки вниз).",
++      "Тяните локтями вниз, не кистями.",
++      "Контролируйте верхнюю точку."
++    ],
++    "common_mistakes": [
++      "Рывок корпусом.",
++      "Плечи к ушам вверху.",
++      "Частичная амплитуда."
++    ],
++    "safety_notes": [
++      "Избегайте дискомфорта в плечах.",
++      "Не используйте инерцию."
++    ],
++    "contraindications_generic": [
++      "Острая боль во время движения."
++    ],
++    "tempo_recommendation": "2-1-2",
++    "breathing_cues": "Вдох вверху, выдох на тяге вниз.",
++    "ROM_notes": "Полное вытяжение вверху при контроле плеч.",
++    "recommended_rest_sec": 120,
++    "progression_options": [
++      "Добавлять вес при сохранении техники"
++    ],
++    "regressions": [
++      "Ассистированные подтягивания"
++    ],
++    "substitutions": [
++      {
++        "exercise_id": "assisted-pull-up",
++        "reason_ru": "Похожее движение.",
++        "confidence": "heuristic"
++      }
++    ],
++    "tags": [
++      "mvp_core",
++      "back",
++      "beginner_friendly"
++    ],
++    "media_suggestion": "Сбоку (корпус), спереди (симметрия).",
++    "sources": [
++      {
++        "title": "ExRx Pulldown",
++        "url": "https://lowrisk2.exrx.net/WeightExercises/LatissimusDorsi/CBFrontPulldown"
++      }
++    ],
++    "evidence_status": "verified"
++  },
++  {
++    "id": "front-plank",
++    "name_en": "Front Plank",
++    "name_ru": "Планка (передняя)",
++    "movement_pattern": "core_anti_extension",
++    "primary_muscles": [
++      "Transverse Abdominis"
++    ],
++    "secondary_muscles": [
++      "Rectus Abdominis",
++      "Gluteus Maximus"
++    ],
++    "equipment": [
++      "bodyweight"
++    ],
++    "difficulty": "beginner",
++    "setup_steps": [
++      "Локти под плечами (или ладони под плечами).",
++      "Рёбра вниз, пресс и ягодицы напряжены."
++    ],
++    "execution_cues": [
++      "Тело в прямой линии.",
++      "Не проваливайте поясницу.",
++      "Дышите ровно."
++    ],
++    "common_mistakes": [
++      "Провал таза.",
++      "Поднятые плечи.",
++      "Слишком долго ценой формы."
++    ],
++    "safety_notes": [
++      "Останавливайтесь, если форма теряется.",
++      "При боли/дискомфорте прекратите."
++    ],
++    "contraindications_generic": [
++      "Острая боль во время движения."
++    ],
++    "tempo_recommendation": "isometric",
++    "breathing_cues": "Ровное дыхание без задержек.",
++    "ROM_notes": "Изометрия: качество важнее времени.",
++    "recommended_rest_sec": 60,
++    "progression_options": [
++      "Увеличивать время малым шагом"
++    ],
++    "regressions": [
++      "Планка с колен"
++    ],
++    "substitutions": [
++      {
++        "exercise_id": "dead-bug",
++        "reason_ru": "Анти-экстензия, проще контроль.",
++        "confidence": "heuristic"
++      }
++    ],
++    "tags": [
++      "mvp_core",
++      "core",
++      "beginner_friendly"
++    ],
++    "media_suggestion": "Сбоку (поясница/таз).",
++    "sources": [
++      {
++        "title": "ExRx Plank",
++        "url": "https://lowrisk2.exrx.net/WeightExercises/RectusAbdominis/BWFrontPlank"
++      }
++    ],
++    "evidence_status": "verified"
++  }
++]
+\ No newline at end of file
+diff --git a/data/content_pack/prescriptions.json b/data/content_pack/prescriptions.json
+new file mode 100644
+index 0000000..d974d47
+--- /dev/null
++++ b/data/content_pack/prescriptions.json
+@@ -0,0 +1,184 @@
++[
++  {
++    "prescription_id": "c_sample_fullbody_6w_A_01",
++    "template_id": "c_sample_fullbody_6w_A",
++    "exercise_id": "barbell-back-squat",
++    "order_in_session": 1,
++    "sets": 3,
++    "reps_min": 8,
++    "reps_max": 10,
++    "target_rir": 3,
++    "rest_sec": 120,
++    "tempo": "2-1-2",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Контроль глубины и коленей."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_A_02",
++    "template_id": "c_sample_fullbody_6w_A",
++    "exercise_id": "barbell-bench-press",
++    "order_in_session": 2,
++    "sets": 3,
++    "reps_min": 8,
++    "reps_max": 10,
++    "target_rir": 3,
++    "rest_sec": 120,
++    "tempo": "2-1-1",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Лопатки сведены."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_A_03",
++    "template_id": "c_sample_fullbody_6w_A",
++    "exercise_id": "lat-pulldown",
++    "order_in_session": 3,
++    "sets": 3,
++    "reps_min": 10,
++    "reps_max": 12,
++    "target_rir": 3,
++    "rest_sec": 90,
++    "tempo": "2-1-2",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Тяните локтями вниз."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_A_04",
++    "template_id": "c_sample_fullbody_6w_A",
++    "exercise_id": "front-plank",
++    "order_in_session": 4,
++    "sets": 3,
++    "reps_min": 30,
++    "reps_max": 45,
++    "target_rir": null,
++    "rest_sec": 60,
++    "tempo": "isometric",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Качество формы важнее времени."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_B_01",
++    "template_id": "c_sample_fullbody_6w_B",
++    "exercise_id": "barbell-deadlift",
++    "order_in_session": 1,
++    "sets": 3,
++    "reps_min": 5,
++    "reps_max": 8,
++    "target_rir": 3,
++    "rest_sec": 150,
++    "tempo": "3-1-1",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Нейтральная спина."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_B_02",
++    "template_id": "c_sample_fullbody_6w_B",
++    "exercise_id": "barbell-bench-press",
++    "order_in_session": 2,
++    "sets": 3,
++    "reps_min": 8,
++    "reps_max": 10,
++    "target_rir": 3,
++    "rest_sec": 120,
++    "tempo": "2-1-1",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Контроль траектории."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_B_03",
++    "template_id": "c_sample_fullbody_6w_B",
++    "exercise_id": "lat-pulldown",
++    "order_in_session": 3,
++    "sets": 3,
++    "reps_min": 10,
++    "reps_max": 12,
++    "target_rir": 3,
++    "rest_sec": 90,
++    "tempo": "2-1-2",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Без раскачки."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_B_04",
++    "template_id": "c_sample_fullbody_6w_B",
++    "exercise_id": "front-plank",
++    "order_in_session": 4,
++    "sets": 3,
++    "reps_min": 30,
++    "reps_max": 45,
++    "target_rir": null,
++    "rest_sec": 60,
++    "tempo": "isometric",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Не проваливайте поясницу."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_C_01",
++    "template_id": "c_sample_fullbody_6w_C",
++    "exercise_id": "barbell-back-squat",
++    "order_in_session": 1,
++    "sets": 3,
++    "reps_min": 6,
++    "reps_max": 8,
++    "target_rir": 3,
++    "rest_sec": 120,
++    "tempo": "2-1-2",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Чуть тяжелее, без потери техники."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_C_02",
++    "template_id": "c_sample_fullbody_6w_C",
++    "exercise_id": "barbell-deadlift",
++    "order_in_session": 2,
++    "sets": 2,
++    "reps_min": 5,
++    "reps_max": 6,
++    "target_rir": 3,
++    "rest_sec": 150,
++    "tempo": "3-1-1",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Короткая, качественная работа."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_C_03",
++    "template_id": "c_sample_fullbody_6w_C",
++    "exercise_id": "barbell-bench-press",
++    "order_in_session": 3,
++    "sets": 3,
++    "reps_min": 8,
++    "reps_max": 10,
++    "target_rir": 3,
++    "rest_sec": 120,
++    "tempo": "2-1-1",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Контроль лопаток."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_C_04",
++    "template_id": "c_sample_fullbody_6w_C",
++    "exercise_id": "lat-pulldown",
++    "order_in_session": 4,
++    "sets": 3,
++    "reps_min": 10,
++    "reps_max": 12,
++    "target_rir": 3,
++    "rest_sec": 90,
++    "tempo": "2-1-2",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Полная амплитуда."
++  },
++  {
++    "prescription_id": "c_sample_fullbody_6w_C_05",
++    "template_id": "c_sample_fullbody_6w_C",
++    "exercise_id": "front-plank",
++    "order_in_session": 5,
++    "sets": 3,
++    "reps_min": 30,
++    "reps_max": 45,
++    "target_rir": null,
++    "rest_sec": 60,
++    "tempo": "isometric",
++    "progression_rule_id": "double_progression_basic",
++    "notes_ru": "Ровное дыхание."
++  }
++]
+\ No newline at end of file
+diff --git a/js/app.js b/js/app.js
+index ee012b8..b3603bf 100644
+--- a/js/app.js
++++ b/js/app.js
+@@ -29,11 +29,385 @@ if (typeof window.initApp !== 'function') {
+   };
+ }
+ 
++// ==========================================
++// === 0.1 CONTENT PACK (Exercises & Programs) ===
++// ==========================================
++//
++// Поддерживаем внешний контентный пакет данных (упражнения + программы) в JSON.
++// Если файлов нет (404) — приложение продолжает работать на встроенной базе.
++//
++// Ожидаемые файлы:
++//   data/content_pack/exercises.json
++//   data/content_pack/courses.json
++//   data/content_pack/course_sessions.json   (optional)
++//   data/content_pack/prescriptions.json     (optional)
++//
++// Форматы поддерживаемые в courses.json:
++//   1) массив courses[] (как в схеме content pack)
++//   2) bundle объект { course, sessions, prescriptions, ... }
++
++const __CONTENT_PACK_BASE = 'data/content_pack';
++let __contentPackState = {
++  loaded: false,
++  used: false,
++  loading: null,
++};
++
++async function __fetchJson(path) {
++  const res = await fetch(`${__CONTENT_PACK_BASE}/${path}`, { cache: 'no-store' });
++  if (!res.ok) {
++    const err = new Error(`Failed to load ${path}: ${res.status}`);
++    // @ts-ignore
++    err.__status = res.status;
++    throw err;
++  }
++  return res.json();
++}
++
++async function __fetchText(path) {
++  const res = await fetch(`${__CONTENT_PACK_BASE}/${path}`, { cache: 'no-store' });
++  if (!res.ok) {
++    const err = new Error(`Failed to load ${path}: ${res.status}`);
++    // @ts-ignore
++    err.__status = res.status;
++    throw err;
++  }
++  return res.text();
++}
++
++// Небольшой CSV-парсер (подходит для наших экспортов; поддерживает кавычки)
++function __parseCsv(text) {
++  const lines = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
++  const out = [];
++  for (let i = 0; i < lines.length; i++) {
++    const line = lines[i];
++    if (!line || !line.trim()) continue;
++    const row = [];
++    let cur = '';
++    let inQ = false;
++    for (let j = 0; j < line.length; j++) {
++      const ch = line[j];
++      if (inQ) {
++        if (ch === '"') {
++          if (line[j + 1] === '"') { cur += '"'; j++; }
++          else inQ = false;
++        } else {
++          cur += ch;
++        }
++      } else {
++        if (ch === ',') { row.push(cur); cur = ''; }
++        else if (ch === '"') { inQ = true; }
++        else { cur += ch; }
++      }
++    }
++    row.push(cur);
++    out.push(row);
++  }
++  return out;
++}
++
++function __csvToObjects(text) {
++  const rows = __parseCsv(text);
++  if (!rows.length) return [];
++  const header = rows[0].map(h => String(h || '').trim());
++  const objs = [];
++  for (let i = 1; i < rows.length; i++) {
++    const r = rows[i];
++    const obj = {};
++    header.forEach((h, idx) => {
++      obj[h] = (r[idx] ?? '').toString().trim();
++    });
++    objs.push(obj);
++  }
++  return objs;
++}
++
++function __equipmentToRuShort(equipmentArr) {
++  const map = {
++    barbell: 'Штанга',
++    dumbbell: 'Гантели',
++    kettlebell: 'Гиря',
++    cable: 'Блок',
++    machine_selectorized: 'Тренажёр',
++    machine_plate_loaded: 'Тренажёр',
++    smith_machine: 'Смит',
++    bodyweight: 'Вес тела',
++    band: 'Резинка',
++    bench: 'Скамья',
++    rack: 'Рама',
++    pullup_bar: 'Турник',
++    dip_bars: 'Брусья',
++    trap_bar: 'Трэп-гриф',
++    landmine: 'Лэндмайн',
++    sled: 'Санки',
++    other: 'Другое',
++  };
++
++  const arr = Array.isArray(equipmentArr) ? equipmentArr : [];
++  const ru = arr.map(k => map[k] || k).filter(Boolean);
++  if (ru.length === 0) return 'Оборудование';
++  if (ru.length <= 2) return ru.join(' + ');
++  return `${ru[0]} + ${ru[1]}…`;
++}
++
++function __inferMuscleGroupFromExercise(ex) {
++  const pattern = String(ex?.movement_pattern || '').toLowerCase();
++  const primary = (ex?.primary_muscles || []).join(' ').toLowerCase();
++
++  if (pattern === 'push_horizontal') return 'chest';
++  if (pattern === 'pull_vertical' || pattern === 'pull_horizontal') return 'back';
++  if (pattern === 'push_vertical') return 'shoulders';
++  if (pattern === 'squat' || pattern === 'hinge' || pattern === 'lunge' || pattern === 'calf' || pattern === 'carry') return 'legs';
++  if (pattern.startsWith('core_')) return 'abs';
++  if (pattern === 'cardio') return 'cardio';
++  if (pattern === 'mobility') return 'mobility';
++
++  // isolation/other — пробуем угадать по мышцам
++  if (primary.includes('pector')) return 'chest';
++  if (primary.includes('lat') || primary.includes('rhombo') || primary.includes('trap')) return 'back';
++  if (primary.includes('quad') || primary.includes('glute') || primary.includes('hamstring') || primary.includes('calf')) return 'legs';
++  if (primary.includes('deltoid') || primary.includes('shoulder')) return 'shoulders';
++  if (primary.includes('biceps') || primary.includes('triceps') || primary.includes('forearm')) return 'arms';
++  if (primary.includes('abdom')) return 'abs';
++
++  return 'other';
++}
++
++function __defaultRepsForExercise(ex) {
++  const pattern = String(ex?.movement_pattern || '').toLowerCase();
++  if (pattern.startsWith('core_')) return '30–45 сек';
++  if (pattern === 'cardio') return '10–20 мин';
++  if (pattern === 'mobility') return '6–10 мин';
++  if (pattern === 'isolation' || pattern === 'calf') return '10–15';
++  if (pattern === 'squat' || pattern === 'hinge') return '6–10';
++  return '8–12';
++}
++
++function __firstOrDash(arr) {
++  return Array.isArray(arr) && arr.length ? String(arr[0]) : '-';
++}
++
++function __iconForGroup(group) {
++  const map = {
++    chest: '💪',
++    back: '🏋️',
++    legs: '🦵',
++    shoulders: '🏋️',
++    arms: '💪',
++    abs: '🧱',
++    cardio: '🏃',
++    mobility: '🤸',
++    other: '🏋️',
++  };
++  return map[group] || '🏋️';
++}
++
++function __toInternalExercise(ex) {
++  const muscle = __inferMuscleGroupFromExercise(ex);
++  const reps = __defaultRepsForExercise(ex);
++  const rest = Number(ex?.recommended_rest_sec || 60);
++  const equip = __equipmentToRuShort(ex?.equipment);
++  const tempo = ex?.tempo_recommendation ? `Темп ${ex.tempo_recommendation}` : '';
++  const cue = __firstOrDash(ex?.execution_cues);
++
++  const mkLevel = (rirText) => ({
++    weight: equip,
++    reps,
++    restTime: rest,
++    advice: [rirText, tempo, cue].filter(Boolean).join(' • '),
++  });
++
++  return {
++    id: ex.id,
++    name: ex.name_ru || ex.name_en || ex.id,
++    muscle,
++    icon: __iconForGroup(muscle),
++    description: (ex.primary_muscles?.length ? `Основные: ${ex.primary_muscles.join(', ')}` : ex.movement_pattern || 'Упражнение'),
++    sets: 3,
++    levels: {
++      beginner: mkLevel('RIR 3–4'),
++      intermediate: mkLevel('RIR 2–3'),
++      pro: mkLevel('RIR 1–2'),
++    },
++    __pack: ex,
++  };
++}
++
++function __buildCourseVm(course, sessions, prescriptions) {
++  const courseId = course.course_id || course.id;
++  const title = course.title_ru || course.title || courseId;
++  const level = course.level || 'beginner';
++  const duration = course.duration_weeks ? `${course.duration_weeks} недель` : (course.duration || '');
++  const desc = course.substitution_policy?.ru || course.description || course.goal || '';
++
++  const sess = (Array.isArray(sessions) ? sessions : []).filter(s => (s.course_id || s.courseId) === courseId);
++  const presc = Array.isArray(prescriptions) ? prescriptions : [];
++
++  // если sessions не дали — пытаемся использовать уже "schedule" в курсе
++  let schedule = [];
++  if (sess.length) {
++    schedule = sess.map(s => {
++      const items = presc
++        .filter(p => p.template_id === s.template_id)
++        .sort((a, b) => (a.order_in_session || 0) - (b.order_in_session || 0))
++        .map(p => ({
++          exercise_id: p.exercise_id,
++          order_in_session: p.order_in_session,
++          sets: p.sets,
++          reps_min: p.reps_min,
++          reps_max: p.reps_max,
++          target_rir: p.target_rir,
++          rest_sec: p.rest_sec,
++          tempo: p.tempo,
++          notes_ru: p.notes_ru,
++          progression_rule_id: p.progression_rule_id,
++        }));
++      return {
++        name: s.title_ru || `Тренировка ${s.week_rotation_code || ''}`.trim(),
++        exercises: items,
++        template_id: s.template_id,
++        focus: s.focus,
++      };
++    });
++  } else if (Array.isArray(course.schedule)) {
++    schedule = course.schedule;
++  }
++
++  return {
++    id: courseId,
++    title,
++    subtitle: course.split_type || '',
++    description: String(desc || '').slice(0, 180),
++    duration,
++    goal: course.goal || '',
++    level,
++    schedule,
++    __pack: course,
++  };
++}
++
++async function ensureContentPackLoaded() {
++  if (__contentPackState.loaded) return __contentPackState.used;
++  if (__contentPackState.loading) return __contentPackState.loading;
++
++  __contentPackState.loading = (async () => {
++    try {
++      const exercises = await __fetchJson('exercises.json');
++
++      // courses.json может быть массивом или bundle-объектом
++      let coursesRaw = null;
++      try {
++        coursesRaw = await __fetchJson('courses.json');
++      } catch (e) {
++        console.warn('[content-pack] courses.json not found:', e);
++      }
++
++      let courses = [];
++      let sessions = [];
++      let prescriptions = [];
++
++      if (coursesRaw && !Array.isArray(coursesRaw) && typeof coursesRaw === 'object' && coursesRaw.course) {
++        // bundle
++        courses = [coursesRaw.course];
++        sessions = coursesRaw.sessions || [];
++        prescriptions = coursesRaw.prescriptions || [];
++      } else if (Array.isArray(coursesRaw)) {
++        courses = coursesRaw;
++        // пытаемся подхватить нормализованные файлы
++        try {
++          sessions = await __fetchJson('course_sessions.json');
++        } catch (_) {
++          // fallback: sessions.csv
++          try {
++            const csv = await __fetchText('sessions.csv');
++            const rows = __csvToObjects(csv);
++            const toNum = (v) => {
++              if (v === null || v === undefined || v === '') return null;
++              const n = Number(String(v).replace(',', '.'));
++              return Number.isFinite(n) ? n : null;
++            };
++            sessions = rows.map(r => ({
++              template_id: r.template_id || r.id || '',
++              course_id: r.course_id || '',
++              title_ru: r.title_ru || r.title || '',
++              week_rotation_code: r.week_rotation_code || r.rotation || '',
++              estimated_duration_min: toNum(r.estimated_duration_min) || 0,
++              focus: r.focus || '',
++            }));
++          } catch (_) {
++            sessions = [];
++          }
++        }
++        try {
++          prescriptions = await __fetchJson('prescriptions.json');
++        } catch (_) {
++          // fallback: prescriptions.csv (есть в экспорте content pack)
++          try {
++            const csv = await __fetchText('prescriptions.csv');
++            const rows = __csvToObjects(csv);
++            const toNum = (v) => {
++              if (v === null || v === undefined || v === '') return null;
++              const n = Number(String(v).replace(',', '.'));
++              return Number.isFinite(n) ? n : null;
++            };
++            prescriptions = rows.map(r => ({
++              prescription_id: r.prescription_id || r.id || '',
++              template_id: r.template_id || '',
++              exercise_id: r.exercise_id || '',
++              order_in_session: toNum(r.order_in_session) || 0,
++              sets: toNum(r.sets) || 0,
++              reps_min: toNum(r.reps_min),
++              reps_max: toNum(r.reps_max),
++              target_rir: toNum(r.target_rir),
++              rest_sec: toNum(r.rest_sec) || 0,
++              tempo: r.tempo || '',
++              progression_rule_id: r.progression_rule_id || '',
++              notes_ru: r.notes_ru || r.notes || '',
++            }));
++          } catch (_) {
++            prescriptions = [];
++          }
++        }
++      }
++
++      // Если курсы не загрузились — всё равно можем использовать базу упражнений
++      const packExercises = Array.isArray(exercises) ? exercises : [];
++      const internalExercises = packExercises.map(__toInternalExercise);
++
++      // Индекс для удобства (замены, отображение)
++      window.__exercisePackIndex = new Map(packExercises.map(e => [e.id, e]));
++
++      EXERCISE_DATABASE = internalExercises;
++
++      if (Array.isArray(courses) && courses.length && Array.isArray(sessions) && Array.isArray(prescriptions) && sessions.length && prescriptions.length) {
++        COURSES_DATABASE = courses.map(c => __buildCourseVm(c, sessions, prescriptions));
++      }
++
++      __contentPackState.used = true;
++      console.log('[content-pack] loaded', { exercises: internalExercises.length, courses: (COURSES_DATABASE || []).length });
++    } catch (e) {
++      // Типичный сценарий: нет файлов (404) — игнорируем
++      const status = e && e.__status;
++      if (status !== 404) console.warn('[content-pack] load failed:', e);
++      __contentPackState.used = false;
++    } finally {
++      __contentPackState.loaded = true;
++    }
++
++    return __contentPackState.used;
++  })();
++
++  return __contentPackState.loading;
++}
++
++// Экспортируем, чтобы страницы могли await перед рендером.
++window.ensureContentPackLoaded = ensureContentPackLoaded;
++
+ // ==========================================
+ // === 1. БАЗА ДАННЫХ УПРАЖНЕНИЙ ===
+ // ==========================================
+ 
+-const EXERCISE_DATABASE = [
++let EXERCISE_DATABASE = [
+   // --- ГРУДЬ ---
+   {
+     id: 'pushups',
+@@ -228,7 +602,7 @@ const EXERCISE_DATABASE = [
+ // === 2. БАЗА КУРСОВ ===
+ // ==========================================
+ 
+-const COURSES_DATABASE = [
++let COURSES_DATABASE = [
+   {
+     id: 'beginner_gym',
+     title: 'Программа для начинающих',
+@@ -293,12 +667,19 @@ function refreshLucideIcons() {
+ // ==========================================
+ 
+ // 5.1 Отрисовка списка разовых тренировок (trainings.html)
+-function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
++function renderWorkoutList(containerId, muscleGroup, level = 'beginner', searchTerm = '') {
+   const container = document.getElementById(containerId);
+   if (!container) return;
+ 
+   let filtered = EXERCISE_DATABASE;
+-  if (muscleGroup !== 'all') filtered = EXERCISE_DATABASE.filter(ex => ex.muscle === muscleGroup);
++  if (muscleGroup !== 'all') {
++    filtered = EXERCISE_DATABASE.filter(ex => ex.muscle === muscleGroup);
++  }
++
++  const q = String(searchTerm || '').trim().toLowerCase();
++  if (q) {
++    filtered = filtered.filter(ex => String(ex.name || '').toLowerCase().includes(q));
++  }
+ 
+   if (filtered.length === 0) {
+     container.innerHTML = `<div class="empty-state loading-state"><p>Тренировок нет.</p></div>`;
+@@ -310,7 +691,7 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
+     const levelData = exercise.levels[level] || exercise.levels['beginner'];
+ 
+     html += `
+-      <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
++      <div class="workout-card" data-exercise-id="${exercise.id}" data-level="${level}">
+         <div class="workout-icon">${exercise.icon}</div>
+         <div class="workout-details">
+           <h3>${exercise.name}</h3>
+@@ -325,6 +706,18 @@ function renderWorkoutList(containerId, muscleGroup, level = 'beginner') {
+   });
+ 
+   container.innerHTML = html;
++
++  // Делегируем клик (чтобы не держать onclick строки)
++  if (!container.__clickBound) {
++    container.addEventListener('click', (e) => {
++      const card = e.target.closest('.workout-card');
++      if (!card) return;
++      const exId = card.dataset.exerciseId;
++      const lvl = card.dataset.level || (localStorage.getItem('userLevel') || 'beginner');
++      showExerciseDetail(exId, lvl);
++    });
++    container.__clickBound = true;
++  }
+ }
+ 
+ // 5.2 Отрисовка списка курсов (courses.html)
+@@ -360,39 +753,72 @@ function renderCoursesList(containerId) {
+   refreshLucideIcons(); // ✅ чтобы иконки появились после вставки HTML
+ }
+ 
+-// 5.3 Отрисовка списка по ID (для workout-process.html)
+-function renderWorkoutListByIds(containerId, exerciseIds, level = 'beginner') {
++// 5.3 Отрисовка списка по ID / назначениям (для workout-process.html)
++function renderWorkoutListByIds(containerId, exerciseItems, level = 'beginner') {
+   const container = document.getElementById(containerId);
+   if (!container) return;
+ 
+-  if (!exerciseIds || exerciseIds.length === 0) {
++  if (!exerciseItems || exerciseItems.length === 0) {
+     container.innerHTML = `<div class="empty-state loading-state"><p>Список пуст.</p></div>`;
+     return;
+   }
+ 
+   let html = '';
+-  exerciseIds.forEach(id => {
++  exerciseItems.forEach((it, idx) => {
++    const id = (typeof it === 'string') ? it : (it.exercise_id || it.id);
++    const override = (typeof it === 'object' && it) ? it : null;
+     const exercise = EXERCISE_DATABASE.find(ex => ex.id === id);
+     if (!exercise) return;
+ 
+     const levelData = exercise.levels[level] || exercise.levels['beginner'];
+ 
++    const sets = override?.sets || exercise.sets || 3;
++    const reps = (override && (override.reps_min || override.reps_max))
++      ? `${override.reps_min || ''}${override.reps_min && override.reps_max ? '–' : ''}${override.reps_max || ''}`
++      : levelData.reps;
++
++    const adviceParts = [
++      levelData.advice,
++      override?.tempo ? `Темп ${override.tempo}` : '',
++      typeof override?.target_rir === 'number' ? `RIR ${override.target_rir}` : '',
++      override?.notes_ru || ''
++    ].filter(Boolean);
++
+     html += `
+-      <div class="workout-card" onclick="showExerciseDetail('${exercise.id}', '${level}')">
++      <div class="workout-card" data-exercise-id="${exercise.id}" data-level="${level}" data-override-index="${idx}">
+         <div class="workout-icon">${exercise.icon}</div>
+         <div class="workout-details">
+           <h3>${exercise.name}</h3>
+           <div class="workout-tags">
+             <span class="tag weight">${levelData.weight}</span>
+-            <span class="tag reps">${exercise.sets || 3}x${levelData.reps}</span>
++            <span class="tag reps">${sets}x${reps}</span>
+           </div>
+-          <p class="workout-advice">${levelData.advice}</p>
++          <p class="workout-advice">${adviceParts.join(' • ')}</p>
+         </div>
+         <div class="workout-action"><span>▶</span></div>
+       </div>`;
+   });
+ 
+   container.innerHTML = html;
++
++  // Сохраняем текущие назначения (для детального окна)
++  window.__lastRenderedWorkoutItems = Array.isArray(exerciseItems) ? exerciseItems : [];
++
++  // Делегируем клик
++  if (!container.__clickBound) {
++    container.addEventListener('click', (e) => {
++      const card = e.target.closest('.workout-card');
++      if (!card) return;
++      const exId = card.dataset.exerciseId;
++      const lvl = card.dataset.level || (localStorage.getItem('userLevel') || 'beginner');
++      const overrideIndex = Number(card.dataset.overrideIndex);
++      const override = Array.isArray(window.__lastRenderedWorkoutItems)
++        ? window.__lastRenderedWorkoutItems[overrideIndex]
++        : null;
++      showExerciseDetail(exId, lvl, (typeof override === 'object' ? override : null));
++    });
++    container.__clickBound = true;
++  }
+ }
+ 
+ // ==========================================
+@@ -472,17 +898,123 @@ function startCourseDay(courseId, dayIndex) {
+     localStorage.setItem('currentWorkoutSource', 'course');
+     localStorage.setItem('currentWorkoutDayIndex', dayIndex);
+     localStorage.setItem('currentCourseId', courseId);
++
++    // ✅ Сохраняем конкретные назначения (если есть) — это нужно для content pack,
++    // чтобы на workout-process.html показать сеты/повторы/отдых/темп из prescriptions.
++    const course = COURSES_DATABASE.find(c => c.id === courseId);
++    const dayData = course?.schedule?.[dayIndex];
++    if (dayData) {
++      localStorage.setItem('currentWorkoutTitle', dayData.name || 'Тренировка');
++      localStorage.setItem('currentWorkoutItems', JSON.stringify(dayData.exercises || []));
++    }
+   } catch (e) {
+     console.warn("Не удалось сохранить прогресс в память");
+   }
+   window.location.href = 'workout-process.html';
+ }
+ 
++function __escapeHtml(str) {
++  return String(str ?? '')
++    .replaceAll('&', '&amp;')
++    .replaceAll('<', '&lt;')
++    .replaceAll('>', '&gt;')
++    .replaceAll('"', '&quot;')
++    .replaceAll("'", '&#39;');
++}
++
++function __renderList(items, limit = 6) {
++  const arr = Array.isArray(items) ? items.slice(0, limit) : [];
++  if (!arr.length) return '<p class="muted">—</p>';
++  return `<ul class="modal-list">${arr.map(s => `<li>${__escapeHtml(s)}</li>`).join('')}</ul>`;
++}
++
++function renderExercisePackDetails(modal, exercise, override) {
++  const pack = exercise?.__pack;
++  let root = modal.querySelector('.exercise-pack-details');
++
++  if (!pack) {
++    if (root) root.remove();
++    return;
++  }
++
++  if (!root) {
++    root = document.createElement('div');
++    root.className = 'exercise-pack-details';
++    // вставляем после блока "Совет" и до таймера
++    const advice = modal.querySelector('.modal-advice-box');
++    const timer = modal.querySelector('.timer-container');
++    if (timer) {
++      (advice ? advice.parentNode : modal).insertBefore(root, timer);
++    } else {
++      modal.querySelector('.modal-content')?.appendChild(root);
++    }
++  }
++
++  // Замены: пытаемся показать названия (если у нас есть индекс)
++  const subs = Array.isArray(pack.substitutions) ? pack.substitutions : [];
++  const subNames = subs
++    .map(s => {
++      const exId = s?.exercise_id;
++      if (!exId) return null;
++      const internal = EXERCISE_DATABASE.find(e => e.id === exId);
++      return internal?.name || window.__exercisePackIndex?.get(exId)?.name_ru || window.__exercisePackIndex?.get(exId)?.name_en || exId;
++    })
++    .filter(Boolean);
++
++  const equip = __equipmentToRuShort(pack.equipment);
++  const pattern = pack.movement_pattern ? String(pack.movement_pattern) : '';
++
++  const prescriptionHtml = override ? `
++    <div class="modal-block">
++      <div class="modal-block__title">Назначение</div>
++      <div class="modal-block__body">
++        <div class="kv"><span class="k">Сеты</span><span class="v">${__escapeHtml(override.sets ?? exercise.sets ?? 3)}</span></div>
++        <div class="kv"><span class="k">Повторы</span><span class="v">${__escapeHtml((override.reps_min || override.reps_max) ? `${override.reps_min || ''}${override.reps_min && override.reps_max ? '–' : ''}${override.reps_max || ''}` : '')}</span></div>
++        <div class="kv"><span class="k">Отдых</span><span class="v">${__escapeHtml(override.rest_sec ? `${override.rest_sec} сек` : '')}</span></div>
++        <div class="kv"><span class="k">Темп</span><span class="v">${__escapeHtml(override.tempo || '')}</span></div>
++        <div class="kv"><span class="k">RIR</span><span class="v">${__escapeHtml(typeof override.target_rir === 'number' ? override.target_rir : '')}</span></div>
++      </div>
++    </div>
++  ` : '';
++
++  root.innerHTML = `
++    <div class="modal-block">
++      <div class="modal-block__title">Параметры</div>
++      <div class="modal-block__body">
++        <div class="kv"><span class="k">Паттерн</span><span class="v">${__escapeHtml(pattern || '—')}</span></div>
++        <div class="kv"><span class="k">Оборудование</span><span class="v">${__escapeHtml(equip)}</span></div>
++        <div class="kv"><span class="k">Темп</span><span class="v">${__escapeHtml(pack.tempo_recommendation || '—')}</span></div>
++      </div>
++    </div>
++    ${prescriptionHtml}
++    <details class="modal-details" open>
++      <summary>Техника</summary>
++      ${__renderList(pack.execution_cues, 6)}
++    </details>
++    <details class="modal-details">
++      <summary>Настройка</summary>
++      ${__renderList(pack.setup_steps, 5)}
++    </details>
++    <details class="modal-details">
++      <summary>Частые ошибки</summary>
++      ${__renderList(pack.common_mistakes, 5)}
++    </details>
++    <details class="modal-details">
++      <summary>Безопасность</summary>
++      ${__renderList(pack.safety_notes, 4)}
++    </details>
++    <details class="modal-details">
++      <summary>Замены</summary>
++      ${__renderList(subNames, 6)}
++    </details>
++  `;
++}
++
+ // ==========================================
+ // === 7. ЛОГИКА МОДАЛКИ И ТАЙМЕРА ===
+ // ==========================================
+ 
+-function showExerciseDetail(exerciseId, level) {
++function showExerciseDetail(exerciseId, level, override = null) {
+   const exercise = EXERCISE_DATABASE.find(ex => ex.id === exerciseId);
+   if (!exercise) return;
+ 
+@@ -494,14 +1026,30 @@ function showExerciseDetail(exerciseId, level) {
+   workoutState.timerInterval = null;
+ 
+   workoutState.currentSet = 1;
+-  workoutState.totalSets = exercise.sets || 3;
+-  workoutState.restTime = levelData.restTime || 60;
++  workoutState.totalSets = (override && override.sets) ? override.sets : (exercise.sets || 3);
++  workoutState.restTime = (override && (override.rest_sec || override.restTime))
++    ? Number(override.rest_sec || override.restTime)
++    : (levelData.restTime || 60);
+ 
+   modal.querySelector('.modal-title').innerText = exercise.name;
+   modal.querySelector('.modal-desc').innerText = exercise.description;
++  const repsText = (override && (override.reps_min || override.reps_max))
++    ? `${override.reps_min || ''}${override.reps_min && override.reps_max ? '–' : ''}${override.reps_max || ''}`
++    : levelData.reps;
++
++  const adviceParts = [
++    levelData.advice,
++    override?.tempo ? `Темп ${override.tempo}` : '',
++    typeof override?.target_rir === 'number' ? `RIR ${override.target_rir}` : '',
++    override?.notes_ru || ''
++  ].filter(Boolean);
++
+   modal.querySelector('.modal-weight').innerText = levelData.weight;
+-  modal.querySelector('.modal-reps').innerText = levelData.reps;
+-  modal.querySelector('.modal-advice').innerText = levelData.advice;
++  modal.querySelector('.modal-reps').innerText = repsText;
++  modal.querySelector('.modal-advice').innerText = adviceParts.join(' • ');
++
++  // ✅ Доп. контент из content pack (техника/ошибки/безопасность/замены)
++  try { renderExercisePackDetails(modal, exercise, override); } catch (_) { /* no-op */ }
+ 
+   updateSetsCounter();
+ 
+diff --git a/trainings.html b/trainings.html
+index 5f7ead4..b162b23 100644
+--- a/trainings.html
++++ b/trainings.html
+@@ -32,6 +32,16 @@
+       <button class="filter-btn" data-muscle="chest" onclick="filterExercises('chest')">Грудь</button>
+       <button class="filter-btn" data-muscle="back" onclick="filterExercises('back')">Спина</button>
+       <button class="filter-btn" data-muscle="legs" onclick="filterExercises('legs')">Ноги</button>
++      <button class="filter-btn" data-muscle="shoulders" onclick="filterExercises('shoulders')">Плечи</button>
++      <button class="filter-btn" data-muscle="arms" onclick="filterExercises('arms')">Руки</button>
++      <button class="filter-btn" data-muscle="abs" onclick="filterExercises('abs')">Пресс</button>
++      <button class="filter-btn" data-muscle="cardio" onclick="filterExercises('cardio')">Кардио</button>
++      <button class="filter-btn" data-muscle="mobility" onclick="filterExercises('mobility')">Мобилити</button>
++    </div>
++
++    <!-- Поиск по упражнениям -->
++    <div class="search-bar">
++      <input id="exercise-search" class="input-search" type="search" placeholder="Поиск упражнений..." autocomplete="off" />
+     </div>
+ 
+     <!-- Контейнер для списка карточек -->
+@@ -49,7 +59,13 @@
+ 
+   <!-- Логика страницы -->
+   <script>
+-    document.addEventListener('DOMContentLoaded', () => {
++    document.addEventListener('DOMContentLoaded', async () => {
++      try {
++        if (typeof window.ensureContentPackLoaded === 'function') {
++          await window.ensureContentPackLoaded();
++        }
++      } catch (_) {}
++
+       initTrainingPage();
+ 
+       // Закрытие по клику вне окна (используем closeExerciseModal из app.js)
+@@ -75,7 +91,22 @@
+       if (badge) badge.textContent = levelNames[currentLevel] || 'Новичок';
+ 
+       // 3. Рисуем список
+-      renderWorkoutList('workout-list', 'all', currentLevel);
++      renderWorkoutList('workout-list', 'all', currentLevel, getSearchTerm());
++
++      // 4. Поиск
++      const input = document.getElementById('exercise-search');
++      if (input && !input.__bound) {
++        input.addEventListener('input', () => {
++          const active = document.querySelector('.filter-btn.active')?.dataset?.muscle || 'all';
++          renderWorkoutList('workout-list', active, currentLevel, getSearchTerm());
++        });
++        input.__bound = true;
++      }
++    }
++
++    function getSearchTerm() {
++      const el = document.getElementById('exercise-search');
++      return el ? el.value : '';
+     }
+ 
+     // Функция фильтрации при нажатии кнопок
+@@ -88,7 +119,7 @@
+       });
+ 
+       // Перерисовываем список
+-      renderWorkoutList('workout-list', muscleGroup, currentLevel);
++      renderWorkoutList('workout-list', muscleGroup, currentLevel, getSearchTerm());
+     }
+   </script>
+ 
+diff --git a/workout-process.html b/workout-process.html
+index 1a9ade6..21e7631 100644
+--- a/workout-process.html
++++ b/workout-process.html
+@@ -90,7 +90,13 @@
+ 
+ 
+   <script>
+-    document.addEventListener('DOMContentLoaded', () => {
++    document.addEventListener('DOMContentLoaded', async () => {
++      try {
++        if (typeof window.ensureContentPackLoaded === 'function') {
++          await window.ensureContentPackLoaded();
++        }
++      } catch (_) {}
++
+       const source = localStorage.getItem('currentWorkoutSource');
+ 
+       if (source !== 'course') {
+@@ -103,17 +109,33 @@
+       const dayIndex = parseInt(dayIndexRaw || '0', 10);
+       const level = localStorage.getItem('userLevel') || 'beginner';
+ 
++      // 1) Пытаемся взять конкретные назначения из localStorage (content pack)
++      let items = [];
+       try {
+-        const course = (typeof COURSES_DATABASE !== 'undefined')
+-          ? COURSES_DATABASE.find(c => c.id === courseId)
+-          : null;
++        items = JSON.parse(localStorage.getItem('currentWorkoutItems') || '[]');
++      } catch (_) { items = []; }
+ 
+-        if (course && course.schedule && course.schedule[dayIndex]) {
+-          const dayData = course.schedule[dayIndex];
+-          document.getElementById('page-title').innerText = dayData.name || 'Тренировка';
+-          renderWorkoutListByIds('workout-list', dayData.exercises, level);
++      const titleFromLS = localStorage.getItem('currentWorkoutTitle');
++      if (titleFromLS) {
++        document.getElementById('page-title').innerText = titleFromLS;
++      }
++
++      try {
++        if (Array.isArray(items) && items.length) {
++          renderWorkoutListByIds('workout-list', items, level);
+         } else {
+-          window.location.href = 'courses.html';
++          // fallback: старый формат (берём по courseId/dayIndex)
++          const course = (typeof COURSES_DATABASE !== 'undefined')
++            ? COURSES_DATABASE.find(c => c.id === courseId)
++            : null;
++
++          if (course && course.schedule && course.schedule[dayIndex]) {
++            const dayData = course.schedule[dayIndex];
++            document.getElementById('page-title').innerText = dayData.name || 'Тренировка';
++            renderWorkoutListByIds('workout-list', dayData.exercises, level);
++          } else {
++            window.location.href = 'courses.html';
++          }
+         }
+       } catch (e) {
+         console.warn('Init workout-process failed:', e);
+@@ -131,6 +153,11 @@
+ 
+     function exitWorkout() {
+       if (confirm("Вы уверены? Прогресс текущей тренировки не сохранится.")) {
++        try {
++          localStorage.removeItem('currentWorkoutSource');
++          localStorage.removeItem('currentWorkoutItems');
++          localStorage.removeItem('currentWorkoutTitle');
++        } catch (_) {}
+         window.location.href = 'courses.html';
+       }
+     }
+@@ -153,6 +180,9 @@
+       const dayIndex = parseInt(localStorage.getItem('currentWorkoutDayIndex') || '0', 10);
+       const level = localStorage.getItem('userLevel') || 'beginner';
+ 
++      let itemsCount = 0;
++      try { itemsCount = JSON.parse(localStorage.getItem('currentWorkoutItems') || '[]').length; } catch (_) {}
++
+       // payload — полезная инфа для истории
+       let payload = {};
+       try {
+@@ -162,10 +192,11 @@
+ 
+         const dayData = course?.schedule?.[dayIndex];
+         payload = {
+-          title: dayData?.name || 'Тренировка',
++          title: localStorage.getItem('currentWorkoutTitle') || dayData?.name || 'Тренировка',
+           courseId,
+           dayIndex,
+-          level
++          level,
++          itemsCount
+         };
+       } catch (_) {}
+ 
+@@ -216,6 +247,8 @@
+ 
+       alert("Тренировка завершена! Отличная работа.");
+       localStorage.removeItem('currentWorkoutSource');
++      localStorage.removeItem('currentWorkoutItems');
++      localStorage.removeItem('currentWorkoutTitle');
+       window.location.href = 'courses.html';
+     }
+   </script>
