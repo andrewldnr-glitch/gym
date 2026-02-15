@@ -71,6 +71,29 @@
       <div id="achievements-container" class="badges-grid"></div>
     </div>
 
+
+
+    <!-- Гемы (кошелёк) -->
+    <div class="wallet-section">
+      <h2 class="section-title">
+        <span class="section-title__icon"><i data-lucide="gem"></i></span>
+        Гемы
+      </h2>
+
+      <div class="wallet-card card">
+        <div class="wallet-balance-row">
+          <div class="wallet-balance-label">Баланс</div>
+          <div class="wallet-balance-value">
+            <i data-lucide="gem"></i>
+            <span id="gems-balance">0</span>
+          </div>
+        </div>
+
+        <div class="wallet-history-title">Последние операции</div>
+        <div id="gems-history" class="wallet-history-list"></div>
+      </div>
+    </div>
+
     <!-- Вес -->
     <div class="weight-section">
       <div class="weight-header">
@@ -125,6 +148,7 @@
   <script src="js/api.js"></script>
   <script src="js/app.js"></script>
   <script src="js/weight.js"></script>
+  <script src="js/gems.js"></script>
   <script src="js/achievements.js"></script>
   <script src="js/profile.js"></script>
 
@@ -222,8 +246,14 @@
     function runUi() {
       if (typeof updateStats === 'function') updateStats();
       if (typeof initWeightSection === 'function') initWeightSection();
-      if (typeof renderAchievements === 'function') renderAchievements();
+
+      // сначала проверяем достижения (они могут начислить гемы)
       if (typeof checkAllAchievements === 'function') checkAllAchievements();
+      if (typeof renderAchievements === 'function') renderAchievements();
+
+      // кошелёк
+      try { if (typeof window.renderGemsBalance === 'function') window.renderGemsBalance('gems-balance'); } catch (_) {}
+      try { if (typeof window.renderGemsHistory === 'function') window.renderGemsHistory('gems-history', { limit: 6 }); } catch (_) {}
     }
 
     document.addEventListener('DOMContentLoaded', async () => {

@@ -398,6 +398,11 @@
         <h1 style="margin-bottom:2px;">FitGym</h1>
         <p style="margin-top:0;">Спокойно. Стабильно. По плану.</p>
       </div>
+
+      <div class="gems-chip" title="Гемы">
+        <span class="gems-chip__icon">💎</span>
+        <span id="gems-balance-mini">0</span>
+      </div>
     </header>
 
     <section class="opal-hero">
@@ -626,6 +631,8 @@
     </a>
   </nav>
 
+
+  <script src="js/gems.js"></script>
   <script>
     // Helpers
     function startOfWeek(d) {
@@ -733,6 +740,9 @@
     }
 
     function initHome() {
+      // Gems
+      try { if (typeof window.renderGemsBalance === 'function') window.renderGemsBalance('gems-balance-mini'); } catch (_) {}
+
       const now = new Date();
       const ws = startOfWeek(now);
 

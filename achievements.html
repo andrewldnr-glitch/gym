@@ -40,6 +40,13 @@
       </div>
 
       <div id="achievements-summary-hint" class="achievements-summary__hint"></div>
+
+      <div class="achievements-summary__wallet">
+        <div class="wallet-chip" title="Гемы">
+          <i data-lucide="gem"></i>
+          <span id="gems-balance">0</span>
+        </div>
+      </div>
     </div>
 
     <div class="filter-tabs achievements-filters" role="tablist" aria-label="Achievements filters">
@@ -53,6 +60,7 @@
 
   </div>
 
+  <script src="js/gems.js"></script>
   <script src="js/achievements.js"></script>
   <script>
     function setActiveFilterButton(targetBtn) {
@@ -72,6 +80,8 @@
 
       // 1) Проверяем достижения (unlock)
       try { if (typeof checkAllAchievements === 'function') checkAllAchievements(); } catch (_) {}
+      // 1.1) Обновим баланс гемов (после возможных новых достижений)
+      try { if (typeof window.renderGemsBalance === 'function') window.renderGemsBalance('gems-balance'); } catch (_) {}
 
       // 2) Рендер
       try { if (typeof renderAchievementsSummary === 'function') renderAchievementsSummary(); } catch (_) {}
