@@ -1141,3 +1141,35 @@ html[data-theme="light"] .opal-ring-fg {
   0%, 100% { opacity: 0.92; }
   50%      { opacity: 1; }
 }
+
+
+/* =========================================================
+   Gems chip (баланс гемов) — пункт #2
+   ========================================================= */
+
+.gems-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: rgba(255,255,255,0.06);
+  box-shadow: var(--shadow-elev);
+  font-weight: 1000;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+html[data-theme="light"] .gems-chip{
+  background: rgba(11,16,32,0.04);
+}
+
+.gems-chip__icon{
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+}
