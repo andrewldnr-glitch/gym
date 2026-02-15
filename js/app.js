@@ -923,7 +923,7 @@ function __escapeHtml(str) {
     .replace(/</g, '<')
     .replace(/>/g, '>')
     .replace(/"/g, '"')
-    .replace(/'/g, ''');
+    .replace(/'/g, ',');
 }
 
 function __renderList(items, limit = 6) {
@@ -1299,4 +1299,5 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(function() {
     // Инициализация анимаций
   }, 100);
+
 });
