@@ -15,8 +15,65 @@ const screens = {
     finish: document.getElementById('screen-finish')
 };
 
+// ------------------------------
+// Helpers (data / history / sound)
+// ------------------------------
+
+// Не критично для логики — но чтобы приложение не падало, даже если звука нет.
+function playSound(_type) {
+  // Можно позже подключить реальные звуки через WebAudio / <audio>.
+}
+
+// Загрузка базы тренировок для training.html (data/trainings.json)
+async function loadTrainingsData() {
+  try {
+    const res = await fetch('data/trainings.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.error('[training] loadTrainingsData failed:', e);
+    const title = document.getElementById('training-name-intro');
+    const desc = document.getElementById('training-desc-intro');
+    if (title) title.innerText = 'Не удалось загрузить тренировку';
+    if (desc) desc.innerText = 'Проверьте подключение и наличие файла data/trainings.json';
+    return null;
+  }
+}
+
+// Сохраняем завершение тренировки в общий ключ истории (его читает index.html / profile.html)
+function saveToHistory(trainingId, trainingName) {
+  const finishedAtIso = new Date().toISOString();
+
+  // 1) История тренировок
+  try {
+    const key = 'trainingHistory';
+    const hist = JSON.parse(localStorage.getItem(key) || '[]');
+    hist.push({
+      date: finishedAtIso,
+      source: 'training',
+      training_id: trainingId,
+      title: trainingName || 'Тренировка'
+    });
+    localStorage.setItem(key, JSON.stringify(hist));
+  } catch (e) {
+    console.warn('[training] saveToHistory failed:', e);
+  }
+
+  // 2) userStats (не обязательно, но полезно для статистики/достижений)
+  try {
+    const statsKey = 'userStats';
+    const stats = JSON.parse(localStorage.getItem(statsKey) || '{}');
+    const total = Number(stats.totalWorkouts || 0) || 0;
+    stats.totalWorkouts = total + 1;
+    stats.lastTrainingDate = finishedAtIso;
+    localStorage.setItem(statsKey, JSON.stringify(stats));
+  } catch (_) {}
+}
+
+
+
 document.addEventListener('DOMContentLoaded', async () => {
-  initApp();
+  if (typeof window.initApp === 'function') window.initApp();
   const params = new URLSearchParams(window.location.search);
   const trainingId = parseInt(params.get('id'));
   if (!trainingId) { window.location.href = 'index.html'; return; }
