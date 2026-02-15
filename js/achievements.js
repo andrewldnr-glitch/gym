@@ -21,6 +21,7 @@ const BADGES_LIST = [
     icon: 'footprints',
     category: 'workouts',
     desc: 'Завершите 1 тренировку.',
+    rewardGems: 10,
     target: 1,
     getValue: (stats) => stats.totalWorkouts,
   },
@@ -30,6 +31,7 @@ const BADGES_LIST = [
     icon: 'flame',
     category: 'workouts',
     desc: 'Завершите 5 тренировок.',
+    rewardGems: 25,
     target: 5,
     getValue: (stats) => stats.totalWorkouts,
   },
@@ -39,6 +41,7 @@ const BADGES_LIST = [
     icon: 'dumbbell',
     category: 'workouts',
     desc: 'Завершите 10 тренировок.',
+    rewardGems: 50,
     target: 10,
     getValue: (stats) => stats.totalWorkouts,
   },
@@ -48,6 +51,7 @@ const BADGES_LIST = [
     icon: 'scale',
     category: 'weight',
     desc: 'Добавьте 1 запись веса.',
+    rewardGems: 10,
     target: 1,
     getValue: (stats) => stats.weightEntries,
   },
@@ -57,6 +61,7 @@ const BADGES_LIST = [
     icon: 'trending-up',
     category: 'weight',
     desc: 'Добавьте 5 записей веса.',
+    rewardGems: 25,
     target: 5,
     getValue: (stats) => stats.weightEntries,
   },
@@ -66,6 +71,7 @@ const BADGES_LIST = [
     icon: 'moon',
     category: 'special',
     desc: 'Завершите тренировку ночью (23:00–06:00).',
+    rewardGems: 15,
     target: 1,
     getValue: (stats) => stats.nightWorkouts,
   },
@@ -124,6 +130,48 @@ function getAchievementUnlockedAt(id) {
   return entry ? entry.unlockedAt : null;
 }
 
+// -------------------------------
+// Gems rewards (за достижения)
+// -------------------------------
+
+function getBadgeById(id) {
+  const key = String(id || '').trim();
+  if (!key) return null;
+  return BADGES_LIST.find((b) => b.id === key) || null;
+}
+
+/**
+ * Начисляет гемы за достижение, если задан rewardGems.
+ * Использует idempotencyKey, чтобы начисление было строго один раз.
+ */
+function awardGemsForAchievement(achievementId) {
+  const badge = getBadgeById(achievementId);
+  const amount = Number(badge?.rewardGems ?? 0);
+
+  if (!Number.isFinite(amount) || amount <= 0) return { ok: true, skipped: true };
+  if (typeof window.addGems !== 'function') return { ok: false, skipped: true };
+
+  return window.addGems(amount, {
+    reason: `achievement:${achievementId}`,
+    title: badge ? `Достижение: ${badge.name}` : `Достижение: ${achievementId}`,
+    idempotencyKey: `achv:${achievementId}`,
+    meta: { achievementId: String(achievementId || '') },
+  });
+}
+
+/**
+ * Миграция: если достижения уже были открыты до внедрения гемов,
+ * мы начислим награды один раз (idempotencyKey защитит от дублей).
+ */
+function ensureAchievementRewardsApplied() {
+  try {
+    const unlocked = getAchievements();
+    unlocked.forEach((id) => {
+      try { awardGemsForAchievement(id); } catch (_) {}
+    });
+  } catch (_) {}
+}
+
 function saveAchievement(id) {
   const normalizedId = String(id || '').trim();
   if (!normalizedId) return;
@@ -134,12 +182,26 @@ function saveAchievement(id) {
   entries.push({ id: normalizedId, unlockedAt: new Date().toISOString() });
   try { localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(entries)); } catch (_) {}
 
-  // UI / TG popup
-  const badge = BADGES_LIST.find((b) => b.id === normalizedId);
+  // UI / TG popup + начисление гемов
+  const badge = getBadgeById(normalizedId);
+  const reward = Number(badge?.rewardGems ?? 0) || 0;
+
+  // начисляем гемы (если подключён gems.js)
+  try { awardGemsForAchievement(normalizedId); } catch (_) {}
+
+  // обновим UI кошелька (если он есть на странице)
+  try { if (typeof window.renderGemsBalance === 'function') window.renderGemsBalance('gems-balance'); } catch (_) {}
+  try { if (typeof window.renderGemsHistory === 'function') window.renderGemsHistory('gems-history', { limit: 6 }); } catch (_) {}
+
   const title = 'Достижение разблокировано! 🏆';
+  const rewardLine = reward > 0 ? `
+
+💎 Награда: +${reward}` : '';
   const message = badge
-    ? `Вы получили: "${badge.name}"\n\n${badge.desc || ''}`
-    : `Вы получили достижение: "${normalizedId}"`;
+    ? `Вы получили: "${badge.name}"
+
+${badge.desc || ''}${rewardLine}`
+    : `Вы получили достижение: "${normalizedId}"${rewardLine}`;
 
   try {
     if (window.Telegram && window.Telegram.WebApp) {
@@ -264,6 +326,9 @@ function checkAllAchievements() {
       : (getBadgeProgress(badge, stats).current >= (badge.target ?? 1));
     if (ok) saveAchievement(badge.id);
   });
+
+  // ✅ начислить награды за достижения (включая миграцию для уже открытых)
+  try { ensureAchievementRewardsApplied(); } catch (_) {}
 }
 
 // -------------------------------
@@ -352,7 +417,8 @@ function renderAchievementsBoard(opts = {}) {
           <div class="achievement-card__desc">${badge.desc || ''}</div>
         </div>
         <div class="achievement-card__status">
-          ${unlocked ? 'Открыто' : 'Закрыто'}
+          <span class="achievement-card__status-text">${unlocked ? 'Открыто' : 'Закрыто'}</span>
+          ${badge.rewardGems ? `<span class="achievement-card__reward"><i data-lucide="gem"></i>+${badge.rewardGems}</span>` : ''}
         </div>
       </div>
 
@@ -369,7 +435,8 @@ function renderAchievementsBoard(opts = {}) {
 
     const openDetails = () => {
       const status = unlocked ? 'Открыто ✅' : 'Пока закрыто 🔒';
-      const msg = `${badge.name}\n\n${badge.desc || ''}\n\n${status}\nПрогресс: ${progress.text}`;
+      const rewardLine = badge.rewardGems ? `\nНаграда: +${badge.rewardGems} 💎` : '';
+      const msg = `${badge.name}\n\n${badge.desc || ''}\n\n${status}\nПрогресс: ${progress.text}${rewardLine}`;
       try {
         if (window.Telegram?.WebApp?.showPopup) {
           window.Telegram.WebApp.showPopup({
@@ -404,3 +471,5 @@ window.checkAllAchievements = checkAllAchievements;
 window.renderAchievements = renderAchievements;
 window.renderAchievementsBoard = renderAchievementsBoard;
 window.renderAchievementsSummary = renderAchievementsSummary;
+window.ensureAchievementRewardsApplied = ensureAchievementRewardsApplied;
+window.awardGemsForAchievement = awardGemsForAchievement;
