@@ -7,6 +7,27 @@
 // Здесь делаем её идемпотентной и безопасной для запуска вне Telegram.
 //
 
+import type {
+  Exercise,
+  Course,
+  CourseScheduleItem,
+  ExerciseLevel,
+  ContentPackExercise,
+  ContentPackCourse,
+  CourseSession,
+  Prescription,
+  ModalState,
+  WorkoutListItem
+} from './types/index';
+// ==========================================
+// === 0. БЕЗОПАСНАЯ ИНИЦИАЛИЗАЦИЯ APP (TG) ===
+// ==========================================
+//
+// Некоторые страницы (например, info.html / training.html) вызывают initApp().
+// Ранее этой функции не было, что ломало JS.
+// Здесь делаем её идемпотентной и безопасной для запуска вне Telegram.
+//
+
 if (typeof window.initApp !== 'function') {
   window.initApp = function initApp() {
     // Telegram WebApp (если открыто внутри Telegram)
@@ -50,10 +71,10 @@ const __CONTENT_PACK_BASE = 'data/content_pack';
 let __contentPackState = {
   loaded: false,
   used: false,
-  loading: null,
+  loading: null as Promise<boolean> | null,
 };
 
-async function __fetchJson(path) {
+async function __fetchJson<T>(path: string): Promise<T> {
   const res = await fetch(`${__CONTENT_PACK_BASE}/${path}`, { cache: 'no-store' });
   if (!res.ok) {
     const err = new Error(`Failed to load ${path}: ${res.status}`);
@@ -61,10 +82,10 @@ async function __fetchJson(path) {
     err.__status = res.status;
     throw err;
   }
-  return await res.json();
+  return await res.json() as T;
 }
 
-async function __fetchText(path) {
+async function __fetchText(path: string): Promise<string> {
   const res = await fetch(`${__CONTENT_PACK_BASE}/${path}`, { cache: 'no-store' });
   if (!res.ok) {
     const err = new Error(`Failed to load ${path}: ${res.status}`);
@@ -76,13 +97,13 @@ async function __fetchText(path) {
 }
 
 // Небольшой CSV-парсер (подходит для наших экспортов; поддерживает кавычки)
-function __parseCsv(text) {
+function __parseCsv(text: string): string[][] {
   const lines = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
-  const out = [];
+  const out: string[][] = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (!line || !line.trim()) continue;
-    const row = [];
+    const row: string[] = [];
     let cur = '';
     let inQ = false;
     for (let j = 0; j < line.length; j++) {
@@ -106,14 +127,14 @@ function __parseCsv(text) {
   return out;
 }
 
-function __csvToObjects(text) {
+function __csvToObjects(text: string): Record<string, string>[] {
   const rows = __parseCsv(text);
   if (!rows.length) return [];
   const header = rows[0].map(h => String(h || '').trim());
-  const objs = [];
+  const objs: Record<string, string>[] = [];
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
-    const obj = {};
+    const obj: Record<string, string> = {};
     header.forEach((h, idx) => {
       obj[h] = (r[idx] ?? '').toString().trim();
     });
@@ -122,8 +143,8 @@ function __csvToObjects(text) {
   return objs;
 }
 
-function __equipmentToRuShort(equipmentArr) {
-  const map = {
+function __equipmentToRuShort(equipmentArr: string[]): string {
+  const map: Record<string, string> = {
     barbell: 'Штанга',
     dumbbell: 'Гантели',
     kettlebell: 'Гиря',
@@ -144,13 +165,13 @@ function __equipmentToRuShort(equipmentArr) {
   };
 
   const arr = Array.isArray(equipmentArr) ? equipmentArr : [];
-  const ru = arr.map(k => map[k] || k).filter(Boolean);
+  const ru = arr.map(k => map[k] || k).filter(Boolean) as string[];
   if (ru.length === 0) return 'Оборудование';
   if (ru.length <= 2) return ru.join(' + ');
   return `${ru[0]} + ${ru[1]}…`;
 }
 
-function __inferMuscleGroupFromExercise(ex) {
+function __inferMuscleGroupFromExercise(ex: ContentPackExercise): string {
   const pattern = String(ex?.movement_pattern || '').toLowerCase();
   const primary = (ex?.primary_muscles || []).join(' ').toLowerCase();
 
@@ -173,7 +194,7 @@ function __inferMuscleGroupFromExercise(ex) {
   return 'other';
 }
 
-function __defaultRepsForExercise(ex) {
+function __defaultRepsForExercise(ex: ContentPackExercise): string {
   const pattern = String(ex?.movement_pattern || '').toLowerCase();
   if (pattern.startsWith('core_')) return '30–45 сек';
   if (pattern === 'cardio') return '10–20 мин';
@@ -183,12 +204,12 @@ function __defaultRepsForExercise(ex) {
   return '8–12';
 }
 
-function __firstOrDash(arr) {
+function __firstOrDash(arr: any[]): string {
   return Array.isArray(arr) && arr.length ? String(arr[0]) : '-';
 }
 
-function __iconForGroup(group) {
-  const map = {
+function __iconForGroup(group: string): string {
+  const map: Record<string, string> = {
     chest: '💪',
     back: '🏋️',
     legs: '🦵',
@@ -202,7 +223,7 @@ function __iconForGroup(group) {
   return map[group] || '🏋️';
 }
 
-function __toInternalExercise(ex) {
+function __toInternalExercise(ex: ContentPackExercise): Exercise {
   const muscle = __inferMuscleGroupFromExercise(ex);
   const reps = __defaultRepsForExercise(ex);
   const rest = Number(ex?.recommended_rest_sec || 60);
@@ -210,7 +231,7 @@ function __toInternalExercise(ex) {
   const tempo = ex?.tempo_recommendation ? `Темп ${ex.tempo_recommendation}` : '';
   const cue = __firstOrDash(ex?.execution_cues);
 
-  const mkLevel = (rirText) => ({
+  const mkLevel = (rirText: string): ExerciseLevel => ({
     weight: equip,
     reps,
     restTime: rest,
@@ -233,7 +254,7 @@ function __toInternalExercise(ex) {
   };
 }
 
-function __buildCourseVm(course, sessions, prescriptions) {
+function __buildCourseVm(course: ContentPackCourse, sessions: CourseSession[], prescriptions: Prescription[]): Course {
   const courseId = course.course_id || course.id;
   const title = course.title_ru || course.title || courseId;
   const level = course.level || 'beginner';
@@ -244,10 +265,10 @@ function __buildCourseVm(course, sessions, prescriptions) {
   const presc = Array.isArray(prescriptions) ? prescriptions : [];
 
   // если sessions не дали — пытаемся использовать уже "schedule" в курсе
-  let schedule = [];
+  let schedule: CourseScheduleItem[] = [];
   if (sess.length) {
     schedule = sess.map(s => {
-      const items = presc
+      const items: (string | Prescription)[] = presc
         .filter(p => p.template_id === s.template_id)
         .sort((a, b) => (a.order_in_session || 0) - (b.order_in_session || 0))
         .map(p => ({
@@ -288,25 +309,25 @@ function __buildCourseVm(course, sessions, prescriptions) {
   };
 }
 
-async function ensureContentPackLoaded() {
+async function ensureContentPackLoaded(): Promise<boolean> {
   if (__contentPackState.loaded) return __contentPackState.used;
   if (__contentPackState.loading) return __contentPackState.loading;
 
-  __contentPackState.loading = (async () => {
+  __contentPackState.loading = (async (): Promise<boolean> => {
     try {
       const exercises = await __fetchJson('exercises.json');
 
       // courses.json может быть массивом или bundle-объектом
-      let coursesRaw = null;
+      let coursesRaw: any = null;
       try {
         coursesRaw = await __fetchJson('courses.json');
       } catch (e) {
         console.warn('[content-pack] courses.json not found:', e);
       }
 
-      let courses = [];
-      let sessions = [];
-      let prescriptions = [];
+      let courses: ContentPackCourse[] = [];
+      let sessions: CourseSession[] = [];
+      let prescriptions: Prescription[] = [];
 
       if (coursesRaw && !Array.isArray(coursesRaw) && typeof coursesRaw === 'object' && coursesRaw.course) {
         // bundle
@@ -323,7 +344,7 @@ async function ensureContentPackLoaded() {
           try {
             const csv = await __fetchText('sessions.csv');
             const rows = __csvToObjects(csv);
-            const toNum = (v) => {
+            const toNum = (v: any): number | null => {
               if (v === null || v === undefined || v === '') return null;
               const n = Number(String(v).replace(',', '.'));
               return Number.isFinite(n) ? n : null;
@@ -348,7 +369,7 @@ async function ensureContentPackLoaded() {
           try {
             const csv = await __fetchText('prescriptions.csv');
             const rows = __csvToObjects(csv);
-            const toNum = (v) => {
+            const toNum = (v: any): number | null => {
               if (v === null || v === undefined || v === '') return null;
               const n = Number(String(v).replace(',', '.'));
               return Number.isFinite(n) ? n : null;
@@ -392,7 +413,7 @@ async function ensureContentPackLoaded() {
       return __contentPackState.used;
     } catch (e) {
       // Типичный сценарий: нет файлов (404) — игнорируем
-      const status = e?.__status;
+      const status = (e as any)?.__status;
       if (status !== 404) console.warn('[content-pack] load failed:', e);
       __contentPackState.used = false;
       return false;
@@ -919,11 +940,11 @@ function startCourseDay(courseId, dayIndex) {
 
 function __escapeHtml(str) {
   return String(str ?? '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
-    .replace(/'/g, ''');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 function __renderList(items, limit = 6) {
