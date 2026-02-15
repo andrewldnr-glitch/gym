@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Привычки</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/habits.css" />
+
+  <!-- ✅ Единая тема для всего приложения -->
+  <script src="js/theme.js"></script>
+
+  <!-- ✅ Lucide CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+
+<body class="has-tab-bar">
+  <div class="container">
+
+    <a href="profile.html" class="btn-back">
+      <i data-lucide="chevron-left"></i>
+      Назад
+    </a>
+
+    <div class="page-head">
+      <h1 class="page-title">
+        <span class="section-title__icon"><i data-lucide="calendar-check"></i></span>
+        Привычки
+      </h1>
+      <p class="page-subtitle">Отмечайте привычки ежедневно — календарь покажет прогресс.</p>
+    </div>
+
+    <!-- Сегодня -->
+    <div class="card today-card">
+      <div class="today-head">
+        <div>
+          <div class="today-title">Сегодня</div>
+          <div class="today-date" id="today-date">—</div>
+        </div>
+        <button id="btn-mark-all" type="button" class="pill-btn btn-state-neutral">Отметить всё</button>
+      </div>
+
+      <div id="today-habits" class="habit-list"></div>
+
+      <div id="today-empty" class="empty-state" style="display:none;">
+        <div class="empty-title">Пока нет привычек</div>
+        <div class="empty-desc">Добавьте первую привычку, чтобы начать вести календарь.</div>
+      </div>
+    </div>
+
+    <!-- Календарь -->
+    <div class="card calendar-card">
+      <div class="calendar-head">
+        <button id="btn-prev-month" type="button" class="icon-btn btn-state-neutral" aria-label="Предыдущий месяц">
+          <i data-lucide="chevron-left"></i>
+        </button>
+
+        <div class="calendar-month" id="calendar-month">—</div>
+
+        <button id="btn-next-month" type="button" class="icon-btn btn-state-neutral" aria-label="Следующий месяц">
+          <i data-lucide="chevron-right"></i>
+        </button>
+      </div>
+
+      <div class="calendar-grid" id="calendar-grid">
+        <!-- JS -->
+      </div>
+
+      <div class="calendar-legend">
+        <span class="legend-dot" data-level="0"></span>
+        <span>0%</span>
+        <span class="legend-dot" data-level="2"></span>
+        <span>~50%</span>
+        <span class="legend-dot" data-level="4"></span>
+        <span>100%</span>
+      </div>
+    </div>
+
+    <!-- Управление привычками -->
+    <div class="card manage-card">
+      <div class="manage-head">
+        <div>
+          <div class="manage-title">Мои привычки</div>
+          <div class="manage-desc">Можно добавлять и удалять привычки — отметки сохранятся по дням.</div>
+        </div>
+        <button id="btn-add-habit" type="button" class="pill-btn btn-state-primary">
+          <i data-lucide="plus"></i>
+          Добавить
+        </button>
+      </div>
+
+      <div id="habits-manage-list" class="manage-list"></div>
+    </div>
+
+  </div>
+
+  <!-- Day modal -->
+  <div id="day-modal" class="modal-backdrop" aria-hidden="true" style="display:none;">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Отметки</div>
+          <div class="modal-subtitle" id="day-modal-date">—</div>
+        </div>
+        <button id="btn-close-day" type="button" class="icon-btn btn-state-neutral" aria-label="Закрыть">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div id="day-modal-list" class="habit-list"></div>
+
+      <button id="btn-clear-day" type="button" class="pill-btn btn-state-neutral" style="width:100%; margin-top:10px;">
+        Очистить отметки дня
+      </button>
+    </div>
+  </div>
+
+  <!-- Add habit modal -->
+  <div id="habit-modal" class="modal-backdrop" aria-hidden="true" style="display:none;">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">Новая привычка</div>
+          <div class="modal-subtitle">Название и эмодзи (по желанию)</div>
+        </div>
+        <button id="btn-close-habit" type="button" class="icon-btn btn-state-neutral" aria-label="Закрыть">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <label class="field">
+        <span>Название</span>
+        <input id="habit-name" type="text" placeholder="Например: Вода" maxlength="28" />
+      </label>
+
+      <label class="field">
+        <span>Эмодзи</span>
+        <input id="habit-emoji" type="text" placeholder="💧" maxlength="4" />
+      </label>
+
+      <button id="btn-save-habit" type="button" class="btn-main" style="margin-top:12px;">
+        Сохранить
+      </button>
+    </div>
+  </div>
+
+  <nav class="tab-bar">
+    <a href="index.html" class="tab-item">
+      <i data-lucide="home"></i>
+      <span>Главная</span>
+    </a>
+
+    <a href="profile.html" class="tab-item">
+      <i data-lucide="bar-chart-3"></i>
+      <span>Статистика</span>
+    </a>
+
+    <a href="info.html" class="tab-item">
+      <i data-lucide="sparkles"></i>
+      <span>Инструменты</span>
+    </a>
+  </nav>
+
+  <script src="js/habits.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      try { if (window.lucide) lucide.createIcons(); } catch (_) {}
+    });
+  </script>
+</body>
+</html>
