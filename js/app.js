@@ -1,4 +1,35 @@
 // ==========================================
+// === 0. БЕЗОПАСНАЯ ИНИЦИАЛИЗАЦИЯ APP (TG) ===
+// ==========================================
+//
+// Некоторые страницы (например, info.html / training.html) вызывают initApp().
+// Ранее этой функции не было, что ломало JS.
+// Здесь делаем её идемпотентной и безопасной для запуска вне Telegram.
+//
+
+if (typeof window.initApp !== 'function') {
+  window.initApp = function initApp() {
+    // Telegram WebApp (если открыто внутри Telegram)
+    try {
+      if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+      }
+    } catch (e) {
+      console.warn('[initApp] Telegram init failed:', e);
+    }
+
+    // Lucide icons (если библиотека подключена на странице)
+    try {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    } catch (_) {}
+  };
+}
+
+// ==========================================
 // === 1. БАЗА ДАННЫХ УПРАЖНЕНИЙ ===
 // ==========================================
 
@@ -687,8 +718,22 @@ function addWeight() {
   alert('Функция добавления веса недоступна: подключи js/weight.js');
 }
 
+function getHistory() {
+  const keys = ['trainingHistory', 'workoutHistory', 'workoutSessions', 'trainingSessions', 'history'];
+  for (const key of keys) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return arr;
+    } catch (_) {}
+  }
+  return [];
+}
+
 function getWeightHistory() {
-  if (typeof window.getWeightHistory === 'function') return window.getWeightHistory();
+  // ⚠️ Раньше тут была рекурсия (функция вызывала сама себя через window.getWeightHistory),
+  // что приводило к переполнению стека на страницах без js/weight.js.
   try { return JSON.parse(localStorage.getItem('weightHistory') || '[]'); }
   catch (e) { return []; }
 }
