@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>FitGym</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- ✅ Единая тема для всего приложения -->
+  <script src="js/theme.js"></script>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    /* ===== OPAL Background (стабильно/просто, чуть темнее и контрастнее) ===== */
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(980px 760px at 28% 18%, rgba(98,123,255,0.36), transparent 66%),
+        radial-gradient(980px 760px at 82% 72%, rgba(186,108,255,0.30), transparent 68%),
+        radial-gradient(760px 620px at 58% 44%, rgba(86,206,255,0.13), transparent 70%),
+        radial-gradient(1200px 900px at 50% 115%, rgba(0,0,0,0.74), transparent 62%);
+      filter: blur(12px);
+      transform: translateZ(0);
+      animation: opalBg 8s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+    @keyframes opalBg{
+      0%   { transform: translate3d(0,0,0) scale(1); filter: blur(12px); }
+      100% { transform: translate3d(0,-16px,0) scale(1.08); filter: blur(16px); }
+    }
+
+    /* Виньетка (важно для “неона”) */
+    body::after{
+      content:"";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(1200px 900px at 50% 35%, rgba(255,255,255,0.06), transparent 60%),
+        radial-gradient(1100px 820px at 50% 80%, rgba(0,0,0,0.64), transparent 62%),
+        radial-gradient(1400px 1100px at 50% 50%, rgba(0,0,0,0.56), transparent 70%);
+      pointer-events: none;
+    }
+
+    .opal-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding-top: 6px;
+      padding-bottom: 14px;
+    }
+
+    /* Glass + верхний highlight */
+    .opal-card.card{
+      position: relative;
+      background: rgba(255,255,255,0.075);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 22px 56px rgba(0,0,0,0.28);
+      overflow: hidden;
+    }
+    .opal-card.card::before{
+      content:"";
+      position:absolute;
+      left: 0; right: 0; top: 0;
+      height: 48px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.10), transparent);
+      opacity: 0.55;
+      pointer-events:none;
+    }
+
+    html[data-theme="light"] .opal-card.card{
+      background: rgba(255,255,255,0.68);
+      border: 1px solid rgba(11,16,32,0.08);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.10);
+    }
+    html[data-theme="light"] .opal-card.card::before{
+      background: linear-gradient(to bottom, rgba(11,16,32,0.06), transparent);
+      opacity: 0.45;
+    }
+
+    /* ===== Ring ===== */
+    .opal-ring-wrap {
+      width: 236px;
+      height: 236px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      margin: 8px auto 2px;
+      flex-shrink: 0;
+    }
+    
+    /* Неоновое свечение вокруг кольца прогресса */
+    .opal-ring-glow {
+      position: absolute;
+      width: 266px;
+      height: 266px;
+      filter: blur(17.5px);
+      animation: neonGlow 15s linear infinite;
+      will-change: transform;
+      z-index: -1;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        #00f 0deg,
+        #00f 90deg,
+        #a0f 180deg,
+        #a0f 270deg,
+        #00f 360deg
+      );
+      top: -15px;
+      left: -15px;
+      opacity: 0.7;
+      mask: radial-gradient(transparent 93px, black 95px);
+      -webkit-mask: radial-gradient(transparent 93px, black 95px);
+      overflow: hidden;
+    }
+    
+    @keyframes neonGlow {
+      0% {
+        transform: rotate(0deg) scale(1);
+        filter: blur(17.5px);
+      }
+      25% {
+        transform: rotate(90deg) scale(1.05);
+        filter: blur(20px);
+      }
+      50% {
+        transform: rotate(180deg) scale(1);
+        filter: blur(17.5px);
+      }
+      75% {
+        transform: rotate(270deg) scale(1.05);
+        filter: blur(20px);
+      }
+      100% {
+        transform: rotate(360deg) scale(1);
+        filter: blur(17.5px);
+      }
+    }
+
+    /* Halo */
+    .opal-ring-wrap::before{
+      content:"";
+      position: absolute;
+      inset: 16px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 50% 50%,
+          rgba(167,139,250,0.20),
+          rgba(96,165,250,0.16) 46%,
+          transparent 72%);
+      filter: blur(14px);
+      opacity: 0.86;
+      animation: opalHalo 3.9s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes opalHalo{
+      0%,100%{ transform: scale(1); opacity: 0.72; }
+      50%{ transform: scale(1.05); opacity: 0.96; }
+    }
+
+    .opal-ring {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      display: block;
+      filter: drop-shadow(0 28px 58px rgba(96,165,250,0.22));
+    }
+
+    .opal-ring-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.14);
+      stroke-width: 10;
+    }
+    html[data-theme="light"] .opal-ring-bg { stroke: rgba(11,16,32,0.10); }
+
+    /* Base ring: всегда видно, но тише */
+    .opal-ring-base{
+      fill: none;
+      stroke: url(#opalRingGrad);
+      stroke-width: 10;
+      stroke-linecap: round;
+      opacity: 0.14;
+      filter: url(#opalRingGlowSoft);
+    }
+
+    /* Bloom/glow слой */
+    .opal-ring-glow-svg {
+      fill: none;
+      stroke: url(#opalRingGrad);
+      stroke-width: 16;
+      stroke-linecap: round;
+      stroke-dasharray: 628;
+      stroke-dashoffset: 628;
+      opacity: 0.34;
+      transition: stroke-dashoffset 650ms ease, opacity 260ms ease;
+      filter: url(#opalRingGlow);
+      animation: opalGlowPulse 3.8s ease-in-out infinite;
+    }
+    @keyframes opalGlowPulse{
+      0%,100%{ opacity: 0.24; }
+      50%{ opacity: 0.44; }
+    }
+
+    /* Основная дуга */
+    .opal-ring-fg {
+      fill: none;
+      stroke: url(#opalRingGrad);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 628;
+      stroke-dashoffset: 628;
+      transition: stroke-dashoffset 650ms ease, opacity 260ms ease;
+      filter: url(#opalRingGlowSoft);
+    }
+
+    /* Core “трубка света” */
+    .opal-ring-core{
+      fill: none;
+      stroke: url(#opalRingCoreGrad);
+      stroke-width: 5.5;
+      stroke-linecap: round;
+      stroke-dasharray: 628;
+      stroke-dashoffset: 628;
+      transition: stroke-dashoffset 650ms ease, opacity 260ms ease;
+      filter: url(#opalCoreGlow);
+      opacity: 0.98;
+    }
+
+    /* Центр — глубина */
+    .opal-ring-center::before{
+      content:"";
+      position:absolute;
+      inset: 52px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 50% 40%,
+          rgba(20,22,40,0.22),
+          rgba(0,0,0,0.58) 70%,
+          rgba(0,0,0,0.74));
+      box-shadow:
+        inset 0 10px 26px rgba(0,0,0,0.48),
+        inset 0 -10px 22px rgba(255,255,255,0.04);
+      opacity: 0.98;
+      pointer-events:none;
+      display: none; /* Скрытие внутреннего круга */
+    }
+
+    .opal-ring-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .opal-ring-center .pct {
+      font-size: 3.2rem;
+      font-weight: 1000;
+      letter-spacing: -1px;
+      line-height: 1;
+      text-shadow: 0 10px 32px rgba(0,0,0,0.62);
+      position: relative;
+    }
+
+    .opal-ring-center .sub {
+      margin-top: 6px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      position: relative;
+    }
+
+    /* Hotspot: стабильный CSS rotate */
+    /* Убираем вращающийся луч света */
+    .opal-hotspot-rotator{
+      display: none;
+    }
+
+    /* ===== Cards ===== */
+    .opal-grid {
+      display: grid;
+      gap: 12px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .opal-card { padding: 16px; }
+    .opal-card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .opal-card-title .label { font-weight: 900; letter-spacing: -0.3px; }
+    .opal-card-title .hint  { color: var(--text-secondary); font-weight: 800; font-size: 0.85rem; }
+
+    .opal-kpis { display: grid; gap: 10px; position: relative; z-index: 1; }
+
+    .opal-kpi {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+    }
+    html[data-theme="light"] .opal-kpi{
+      border-color: rgba(11,16,32,0.08);
+      background: rgba(11,16,32,0.03);
+    }
+
+    .opal-kpi .k { color: var(--text-secondary); font-weight: 800; font-size: 0.9rem; }
+    .opal-kpi .v { font-weight: 1000; letter-spacing: -0.4px; font-size: 1.05rem; }
+
+    .opal-mini-chart{
+      width: 100%;
+      height: 92px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.05);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    html[data-theme="light"] .opal-mini-chart{
+      border-color: rgba(11,16,32,0.08);
+      background: rgba(11,16,32,0.03);
+    }
+    .opal-mini-chart svg { width: 100%; height: 100%; display: block; }
+
+    /* ===== CTA Buttons ===== */
+    .opal-cta{
+      display: grid;
+      gap: 10px;
+      margin-top: 6px;
+      width: 100%;
+    }
+
+    .btn-ghost{
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.07);
+      color: var(--text-primary);
+      font-weight: 1000;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.12s ease, box-shadow 0.18s ease;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.18);
+    }
+    .btn-ghost:active{ transform: scale(0.99); }
+    html[data-theme="light"] .btn-ghost{
+      border-color: rgba(11,16,32,0.10);
+      background: rgba(255,255,255,0.55);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.08);
+    }
+
+    .opal-cta .btn-main{
+      width: 100%;
+      font-size: 1.05rem;
+      padding: 18px 18px;
+    }
+
+    .opal-card.card { cursor: default; }
+    .opal-progress-card { overflow: visible; }
+  </style>
+
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
+  </script>
+</head>
+
+<body class="has-tab-bar">
+  <div class="container">
+
+    <header class="page-header">
+      <div>
+        <h1 style="margin-bottom:2px;">FitGym</h1>
+        <p style="margin-top:0;">Спокойно. Стабильно. По плану.</p>
+      </div>
+    </header>
+
+    <section class="opal-hero">
+      <!-- Progress Card -->
+      <div class="card opal-card opal-progress-card" style="width:100%; max-width:420px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; position:relative; z-index:1;">
+          <div style="font-weight:900;">Прогресс</div>
+          <div id="opal-progress-hint" style="color:var(--text-secondary); font-weight:800; font-size:0.85rem;">Эта неделя</div>
+        </div>
+
+        <!-- Ring -->
+        <div class="opal-ring-wrap">
+          <!-- Неоновое свечение вокруг кольца прогресса -->
+          <div class="opal-ring-glow"></div>
+          <svg class="opal-ring" viewBox="0 0 220 220" aria-hidden="true">
+            <defs>
+              <!-- ✅ ВАЖНО: порядок цветов = Blue → Indigo → Purple (как реф) -->
+              <linearGradient id="opalRingGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                <stop offset="0%"   stop-color="var(--accent-tertiary)"></stop>   <!-- blue -->
+                <stop offset="44%"  stop-color="var(--accent-primary)"></stop>    <!-- indigo -->
+                <stop offset="78%"  stop-color="var(--accent-secondary)"></stop>  <!-- purple -->
+                <stop offset="100%" stop-color="var(--accent-tertiary)"></stop>   <!-- back to blue -->
+
+                <animateTransform
+                  attributeName="gradientTransform"
+                  type="rotate"
+                  from="0 0.5 0.5"
+                  to="360 0.5 0.5"
+                  dur="6.2s"
+                  repeatCount="indefinite"/>
+              </linearGradient>
+
+              <!-- Core: почти белая трубка, но с лёгким холодным оттенком -->
+              <linearGradient id="opalRingCoreGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                <stop offset="0%"   stop-color="rgba(240,248,255,0.96)"></stop>
+                <stop offset="45%"  stop-color="rgba(255,255,255,0.92)"></stop>
+                <stop offset="80%"  stop-color="rgba(245,236,255,0.90)"></stop>
+                <stop offset="100%" stop-color="rgba(240,248,255,0.96)"></stop>
+
+                <animateTransform
+                  attributeName="gradientTransform"
+                  type="rotate"
+                  from="0 0.5 0.5"
+                  to="360 0.5 0.5"
+                  dur="6.2s"
+                  repeatCount="indefinite"/>
+              </linearGradient>
+
+              <!-- Soft glow for base/fg -->
+              <filter id="opalRingGlowSoft" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4.2" result="b"></feGaussianBlur>
+                <feMerge>
+                  <feMergeNode in="b"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
+
+              <!-- Strong bloom -->
+              <filter id="opalRingGlow" x="-120%" y="-120%" width="340%" height="340%" color-interpolation-filters="sRGB">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur"></feGaussianBlur>
+                <feColorMatrix
+                  in="blur"
+                  type="matrix"
+                  values="
+                    1 0 0 0 0
+                    0 1 0 0 0
+                    0 0 1 0 0
+                    0 0 0 0.72 0"
+                  result="glow"></feColorMatrix>
+                <feMerge>
+                  <feMergeNode in="glow"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
+
+              <!-- Core glow -->
+              <filter id="opalCoreGlow" x="-80%" y="-80%" width="260%" height="260%" color-interpolation-filters="sRGB">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2.1" result="blur"></feGaussianBlur>
+                <feMerge>
+                  <feMergeNode in="blur"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
+
+              <!-- Hotspot glow -->
+              <filter id="opalHotspotGlow" x="-220%" y="-220%" width="560%" height="560%" color-interpolation-filters="sRGB">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5.2" result="hb"></feGaussianBlur>
+                <feMerge>
+                  <feMergeNode in="hb"></feMergeNode>
+                  <feMergeNode in="SourceGraphic"></feMergeNode>
+                </feMerge>
+              </filter>
+
+              <radialGradient id="opalHotspotFill" cx="50%" cy="50%" r="62%">
+                <stop offset="0%" stop-color="rgba(255,255,255,1)"></stop>
+                <stop offset="38%" stop-color="rgba(220,236,255,0.92)"></stop>
+                <stop offset="100%" stop-color="rgba(220,236,255,0)"></stop>
+              </radialGradient>
+            </defs>
+
+            <circle class="opal-ring-bg" cx="110" cy="110" r="100"></circle>
+
+            <!-- Always-on base ring -->
+            <circle class="opal-ring-base" cx="110" cy="110" r="100"></circle>
+
+            <!-- Progress layers (будут скрываться при 0%) -->
+            <circle id="opal-ring-glow" class="opal-ring-glow-svg" cx="110" cy="110" r="100"></circle>
+            <circle id="opal-ring-fg" class="opal-ring-fg" cx="110" cy="110" r="100"></circle>
+            <circle id="opal-ring-core" class="opal-ring-core" cx="110" cy="110" r="100"></circle>
+
+            <!-- ✅ Один hotspot (меньше, ближе к рефу) -->
+            <g class="opal-hotspot-rotator">
+              <circle cx="110" cy="10" r="7.4" fill="url(#opalHotspotFill)" filter="url(#opalHotspotGlow)" opacity="0.88"></circle>
+              <circle cx="110" cy="10" r="2.6" fill="rgba(255,255,255,0.92)" opacity="0.92"></circle>
+            </g>
+          </svg>
+
+          <div class="opal-ring-center">
+            <div>
+              <div id="opal-percent" class="pct">0%</div>
+              <div class="sub">цель недели</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="opal-grid">
+        <div class="card opal-card">
+          <div class="opal-card-title">
+            <div class="label">На этой неделе</div>
+            <div class="hint" id="opal-week-range">—</div>
+          </div>
+
+          <div class="opal-kpis">
+            <div class="opal-kpi">
+              <div class="k">Активное время</div>
+              <div class="v" id="opal-active-time">0m</div>
+            </div>
+            <div class="opal-kpi">
+              <div class="k">Тренировок</div>
+              <div class="v" id="opal-workouts">0</div>
+            </div>
+            <div class="opal-kpi">
+              <div class="k">Дней с целью</div>
+              <div class="v" id="opal-days">0/7</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card opal-card">
+          <div class="opal-card-title">
+            <div class="label">Вес</div>
+            <div class="hint" id="opal-weight-last">—</div>
+          </div>
+
+          <div class="opal-mini-chart">
+            <svg viewBox="0 0 400 92" preserveAspectRatio="none">
+              <path id="opal-weight-area" d="" fill="url(#areaGrad)" opacity="0.25"></path>
+              <path id="opal-weight-line" d="" fill="none" stroke="url(#lineGrad)" stroke-width="3" stroke-linecap="round"></path>
+
+              <defs>
+                <linearGradient id="opalChartGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+                  <stop offset="0%" stop-color="var(--accent-tertiary)"></stop>
+                  <stop offset="55%" stop-color="var(--accent-secondary)"></stop>
+                  <stop offset="100%" stop-color="var(--accent-primary)"></stop>
+
+                  <animateTransform
+                    attributeName="gradientTransform"
+                    type="rotate"
+                    from="0 0.5 0.5"
+                    to="360 0.5 0.5"
+                    dur="8s"
+                    repeatCount="indefinite"></animateTransform>
+                </linearGradient>
+
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--accent-secondary)" stop-opacity="0.78"></stop>
+                  <stop offset="100%" stop-color="var(--accent-secondary)" stop-opacity="0"></stop>
+                </linearGradient>
+
+                <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="var(--accent-tertiary)"></stop>
+                  <stop offset="55%" stop-color="var(--accent-primary)"></stop>
+                  <stop offset="100%" stop-color="var(--accent-secondary)"></stop>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <p style="margin-top:10px; color:var(--text-secondary); font-weight:800; font-size:0.9rem; position:relative; z-index:1;">
+            Добавляй вес — и увидишь тренд.
+          </p>
+        </div>
+
+        <!-- CTA -->
+        <div class="opal-cta">
+          <button class="btn-main" onclick="window.location.href='trainings.html'">Начать тренировку</button>
+          <button class="btn-ghost" onclick="window.location.href='courses.html'">Курсы тренировок</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Tab Bar -->
+  <nav class="tab-bar">
+    <a class="tab-item active" href="index.html">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5z"/>
+      </svg>
+      Главная
+    </a>
+    <a class="tab-item" href="profile.html">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 19a8 8 0 0 1 16 0"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      Статистика
+    </a>
+    <a class="tab-item" href="info.html">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        <circle cx="12" cy="12" r="4"/>
+      </svg>
+      Инструменты
+    </a>
+  </nav>
+
+  <script>
+    // Helpers
+    function startOfWeek(d) {
+      const x = new Date(d);
+      const day = (x.getDay() + 6) % 7; // Mon=0
+      x.setHours(0,0,0,0);
+      x.setDate(x.getDate() - day);
+      return x;
+    }
+
+    function fmtRange(weekStart) {
+      const end = new Date(weekStart);
+      end.setDate(end.getDate() + 6);
+      const opts = { day: 'numeric', month: 'short' };
+      return `${weekStart.toLocaleDateString('ru-RU', opts)} – ${end.toLocaleDateString('ru-RU', opts)}`;
+    }
+
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+    function loadTrainingHistory() {
+      try { return JSON.parse(localStorage.getItem('trainingHistory') || '[]'); }
+      catch(_) { return []; }
+    }
+
+    function loadWeightHistory() {
+      try { return JSON.parse(localStorage.getItem('weightHistory') || '[]'); }
+      catch(_) { return []; }
+    }
+
+    function setProgressLayersVisible(isVisible){
+      const glow = document.getElementById('opal-ring-glow');
+      const fg = document.getElementById('opal-ring-fg');
+      const core = document.getElementById('opal-ring-core');
+
+      const v = isVisible ? '1' : '0';
+      if (glow) glow.style.opacity = v;
+      if (fg) fg.style.opacity = v;
+      if (core) core.style.opacity = v;
+    }
+
+    function updateRing(percent) {
+      const glow = document.getElementById('opal-ring-glow');
+      const fg = document.getElementById('opal-ring-fg');
+      const core = document.getElementById('opal-ring-core');
+      const label = document.getElementById('opal-percent');
+
+      const r = 100;
+      const c = 2 * Math.PI * r;
+
+      const raw = Number(percent) || 0;
+
+      // ✅ при 0% скрываем прогресс-дугу полностью (убираем “вторую лампочку”)
+      if (raw <= 0) {
+        setProgressLayersVisible(false);
+        if (label) label.textContent = `0%`;
+        return;
+      }
+
+      setProgressLayersVisible(true);
+
+      const p = clamp(raw, 0, 100);
+      const offset = c * (1 - p/100);
+
+      if (glow) { glow.style.strokeDasharray = String(c); glow.style.strokeDashoffset = String(offset); }
+      if (fg)   { fg.style.strokeDasharray   = String(c); fg.style.strokeDashoffset   = String(offset); }
+      if (core) { core.style.strokeDasharray = String(c); core.style.strokeDashoffset = String(offset); }
+
+      if (label) label.textContent = `${Math.round(raw)}%`;
+    }
+
+    function buildMiniChart(values) {
+      const line = document.getElementById('opal-weight-line');
+      const area = document.getElementById('opal-weight-area');
+      if (!line || !area) return;
+
+      if (!values || values.length < 2) {
+        line.setAttribute('d', '');
+        area.setAttribute('d', '');
+        return;
+      }
+
+      const pts = values.slice(-14);
+      const w = 400, h = 92;
+      const padX = 8, padY = 10;
+
+      const ys = pts.map(p => p.weight);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const span = (maxY - minY) || 1;
+
+      const step = (w - padX*2) / (pts.length - 1);
+
+      const coords = pts.map((p, i) => {
+        const x = padX + step * i;
+        const norm = (p.weight - minY) / span;
+        const y = (h - padY) - norm * (h - padY*2);
+        return { x, y };
+      });
+
+      const d = coords.map((p,i) => `${i===0?'M':'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+      line.setAttribute('d', d);
+
+      const dA = `${d} L ${coords[coords.length-1].x.toFixed(1)} ${(h-padY).toFixed(1)} L ${coords[0].x.toFixed(1)} ${(h-padY).toFixed(1)} Z`;
+      area.setAttribute('d', dA);
+    }
+
+    function initHome() {
+      const now = new Date();
+      const ws = startOfWeek(now);
+
+      const rangeEl = document.getElementById('opal-week-range');
+      if (rangeEl) rangeEl.textContent = fmtRange(ws);
+
+      const hist = loadTrainingHistory();
+      const weekItems = hist.filter(x => {
+        const dt = new Date(x.date || x.finished_at || Date.now());
+        return dt >= ws && dt < new Date(ws.getTime() + 7*24*3600*1000);
+      });
+
+      const daysSet = new Set(
+        weekItems.map(x => {
+          const dt = new Date(x.date || x.finished_at || Date.now());
+          return dt.toISOString().slice(0,10);
+        })
+      );
+
+      const workouts = weekItems.length;
+      const days = daysSet.size;
+
+      // пока простая оценка
+      const activeMinutes = workouts * 45;
+      const hours = Math.floor(activeMinutes / 60);
+      const mins = activeMinutes % 60;
+
+      const activeEl = document.getElementById('opal-active-time');
+      const workoutsEl = document.getElementById('opal-workouts');
+      const daysEl = document.getElementById('opal-days');
+
+      if (activeEl) activeEl.textContent = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+      if (workoutsEl) workoutsEl.textContent = String(workouts);
+      if (daysEl) daysEl.textContent = `${days}/7`;
+
+      const WEEK_GOAL = 5;
+      const pct = workouts > 0 ? (workouts / WEEK_GOAL) * 100 : 0;
+      updateRing(pct);
+
+      const weights = loadWeightHistory();
+      const last = weights.length ? weights[weights.length-1] : null;
+      const wLastEl = document.getElementById('opal-weight-last');
+      if (wLastEl) wLastEl.textContent = last ? `${last.weight} кг` : 'Нет данных';
+
+      buildMiniChart(weights);
+    }
+
+    document.addEventListener('DOMContentLoaded', initHome);
+  </script>
+</body>
+</html>
