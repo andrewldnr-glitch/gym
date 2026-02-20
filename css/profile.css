@@ -63,7 +63,8 @@ html[data-theme="light"] .section-title__icon{
 }
 
 .tab-item.active svg{
-  stroke: var(--accent-primary);
+  /* В новом dock — иконка должна следовать currentColor (градиент/контраст) */
+  stroke: currentColor;
 }
 
 /* Theme switch card */
