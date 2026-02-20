@@ -400,13 +400,13 @@
     activeDayKey = dayKey;
     renderDayModal(dayKey);
 
-    dayModal.style.display = 'grid';
+    dayModal.classList.add('active');
     dayModal.setAttribute('aria-hidden', 'false');
     haptic('select');
   }
 
   function closeDayModal() {
-    dayModal.style.display = 'none';
+    dayModal.classList.remove('active');
     dayModal.setAttribute('aria-hidden', 'true');
     activeDayKey = null;
   }
@@ -472,7 +472,7 @@
     inputHabitName.value = '';
     inputHabitEmoji.value = '';
 
-    habitModal.style.display = 'grid';
+    habitModal.classList.add('active');
     habitModal.setAttribute('aria-hidden', 'false');
     setTimeout(() => {
       try { inputHabitName.focus(); } catch (_) {}
@@ -482,7 +482,7 @@
   }
 
   function closeHabitModal() {
-    habitModal.style.display = 'none';
+    habitModal.classList.remove('active');
     habitModal.setAttribute('aria-hidden', 'true');
   }
 

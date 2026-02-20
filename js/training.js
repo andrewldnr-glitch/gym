@@ -7,6 +7,8 @@ let currentTrainingData = null;
 let exercisesList = [];
 let currentExerciseIndex = 0;
 let timerInterval = null;
+let timerTimeout = null;
+let timerSeq = 0;
 let currentMode = 'intro';
 
 let __playlistContextKey = '';
@@ -24,6 +26,24 @@ const screens = {
 // Не критично для логики — но чтобы приложение не падало, даже если звука нет.
 function playSound(_type) {
   // Можно позже подключить реальные звуки через WebAudio / <audio>.
+}
+
+// Останавливаем активный таймер и (опционально) инвалидируем отложенные callbacks
+function stopTimer(invalidate = false) {
+  if (invalidate) timerSeq++;
+  try {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  } catch (_) {}
+
+  try {
+    if (timerTimeout) {
+      clearTimeout(timerTimeout);
+      timerTimeout = null;
+    }
+  } catch (_) {}
 }
 
 // Загрузка базы тренировок для training.html (data/trainings.json)
@@ -108,13 +128,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   exercisesList.forEach((ex, index) => {
     const item = document.createElement('div');
     item.className = 'intro-exercise-item';
-    item.innerHTML = '<div class="intro-number">'+(index+1)+'</div><div class="intro-name">'+ex.name+'</div><div class="intro-meta">'+ex.sets+' × '+ex.reps+'</div>';
+
+    const num = document.createElement('div');
+    num.className = 'intro-number';
+    num.textContent = String(index + 1);
+
+    const name = document.createElement('div');
+    name.className = 'intro-name';
+    name.textContent = String(ex?.name || 'Упражнение');
+
+    const meta = document.createElement('div');
+    meta.className = 'intro-meta';
+    const sets = Number(ex?.sets || 0) || 0;
+    const reps = ex?.reps ?? '';
+    meta.textContent = `${sets} × ${reps}`.trim();
+
+    item.appendChild(num);
+    item.appendChild(name);
+    item.appendChild(meta);
+
     introList.appendChild(item);
   });
   document.getElementById('btn-back-main').style.display = 'inline-flex';
 });
 
 function startWorkout() {
+  if (!Array.isArray(exercisesList) || exercisesList.length === 0) {
+    alert('В этой тренировке нет упражнений.');
+    return;
+  }
   currentExerciseIndex = 0;
   switchScreen('workout');
   document.getElementById('btn-back-main').style.display = 'none';
@@ -125,6 +167,7 @@ function startGetReady() {
   currentMode = 'getready';
   
   const ex = exercisesList[currentExerciseIndex];
+  if (!ex) { finishWorkout(); return; }
   document.getElementById('progress-text').innerText = `Приготовьтесь: ${currentExerciseIndex + 1} из ${exercisesList.length}`;
   document.getElementById('current-exercise-name').innerText = ex.name;
   document.getElementById('current-exercise-meta').innerText = `${ex.sets} × ${ex.reps}`;
@@ -140,7 +183,7 @@ function startGetReady() {
   actionBtn.innerText = "Начать";
   actionBtn.style.display = 'block';
   actionBtn.onclick = function() {
-      clearInterval(timerInterval);
+      stopTimer(true);
       startExercise();
   };
 
@@ -156,6 +199,7 @@ function startExercise() {
   playSound('start');
   
   const ex = exercisesList[currentExerciseIndex];
+  if (!ex) { finishWorkout(); return; }
   document.getElementById('progress-text').innerText = `Упражнение: ${currentExerciseIndex + 1} из ${exercisesList.length}`;
   document.getElementById('current-exercise-name').innerText = ex.name;
   document.getElementById('current-exercise-meta').innerText = `${ex.sets} × ${ex.reps}`;
@@ -184,7 +228,7 @@ function startRest() {
   document.getElementById('current-exercise-name').innerText = "Перерыв";
   
   const nextEx = exercisesList[currentExerciseIndex + 1];
-  document.getElementById('current-exercise-meta').innerText = `Далее: ${nextEx.name}`;
+  document.getElementById('current-exercise-meta').innerText = nextEx ? `Далее: ${nextEx.name}` : '';
   
   const container = document.getElementById('timer-container');
   container.classList.remove('ready-mode');
@@ -196,12 +240,12 @@ function startRest() {
   
   actionBtn.innerText = "Пропустить отдых";
   actionBtn.onclick = function() { 
-      clearInterval(timerInterval); 
+      stopTimer(true);
       onRestEnd(); 
   };
   
   skipBtn.onclick = function() {
-      clearInterval(timerInterval); 
+      stopTimer(true);
       onRestEnd();
   };
 
@@ -209,48 +253,63 @@ function startRest() {
 }
 
 function startTimer(seconds, callback) {
-  clearInterval(timerInterval);
-  
+  // invalidate any pending callback from previous timer
+  stopTimer(true);
+  const mySeq = timerSeq;
+
   const circle = document.getElementById('timer-circle');
   const secondsEl = document.getElementById('timer-seconds');
-  
-  let timeLeft = seconds;
+
+  if (!circle || !secondsEl) return;
+
+  let timeLeft = Number(seconds) || 0;
   const radius = 90;
   const circumference = 2 * Math.PI * radius;
-  
+
   circle.style.strokeDasharray = circumference;
   secondsEl.innerText = timeLeft;
-  
+
   function updateVisual() {
-      const progress = timeLeft / seconds;
-      const offset = circumference * (1 - progress);
-      circle.style.strokeDashoffset = offset;
+    const total = Number(seconds) || 1;
+    const progress = timeLeft / total;
+    const offset = circumference * (1 - progress);
+    circle.style.strokeDashoffset = offset;
   }
-  
+
   updateVisual();
 
   timerInterval = setInterval(() => {
     timeLeft--;
-    
+
     if (currentMode === 'getready' || currentMode === 'rest') {
-        playSound('tick');
+      playSound('tick');
     }
     if (timeLeft <= 3 && currentMode === 'exercise') {
-        playSound('tick');
+      playSound('tick');
     }
 
     if (timeLeft < 0) {
-        clearInterval(timerInterval);
-        return;
+      stopTimer(false);
+      return;
     }
 
     secondsEl.innerText = timeLeft;
     updateVisual();
 
     if (timeLeft === 0) {
-      clearInterval(timerInterval);
-      setTimeout(() => {
-          if (currentMode !== 'finish') callback();
+      // Stop the interval but keep seq so the scheduled callback can validate.
+      try {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+      } catch (_) {}
+
+      // Small delay for smoother UX; guarded by timerSeq.
+      timerTimeout = setTimeout(() => {
+        if (timerSeq !== mySeq) return;
+        if (currentMode === 'finish') return;
+        try { callback(); } catch (e) { console.error('[training] timer callback failed:', e); }
       }, 300);
     }
   }, 1000);
@@ -271,7 +330,7 @@ function onRestEnd() {
 
 function completeStep() {
   if (currentMode !== 'exercise') return;
-  clearInterval(timerInterval);
+  stopTimer(true);
   if (currentExerciseIndex === exercisesList.length - 1) {
       finishWorkout();
   } else {
@@ -280,7 +339,7 @@ function completeStep() {
 }
 
 function skipStep() {
-  clearInterval(timerInterval);
+  stopTimer(true);
   
   if (currentMode === 'rest') {
     currentExerciseIndex++;
@@ -296,7 +355,7 @@ function skipStep() {
 }
 
 function finishWorkout() {
-  clearInterval(timerInterval);
+  stopTimer(true);
   currentMode = 'finish';
   
   // Сохраняем тренировку

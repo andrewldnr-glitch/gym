@@ -79,10 +79,15 @@
 
     // haptic
     try {
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-      }
+      window.Telegram?.WebApp?.HapticFeedback?.impactOccurred?.('light');
     } catch (_) {}
+  };
+
+  // ✅ Удобный toggle для UI (иконка/кнопка на страницах)
+  window.toggleTheme = function () {
+    const current = readStoredTheme() || document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = normalizeTheme(current) === 'dark' ? 'light' : 'dark';
+    window.setAppTheme(next);
   };
 
   // ✅ 1) Применяем тему максимально рано (без вспышки)

@@ -50,8 +50,22 @@ const __CONTENT_PACK_BASE = 'data/content_pack';
 let __contentPackState = {
   loaded: false,
   used: false,
+  usedExercises: false,
+  usedCourses: false,
+  source: 'built_in',
+  errors: [],
   loading: null,
 };
+
+// Expose state for pages/debugging (read-only-ish).
+// Consumers may read window.__contentPackState / window.getContentPackState().
+try {
+  if (typeof window !== 'undefined') {
+    window.__contentPackState = __contentPackState;
+    window.getContentPackState = () => ({ ...__contentPackState });
+  }
+} catch (_) {}
+
 
 async function __fetchJson(path) {
   const res = await fetch(`${__CONTENT_PACK_BASE}/${path}`, { cache: 'no-store' });
@@ -378,23 +392,51 @@ async function ensureContentPackLoaded() {
       const packExercises = Array.isArray(exercises) ? exercises : [];
       const internalExercises = packExercises.map(__toInternalExercise);
 
-      // Индекс для удобства (замены, отображение)
-      window.__exercisePackIndex = new Map(packExercises.map(e => [e.id, e]));
+// Индекс для удобства (замены, отображение)
+try { window.__exercisePackIndex = new Map(packExercises.map(e => [e.id, e])); } catch (_) {}
 
-      EXERCISE_DATABASE = internalExercises;
+// Merge pack exercises into built-in DB.
+// This prevents breaking built-in courses if content pack is partial.
+try {
+  const merged = new Map((Array.isArray(EXERCISE_DATABASE) ? EXERCISE_DATABASE : []).map(e => [e.id, e]));
+  for (const ex of internalExercises) merged.set(ex.id, ex);
+  EXERCISE_DATABASE = Array.from(merged.values());
+  __contentPackState.usedExercises = internalExercises.length > 0;
+} catch (e) {
+  console.warn('[content-pack] merge exercises failed:', e);
+  try { __contentPackState.errors.push({ stage: 'exercises', message: String(e) }); } catch (_) {}
+}
 
-      if (Array.isArray(courses) && courses.length && Array.isArray(sessions) && Array.isArray(prescriptions) && sessions.length && prescriptions.length) {
-        COURSES_DATABASE = courses.map(c => __buildCourseVm(c, sessions, prescriptions));
-      }
+// Courses are optional. If loaded — merge/override by id.
+if (Array.isArray(courses) && courses.length && Array.isArray(sessions) && Array.isArray(prescriptions) && sessions.length && prescriptions.length) {
+  try {
+    const packCourses = courses.map(c => __buildCourseVm(c, sessions, prescriptions)).filter(Boolean);
+    const mergedC = new Map((Array.isArray(COURSES_DATABASE) ? COURSES_DATABASE : []).map(c => [c.id, c]));
+    for (const c of packCourses) mergedC.set(c.id, c);
+    COURSES_DATABASE = Array.from(mergedC.values());
+    __contentPackState.usedCourses = packCourses.length > 0;
+  } catch (e) {
+    console.warn('[content-pack] merge courses failed:', e);
+    try { __contentPackState.errors.push({ stage: 'courses', message: String(e) }); } catch (_) {}
+  }
+}
 
-      __contentPackState.used = true;
-      console.log('[content-pack] loaded', { exercises: internalExercises.length, courses: (COURSES_DATABASE || []).length });
-      return __contentPackState.used;
+__contentPackState.used = !!(__contentPackState.usedExercises || __contentPackState.usedCourses);
+__contentPackState.source = __contentPackState.used ? 'content_pack' : 'built_in';
+
+console.log('[content-pack] loaded', { exercises: internalExercises.length, courses: (COURSES_DATABASE || []).length, used: __contentPackState.used });
+return __contentPackState.used;
     } catch (e) {
       // Типичный сценарий: нет файлов (404) — игнорируем
       const status = e?.__status;
       if (status !== 404) console.warn('[content-pack] load failed:', e);
+
       __contentPackState.used = false;
+      __contentPackState.usedExercises = false;
+      __contentPackState.usedCourses = false;
+      __contentPackState.source = 'built_in';
+      try { __contentPackState.errors.push({ stage: 'load', message: String(e), status }); } catch (_) {}
+
       return false;
     } finally {
       __contentPackState.loaded = true;
@@ -665,6 +707,22 @@ function refreshLucideIcons() {
     }
   } catch (_) {}
 }
+
+/** ✅ Telegram haptics (safe outside Telegram / older clients) */
+function tgHapticImpact(style = 'light') {
+  try {
+    const hf = window?.Telegram?.WebApp?.HapticFeedback;
+    hf?.impactOccurred?.(style);
+  } catch (_) {}
+}
+
+function tgHapticNotify(type = 'success') {
+  try {
+    const hf = window?.Telegram?.WebApp?.HapticFeedback;
+    hf?.notificationOccurred?.(type);
+  } catch (_) {}
+}
+
 
 // ==========================================
 // === 5. ФУНКЦИИ ИНТЕРФЕЙСА (ОТРИСОВКА) ===
@@ -1076,7 +1134,7 @@ function showExerciseDetail(exerciseId, level, override = null) {
   setTimerCircleState(timerCircle, 'none');
 
   modal.classList.add('active');
-  if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+  tgHapticImpact('light');
 }
 
 function updateSetsCounter() {
@@ -1090,7 +1148,7 @@ function handleWorkoutAction(button) {
   if (currentText.includes('Начать подход')) {
     button.innerText = `Завершить подход ${workoutState.currentSet}`;
     setActionButtonState(button, 'warning');
-    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    tgHapticImpact('light');
     return;
   }
 
@@ -1155,7 +1213,7 @@ function startRestTimer(button) {
 
   setTimerCircleState(timerCircle, 'ok');
 
-  if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+  tgHapticNotify('success');
 
   if (workoutState.timerInterval) clearInterval(workoutState.timerInterval);
   workoutState.timerInterval = setInterval(() => {
@@ -1167,7 +1225,7 @@ function startRestTimer(button) {
 
     if (timeLeft <= 3) {
       setTimerCircleState(timerCircle, 'danger');
-      if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('light');
+      tgHapticImpact('light');
     }
 
     if (timeLeft <= 0) {
@@ -1193,7 +1251,7 @@ function skipRest() {
 
   if (timerBlock) timerBlock.style.display = 'none';
 
-  if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+  tgHapticImpact('medium');
 
   if (button && timerBlock) {
     nextSet(button, timerBlock);
@@ -1211,7 +1269,7 @@ function nextSet(button, timerBlock) {
     button.style.display = 'block';
     button.innerText = `Начать подход ${workoutState.currentSet}`;
     setActionButtonState(button, 'primary');
-    if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('warning');
+    tgHapticNotify('warning');
   }
 }
 
@@ -1235,7 +1293,7 @@ function finishExercise(button, timerBlock) {
   }
   if (counter) counter.innerText = "Готово 🎉";
 
-  if (window.Telegram?.WebApp) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+  tgHapticNotify('success');
 }
 
 function closeExerciseModal() {
@@ -1295,11 +1353,18 @@ function getWeightHistory() {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Инициализации по страницам пусть делают сами страницы.
-  setTimeout(function() {
-    // Инициализация анимаций
-  }, 100);
+  // ✅ Unified & safe bootstrap for ALL pages
+  try { window.initApp && window.initApp(); } catch (_) {}
 
+  // ✅ Warm-up content pack in background (doesn't block UI)
+  try {
+    if (typeof ensureContentPackLoaded === 'function') {
+      Promise.resolve(ensureContentPackLoaded()).catch(() => {});
+    }
+  } catch (_) {}
+
+  // ✅ Render lucide icons (if CDN loaded)
+  try { refreshLucideIcons(); } catch (_) {}
 });
 // ==========================================
 // === 10. ACTIVITY RINGS (Apple Watch style) ===
