@@ -2,11 +2,14 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script src="js/theme-preload.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Тренировка</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/playlists.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="css/redesign.css">
+  <link rel="stylesheet" href="css/premium.css">
 </head>
 <body>
   <div class="container">
@@ -16,7 +19,7 @@
       На главную
     </button>
 
-    <div id="screen-intro" class="intro-screen">
+    <div id="screen-intro" class="intro-screen card">
       <h2 id="training-name-intro" style="margin-bottom: 10px;">Загрузка...</h2>
       <p id="training-desc-intro" style="margin-bottom: 30px;"></p>
       
@@ -31,7 +34,7 @@
       </div>
     </div>
 
-    <div id="screen-workout" class="workout-screen" style="display: none;">
+    <div id="screen-workout" class="workout-screen card" style="display: none;">
       
       
       <button class="music-fab btn-state-neutral" type="button" onclick="openTrainingPlaylist()" aria-label="Открыть плейлист">🎵</button>
@@ -43,6 +46,21 @@
 
       <div id="timer-container" class="timer-circle-container">
         <svg class="timer-svg" viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="timerGradExercise" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--accent-cyan)"></stop>
+              <stop offset="52%" stop-color="var(--accent-primary)"></stop>
+              <stop offset="100%" stop-color="var(--accent-secondary)"></stop>
+            </linearGradient>
+            <linearGradient id="timerGradReady" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--accent-cyan)"></stop>
+              <stop offset="100%" stop-color="var(--accent-tertiary)"></stop>
+            </linearGradient>
+            <linearGradient id="timerGradRest" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
+              <stop offset="100%" stop-color="var(--accent-pink)"></stop>
+            </linearGradient>
+          </defs>
           <circle class="timer-bg" cx="100" cy="100" r="90"></circle>
           <circle id="timer-circle" class="timer-progress" cx="100" cy="100" r="90"></circle>
         </svg>
@@ -58,7 +76,7 @@
       </div>
     </div>
 
-    <div id="screen-finish" style="display: none; text-align: center; padding-top: 20vh;">
+    <div id="screen-finish" class="finish-screen card" style="display: none; text-align: center; padding-top: 20vh;">
       <div style="font-size: 3rem; margin-bottom: 20px;">🏆</div>
       <h2>Тренировка завершена</h2>
       <p style="margin: 20px 0 40px; color: var(--text-secondary);">Вы большие молодцы. Результат сохранен.</p>
