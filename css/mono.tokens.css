@@ -1,0 +1,39 @@
+:root{
+  --mono-bg-0:#0b0c0f;
+  --mono-bg-1:#101217;
+  --mono-bg-2:#141823;
+  --mono-stroke-1:rgba(255,255,255,.08);
+  --mono-stroke-2:rgba(255,255,255,.14);
+  --mono-text-1:rgba(255,255,255,.96);
+  --mono-text-2:rgba(255,255,255,.72);
+  --mono-text-3:rgba(255,255,255,.46);
+  --mono-radius-1:14px;
+  --mono-radius-2:18px;
+  --mono-radius-3:26px;
+  --mono-shadow-1:0 10px 28px rgba(0,0,0,.55);
+  --mono-shadow-2:0 2px 0 rgba(255,255,255,.03) inset;
+  --mono-pad:16px;
+  --mono-max:480px;
+  --mono-nav-h:74px;
+  --mono-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --mono-noise-opacity:.04;
+  --mono-focus:rgba(255,255,255,.92);
+  /* Compatibility aliases for legacy CSS */
+  --text-primary: var(--mono-text-1);
+  --text-secondary: var(--mono-text-2);
+  --border-light: var(--mono-stroke-1);
+
+}
+html[data-theme="light"]{
+  --mono-bg-0:#f4f5f7;
+  --mono-bg-1:#ffffff;
+  --mono-bg-2:#f0f2f5;
+  --mono-stroke-1:rgba(0,0,0,.08);
+  --mono-stroke-2:rgba(0,0,0,.14);
+  --mono-text-1:rgba(0,0,0,.92);
+  --mono-text-2:rgba(0,0,0,.66);
+  --mono-text-3:rgba(0,0,0,.42);
+  --mono-shadow-1:0 18px 38px rgba(0,0,0,.12);
+  --mono-shadow-2:0 1px 0 rgba(255,255,255,.7) inset;
+  --mono-focus:rgba(0,0,0,.92);
+}

@@ -1,104 +1,162 @@
-/* css/achievements.css — Achievements board (OPAL) */
+/* css/achievements.css — Monochrome premium (RU) */
 
+body.mono .container{
+  max-width: 720px;
+}
+
+/* Summary card */
 .achievements-summary{
   cursor: default;
 }
 
 .achievements-summary__top{
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
   margin-bottom: 10px;
 }
 
 .achievements-summary__title{
-  font-weight: 1000;
-  font-size: 1rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--mono-text-2);
 }
 
 .achievements-summary__count{
-  font-weight: 1000;
-  font-size: 1.1rem;
-  letter-spacing: -0.01em;
+  font-weight: 900;
+  font-size: 1.25rem;
+  letter-spacing: .02em;
+  color: var(--mono-text-1);
 }
 
 .progress-track{
+  width: 100%;
   height: 10px;
   border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--mono-stroke-1);
   overflow: hidden;
-  border: 1px solid var(--border-light);
-  background: rgba(255,255,255,0.06);
-}
-
-html[data-theme="light"] .progress-track{
-  background: rgba(11,16,32,0.04);
 }
 
 .progress-fill{
   height: 100%;
   width: 0%;
   border-radius: 999px;
-  background: var(--cta-gradient);
+  background: var(--mono-text-1);
+  opacity: .9;
 }
 
 .achievements-summary__hint{
   margin-top: 10px;
-  color: var(--text-secondary);
-  font-weight: 800;
-  font-size: 0.9rem;
+  color: var(--mono-text-2);
+  font-size: 0.92rem;
+  line-height: 1.35;
 }
 
-.achievements-filters{
+.achievements-summary__wallet{
   margin-top: 14px;
+  display:flex;
+  justify-content:flex-end;
 }
 
+.wallet-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--mono-stroke-1);
+  color: var(--mono-text-1);
+  user-select:none;
+}
+
+.wallet-chip i{
+  width: 16px;
+  height: 16px;
+  opacity: .92;
+}
+
+/* Filters */
+.filter-tabs{
+  display:flex;
+  gap:8px;
+  margin: 14px 0 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn{
+  appearance:none;
+  border: 1px solid var(--mono-stroke-1);
+  background: rgba(255,255,255,.03);
+  color: var(--mono-text-2);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-weight: 750;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: transform .12s ease, border-color .12s ease, background .12s ease;
+}
+
+.filter-btn:active{ transform: translateY(1px); }
+
+.filter-btn.active{
+  background: rgba(255,255,255,.10);
+  border-color: var(--mono-stroke-2);
+  color: var(--mono-text-1);
+}
+
+.filter-btn:focus-visible{
+  outline: 2px solid rgba(255,255,255,.32);
+  outline-offset: 2px;
+}
+
+/* Board */
 .achievements-board{
-  display: grid;
+  display:grid;
   grid-template-columns: 1fr;
-  gap: 12px;
-  margin-top: 12px;
-  padding-bottom: 22px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .achievement-card{
-  cursor: pointer;
+  border-radius: var(--mono-radius-2);
+  border: 1px solid var(--mono-stroke-1);
+  background: rgba(255,255,255,.03);
+  box-shadow: var(--mono-shadow-1);
+  padding: 14px;
 }
 
 .achievement-card__top{
-  display: flex;
-  align-items: flex-start;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
   gap: 12px;
+  margin-bottom: 10px;
 }
 
 .achievement-card__icon{
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border-light);
-  background: rgba(255,255,255,0.08);
-  box-shadow: var(--shadow-elev);
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid var(--mono-stroke-1);
+  background: rgba(255,255,255,.04);
+  display:flex;
+  align-items:center;
+  justify-content:center;
   flex: 0 0 auto;
 }
 
-html[data-theme="light"] .achievement-card__icon{
-  background: rgba(11,16,32,0.04);
-}
-
+.achievement-card__icon i,
 .achievement-card__icon svg{
-  width: 22px;
-  height: 22px;
-  stroke: var(--text-secondary);
-  stroke-width: 2;
-}
-
-.achievement-card.is-unlocked .achievement-card__icon svg{
-  stroke: var(--accent-primary);
-  filter:
-    drop-shadow(0 0 6px rgba(124,124,255,0.40))
-    drop-shadow(0 0 14px rgba(167,139,250,0.24));
+  width: 18px;
+  height: 18px;
+  opacity: .92;
 }
 
 .achievement-card__meta{
@@ -107,109 +165,102 @@ html[data-theme="light"] .achievement-card__icon{
 }
 
 .achievement-card__name{
-  font-weight: 1000;
-  letter-spacing: -0.01em;
+  font-weight: 900;
+  letter-spacing: .01em;
+  color: var(--mono-text-1);
+  line-height: 1.2;
 }
 
 .achievement-card__desc{
   margin-top: 4px;
-  color: var(--text-secondary);
-  font-weight: 800;
+  color: var(--mono-text-2);
   font-size: 0.92rem;
+  line-height: 1.35;
 }
 
 .achievement-card__status{
   flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
+  display:flex;
+  align-items:center;
   gap: 8px;
-  font-size: 0.72rem;
-  font-weight: 1000;
+}
+
+.achievement-card__status-text{
+  font-weight: 800;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid var(--border-light);
-  background: rgba(255,255,255,0.06);
-  color: var(--text-secondary);
+  border: 1px solid var(--mono-stroke-1);
+  color: var(--mono-text-2);
+  background: rgba(255,255,255,.03);
 }
 
-.achievement-card.is-unlocked .achievement-card__status{
-  color: var(--text-primary);
-  border-color: rgba(124,124,255,0.40);
+.achievement-card.is-unlocked .achievement-card__status-text{
+  color: var(--mono-bg-0);
+  background: rgba(255,255,255,.92);
+  border-color: rgba(255,255,255,.55);
 }
 
-.achievement-card.is-locked{
-  opacity: 0.88;
+.achievement-card__reward{
+  margin-top: 8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+}
+
+.achievement-card__reward .label{
+  color: var(--mono-text-3);
+  font-size: .80rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.achievement-card__reward .value{
+  color: var(--mono-text-1);
+  font-weight: 900;
+}
+
+/* Progress row */
+.achievement-card__progress-row{
+  margin-top: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
 }
 
 .achievement-card__progress{
-  margin-top: 12px;
+  flex: 1 1 auto;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--mono-stroke-1);
+  overflow:hidden;
 }
 
-.achievement-card__progress-row{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
+.achievement-card__progress .fill{
+  height: 100%;
+  width: 0%;
+  background: rgba(255,255,255,.88);
 }
 
 .achievement-card__progress-text{
-  color: var(--text-secondary);
-  font-weight: 900;
-  font-size: 0.86rem;
+  flex: 0 0 auto;
+  color: var(--mono-text-2);
+  font-size: .86rem;
+  font-weight: 800;
 }
 
-.achievement-card__date{
-  color: var(--text-secondary);
-  font-weight: 900;
-  font-size: 0.86rem;
+/* Empty */
+.achievements-empty{
+  padding: 18px;
+  border-radius: var(--mono-radius-2);
+  border: 1px dashed var(--mono-stroke-1);
+  color: var(--mono-text-2);
 }
 
-
-/* Reward pill inside status */
-.achievement-card__reward{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding-left: 8px;
-  margin-left: 2px;
-  border-left: 1px solid var(--border-light);
-  color: var(--text-primary);
-}
-
-.achievement-card__reward svg{
-  width: 16px;
-  height: 16px;
-  stroke: var(--accent-primary);
-  stroke-width: 2;
-}
-
-/* Gems balance on summary card */
-.achievements-summary__wallet{
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.wallet-chip{
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border-light);
-  background: rgba(255,255,255,0.06);
-  box-shadow: var(--shadow-elev);
-  font-weight: 1000;
-}
-
-html[data-theme="light"] .wallet-chip{
-  background: rgba(11,16,32,0.04);
-}
-
-.wallet-chip svg{
-  width: 18px;
-  height: 18px;
-  stroke: var(--accent-primary);
-  stroke-width: 2;
-}
+.achievement-card__date{ color: var(--mono-text-3); font-size: .84rem; font-weight: 800; letter-spacing: .02em; }
