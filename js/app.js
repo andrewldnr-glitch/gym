@@ -641,6 +641,323 @@ let EXERCISE_DATABASE = [
     description: 'Нижний пресс.',
     sets: 3,
     levels: { beginner: { weight: 'Вес тела', reps: '12-15 раз', restTime: 45, advice: 'Не раскачивайтесь.' } }
+  },
+
+  // --- ДОБАВЛЕННЫЕ УПРАЖНЕНИЯ (программы чемпионов) ---
+  {
+    id: 'incline_bench_press',
+    name: 'Жим штанги в наклоне',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'dumbbell_shoulder_press',
+    name: 'Жим гантелей на плечи',
+    muscle: 'shoulders',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'lateral_raise',
+    name: 'Разведения на плечи (в стороны)',
+    muscle: 'shoulders',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'close_grip_bench_press',
+    name: 'Жим лёжа узким хватом',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'pec_deck',
+    name: 'Бабочка (разведения в тренажёре)',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'overhead_triceps_extension',
+    name: 'Разгибание гантели за головой (трицепс)',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'seated_row',
+    name: 'Тяга горизонтального блока',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'barbell_row',
+    name: 'Тяга штанги в наклоне',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'incline_dumbbell_curl',
+    name: 'Сгибания на наклонной скамье',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'chin_ups',
+    name: 'Подтягивания обратным хватом',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'ez_bar_curl',
+    name: 'Сгибания с EZ‑штангой',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'hammer_curl',
+    name: 'Молотки',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'reverse_grip_pulldown',
+    name: 'Тяга верхнего блока обратным хватом',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'rope_curl',
+    name: 'Сгибания на бицепс с канатом',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'dumbbell_curl_drop',
+    name: 'Сгибание гантелей стоя (дроп‑сет)',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'hip_thrust',
+    name: 'Ягодичный мост',
+    muscle: 'legs',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'glute_abduction',
+    name: 'Отведение ног (ягодицы)',
+    muscle: 'legs',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'calf_raise_seated',
+    name: 'Подъём на икры сидя',
+    muscle: 'legs',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'calf_raise_standing',
+    name: 'Подъём на икры стоя',
+    muscle: 'legs',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'leg_curl',
+    name: 'Сгибание ног в тренажёре',
+    muscle: 'legs',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'hip_adduction',
+    name: 'Сведение ног в тренажёре',
+    muscle: 'legs',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'calf_press_leg_press',
+    name: 'Жим ногами на икры',
+    muscle: 'legs',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'hack_squat',
+    name: 'Гакк-присед',
+    muscle: 'legs',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'hammer_strength_press',
+    name: 'Жим в тренажёре Hammer',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'cable_press',
+    name: 'Жим сидя в кроссовере',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'cable_pullover',
+    name: 'Пуловер в кроссовере',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'lat_pulldown_wide',
+    name: 'Тяга верхнего блока широким хватом',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'lat_pulldown_narrow',
+    name: 'Тяга верхнего блока узким хватом',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'rear_delt_pec_deck',
+    name: 'Задняя дельта в «бабочке»',
+    muscle: 'shoulders',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'front_raise_barbell',
+    name: 'Подъём штанги перед собой',
+    muscle: 'shoulders',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'rear_delt_supported_raise',
+    name: 'Разведения на заднюю дельту с упором грудью',
+    muscle: 'shoulders',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'spider_curl',
+    name: '«Паучий» подъём на бицепс',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'preacher_curl',
+    name: 'Подъём на бицепс (скамья Скотта)',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'cable_triceps_pushdown',
+    name: 'Разгибания на трицепс с канатом',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'machine_dip',
+    name: 'Обратные отжимания в тренажёре',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'cable_extension',
+    name: 'Экстензия в кроссовере с канатом',
+    muscle: 'arms',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'machine_shoulder_press',
+    name: 'Жим на плечи в тренажёре',
+    muscle: 'shoulders',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'machine_lateral_raise',
+    name: 'Разведение на плечи в тренажёре',
+    muscle: 'shoulders',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'horizontal_row_wide',
+    name: 'Горизонтальная тяга широким хватом',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'machine_row_narrow',
+    name: 'Тяга узким хватом в тренажёре',
+    muscle: 'back',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'cable_fly',
+    name: 'Сведения с канатом (грудь)',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'smith_incline_press',
+    name: 'Жим в Смите в наклоне',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'crossover_press_seated',
+    name: 'Жим сидя в кроссовере (вариант)',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'incline_dumbbell_press',
+    name: 'Жим гантелей в наклоне',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
+  },
+  {
+    id: 'dumbbell_bench_press',
+    name: 'Жим гантелей лёжа',
+    muscle: 'chest',
+    icon: `<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 12h12'/><path d='M12 6v12'/></svg>`,
+    meta: { restTime: 60, advice: 'Сохраняйте технику и контроль.' }
   }
 ];
 
@@ -662,7 +979,429 @@ let COURSES_DATABASE = [
       { name: 'Среда', exercises: ['bench_press', 'dumbbell_flyes', 'romanian_deadlift', 'leg_extension', 'lat_pulldown', 'triceps_extension'] },
       { name: 'Пятница', exercises: ['hyperextension', 'squats', 'lunges', 'lat_pulldown', 'one_arm_row', 'leg_raises'] }
     ]
+  },
+  {
+    id: 'cbum_press',
+    title: 'Крис Бамстед',
+    subtitle: 'Жимы • 2 дня',
+    description: 'Два дня жимовых движений: грудь, плечи, трицепс. Подходит для набора силы и объёма.',
+    duration: '2 тренировки',
+    goal: 'hypertrophy',
+    level: 'intermediate',
+    schedule: [
+      {
+        name: 'День 1 — Жимы',
+        exercises: [
+          {
+            exercise_id: 'incline_bench_press',
+            sets: 3,
+            reps_min: 5,
+            reps_max: 12,
+            scheme_ru: [
+              '2 тяжёлых подхода по 5–8 повторений',
+              '1 подход полегче на 10–12 повторений',
+              'Вариант: можно заменить на жим лёжа'
+            ]
+          },
+          {
+            exercise_id: 'dumbbell_shoulder_press',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['3 тяжёлых подхода по 10–12 повторений']
+          },
+          {
+            exercise_id: 'dumbbell_flyes',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['Суперсет с трицепсом: 3 подхода по 10–12 повторений']
+          },
+          {
+            exercise_id: 'triceps_extension',
+            sets: 4,
+            reps_min: 7,
+            reps_max: 10,
+            scheme_ru: ['Суперсет с грудью: 4 подхода по 7–10 повторений']
+          },
+          {
+            exercise_id: 'lateral_raise',
+            sets: 4,
+            reps_min: 10,
+            reps_max: 12,
+            rest_sec: 60,
+            scheme_ru: ['4 подхода по 10–12 повторений', 'Отдых 1 минута']
+          },
+          {
+            exercise_id: 'pushups',
+            sets: 3,
+            notes_ru: 'До отказа',
+            scheme_ru: ['3 подхода до отказа']
+          }
+        ]
+      },
+      {
+        name: 'День 2 — Жимы',
+        exercises: [
+          {
+            exercise_id: 'close_grip_bench_press',
+            sets: 3,
+            reps_min: 8,
+            reps_max: 10,
+            scheme_ru: ['3 подхода по 8–10 повторений']
+          },
+          {
+            exercise_id: 'overhead_press',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['3 подхода по 10–12 повторений']
+          },
+          {
+            exercise_id: 'pec_deck',
+            sets: 3,
+            reps_min: 8,
+            reps_max: 10,
+            scheme_ru: [
+              '1 подход на 8–10 повторений',
+              '2 подхода по 40 секунд работы'
+            ]
+          },
+          {
+            exercise_id: 'overhead_triceps_extension',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['3 подхода по 10–12 повторений']
+          },
+          {
+            exercise_id: 'lateral_raise',
+            sets: 4,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['4 подхода по 10–12 повторений', 'Суперсет с отжиманиями']
+          },
+          {
+            exercise_id: 'pushups',
+            sets: 3,
+            notes_ru: 'До отказа',
+            scheme_ru: ['3 подхода до отказа (после разведений)']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'cbum_pulls',
+    title: 'Крис Бамстед',
+    subtitle: 'Тяги • 2 дня',
+    description: 'Два дня тяг: спина и бицепс. Включает тяжёлые базовые движения и работу до отказа.',
+    duration: '2 тренировки',
+    goal: 'hypertrophy',
+    level: 'intermediate',
+    schedule: [
+      {
+        name: 'День 1 — Тяги',
+        exercises: [
+          {
+            exercise_id: 'seated_row',
+            sets: 3,
+            reps_min: 8,
+            reps_max: 10,
+            scheme_ru: ['2 разминочных подхода', '3 рабочих подхода по 8–10', 'В конце — дропсет']
+          },
+          {
+            exercise_id: 'barbell_row',
+            sets: 3,
+            reps_min: 6,
+            reps_max: 12,
+            scheme_ru: ['2 разминочных подхода', '2 тяжёлых подхода по 6–8', '1 подход полегче на 10–12']
+          },
+          {
+            exercise_id: 'incline_dumbbell_curl',
+            sets: 4,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['4 подхода по 10–12 повторений']
+          },
+          {
+            exercise_id: 'chin_ups',
+            sets: 3,
+            notes_ru: 'До отказа',
+            scheme_ru: ['3 подхода до отказа (обратным хватом)']
+          },
+          {
+            exercise_id: 'ez_bar_curl',
+            sets: 4,
+            reps_min: 8,
+            reps_max: 10,
+            scheme_ru: ['2 подхода по 8–10', '2 подхода по 40 секунд работы']
+          }
+        ]
+      },
+      {
+        name: 'День 2 — Тяги',
+        exercises: [
+          {
+            exercise_id: 'pull_ups',
+            sets: 3,
+            scheme_ru: ['3 подхода — просто разминка']
+          },
+          {
+            exercise_id: 'deadlift',
+            sets: 2,
+            reps_min: 8,
+            reps_max: 10,
+            scheme_ru: ['3 разминочных подхода', '2 рабочих подхода по 8–10']
+          },
+          {
+            exercise_id: 'hammer_curl',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['3 подхода по 10–12 повторений']
+          },
+          {
+            exercise_id: 'reverse_grip_pulldown',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['3 подхода по 10–12 повторений', 'Альтернатива: тяга штанги в наклоне 3×10–12']
+          },
+          {
+            exercise_id: 'rope_curl',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['3 подхода по 10–12 повторений']
+          },
+          {
+            exercise_id: 'dumbbell_curl_drop',
+            sets: 1,
+            notes_ru: 'Дроп до отказа',
+            scheme_ru: ['1 дроп-подход: от максимального веса к минимальному — до отказа']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'cbum_legs',
+    title: 'Крис Бамстед',
+    subtitle: 'Ноги • 2 дня',
+    description: 'Два дня ног: квадрицепс, задняя поверхность, ягодицы и икры.',
+    duration: '2 тренировки',
+    goal: 'hypertrophy',
+    level: 'intermediate',
+    schedule: [
+      {
+        name: 'День 1 — Ноги',
+        exercises: [
+          {
+            exercise_id: 'lunges',
+            sets: 3,
+            notes_ru: '10–15 шагов',
+            scheme_ru: ['3 разминочных подхода', '3 рабочих подхода: 10–15 шагов']
+          },
+          {
+            exercise_id: 'romanian_deadlift',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['2 разминочных подхода', '3 рабочих подхода по 10–12', 'Если это становая — 6–8 повторений']
+          },
+          {
+            exercise_id: 'hip_thrust',
+            sets: 3,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['3 подхода по 10–12 повторений', 'Альтернатива: отведения ног в тренажёре']
+          },
+          {
+            exercise_id: 'calf_raise_seated',
+            sets: 6,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['2 подхода по 10–12', 'Затем 4 подхода суперсетом после 10–12 повторений']
+          },
+          {
+            exercise_id: 'leg_curl',
+            sets: 4,
+            reps_min: 8,
+            reps_max: 10,
+            scheme_ru: ['2 подхода по 8–10', '2 подхода по 40 секунд работы']
+          }
+        ]
+      },
+      {
+        name: 'День 2 — Ноги',
+        exercises: [
+          {
+            exercise_id: 'squats',
+            sets: 4,
+            reps_min: 4,
+            reps_max: 10,
+            scheme_ru: ['3 разминочных подхода', '3 подхода по 8–10', '1 подход по 4–6']
+          },
+          {
+            exercise_id: 'calf_press_leg_press',
+            sets: 4,
+            notes_ru: 'Часть подходов до отказа',
+            scheme_ru: ['2 подхода по 40 секунд', '2 подхода до отказа']
+          },
+          {
+            exercise_id: 'hip_adduction',
+            sets: 4,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['4 подхода по 10–12 повторений']
+          },
+          {
+            exercise_id: 'calf_raise_standing',
+            sets: 4,
+            reps_min: 10,
+            reps_max: 12,
+            notes_ru: 'До отказа',
+            scheme_ru: ['4 подхода по 10–12 до отказа']
+          },
+          {
+            exercise_id: 'leg_extension',
+            sets: 4,
+            reps_min: 10,
+            reps_max: 12,
+            scheme_ru: ['2 подхода по 10–12', '2 подхода дропсет']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'cbum_urs_shoulders_arms',
+    title: 'Бамстед × Калесински',
+    subtitle: 'Плечи и руки',
+    description: 'Одна тренировка: акцент на плечи, затем бицепс/трицепс. Высокая интенсивность.',
+    duration: '1 тренировка',
+    goal: 'hypertrophy',
+    level: 'advanced',
+    schedule: [
+      {
+        name: 'Тренировка',
+        exercises: [
+          { exercise_id: 'dumbbell_shoulder_press', sets: 5, reps_min: 8, reps_max: 10, scheme_ru: ['5 подходов по 8–10 повторений'] },
+          { exercise_id: 'machine_shoulder_press', sets: 3, reps_min: 10, reps_max: 13, scheme_ru: ['3 подхода по 10–13 повторений'] },
+          { exercise_id: 'machine_lateral_raise', sets: 2, reps_min: 6, reps_max: 10, scheme_ru: ['2 подхода по 6–10 повторений'] },
+          { exercise_id: 'preacher_curl', sets: 4, reps_min: 6, reps_max: 10, scheme_ru: ['4 подхода по 6–10 повторений', 'Плюс: 1 подход на 7 повторений'] },
+          { exercise_id: 'cable_triceps_pushdown', sets: 4, reps_min: 5, reps_max: 5, scheme_ru: ['4 подхода по 5 повторений'] },
+          { exercise_id: 'overhead_triceps_extension', sets: 2, reps_min: 4, reps_max: 6, scheme_ru: ['2 подхода по 4–6 повторений (по 1 руке)'] },
+          { exercise_id: 'spider_curl', sets: 1, reps_min: 13, reps_max: 13, scheme_ru: ['Сет: 1×13 на разгибание в кроссовере + 1×13 подъём гантелей сидя (на каждую руку)'] }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ramon_dino_week',
+    title: 'Рамон Дино',
+    subtitle: 'Сплит на неделю (5 дней)',
+    description: 'Классический сплит: грудь/спина/ноги/плечи/руки. Сбалансированная нагрузка на неделю.',
+    duration: '1 неделя',
+    goal: 'hypertrophy',
+    level: 'intermediate',
+    schedule: [
+      {
+        name: 'Понедельник — Грудь',
+        exercises: [
+          { exercise_id: 'incline_dumbbell_press', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] },
+          { exercise_id: 'hammer_strength_press', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] },
+          { exercise_id: 'cable_press', sets: 3, reps_min: 10, reps_max: 12, scheme_ru: ['3 подхода по 10–12 повторений'] },
+          { exercise_id: 'pec_deck', sets: 3, reps_min: 10, reps_max: 12, scheme_ru: ['3 подхода по 10–12 повторений'] }
+        ]
+      },
+      {
+        name: 'Вторник — Спина',
+        exercises: [
+          { exercise_id: 'cable_pullover', sets: 3, reps_min: 10, reps_max: 12, scheme_ru: ['3 подхода по 10–12 повторений'] },
+          { exercise_id: 'lat_pulldown_wide', sets: 4, reps_min: 8, reps_max: 10, scheme_ru: ['4 подхода по 8–10 повторений'] },
+          { exercise_id: 'lat_pulldown_narrow', sets: 4, reps_min: 8, reps_max: 10, scheme_ru: ['4 подхода по 8–10 повторений'] },
+          { exercise_id: 'barbell_row', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] },
+          { exercise_id: 'hyperextension', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] }
+        ]
+      },
+      {
+        name: 'Среда — Ноги',
+        exercises: [
+          { exercise_id: 'leg_extension', sets: 3, reps_min: 10, reps_max: 12, scheme_ru: ['3 подхода по 10–12 повторений'] },
+          { exercise_id: 'squats', sets: 3, reps_min: 10, reps_max: 12, scheme_ru: ['3 подхода по 10–12 повторений'] },
+          { exercise_id: 'leg_press', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] },
+          { exercise_id: 'hack_squat', sets: 3, reps_min: 10, reps_max: 12, scheme_ru: ['3 подхода по 10–12 повторений'] },
+          { exercise_id: 'leg_curl', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] },
+          { exercise_id: 'lunges', sets: 3, reps_min: 10, reps_max: 10, scheme_ru: ['3 подхода по 10 повторений'] }
+        ]
+      },
+      {
+        name: 'Четверг — Плечи',
+        exercises: [
+          { exercise_id: 'machine_shoulder_press', sets: 5, reps_min: 8, reps_max: 10, scheme_ru: ['5 подходов по 8–10 повторений'] },
+          { exercise_id: 'lateral_raise', sets: 5, reps_min: 12, reps_max: 12, scheme_ru: ['5 подходов по 12 повторений'] },
+          { exercise_id: 'machine_lateral_raise', sets: 4, reps_min: 12, reps_max: 12, scheme_ru: ['4 подхода по 12 повторений'] },
+          { exercise_id: 'front_raise_barbell', sets: 3, reps_min: 12, reps_max: 12, scheme_ru: ['3 подхода по 12 повторений'] },
+          { exercise_id: 'rear_delt_pec_deck', sets: 3, reps_min: 12, reps_max: 12, scheme_ru: ['3 подхода по 12 повторений'] },
+          { exercise_id: 'rear_delt_supported_raise', sets: 3, reps_min: 10, reps_max: 12, scheme_ru: ['3 подхода по 10–12 повторений'] }
+        ]
+      },
+      {
+        name: 'Пятница — Руки',
+        exercises: [
+          { exercise_id: 'spider_curl', sets: 3, reps_min: 10, reps_max: 12, scheme_ru: ['3 подхода по 10–12 повторений'] },
+          { exercise_id: 'incline_dumbbell_curl', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] },
+          { exercise_id: 'preacher_curl', sets: 3, reps_min: 12, reps_max: 12, scheme_ru: ['3 подхода по 12 повторений'] },
+          { exercise_id: 'cable_triceps_pushdown', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] },
+          { exercise_id: 'machine_dip', sets: 4, reps_min: 12, reps_max: 12, scheme_ru: ['4 подхода по 12 повторений'] },
+          { exercise_id: 'cable_extension', sets: 4, reps_min: 10, reps_max: 12, scheme_ru: ['4 подхода по 10–12 повторений'] }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'sam_sulek_back',
+    title: 'Сэм Сулек',
+    subtitle: 'Спина (до отказа)',
+    description: 'Короткая, но тяжёлая тренировка спины: тяги и пуловер. Подходит как отдельный день.',
+    duration: '1 тренировка',
+    goal: 'hypertrophy',
+    level: 'intermediate',
+    schedule: [
+      {
+        name: 'Тренировка спины',
+        exercises: [
+          { exercise_id: 'horizontal_row_wide', sets: 2, notes_ru: 'До отказа', scheme_ru: ['2 подхода до отказа'] },
+          { exercise_id: 'cable_pullover', sets: 4, notes_ru: 'До отказа', scheme_ru: ['4 подхода до отказа'] },
+          { exercise_id: 'machine_row_narrow', sets: 2, notes_ru: 'До отказа', scheme_ru: ['2 подхода до отказа'] }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'tren_twins_chest',
+    title: 'Tren Twins',
+    subtitle: 'Грудь (силовая)',
+    description: 'Жимовой день в тяжёлом стиле: много базовых жимов и добивка в кроссовере.',
+    duration: '1 тренировка',
+    goal: 'hypertrophy',
+    level: 'advanced',
+    schedule: [
+      {
+        name: 'Тренировка груди',
+        exercises: [
+          { exercise_id: 'bench_press', sets: 4, reps_min: 8, reps_max: 8, scheme_ru: ['4 подхода по 8 повторений'] },
+          { exercise_id: 'incline_dumbbell_press', sets: 4, reps_min: 8, reps_max: 10, scheme_ru: ['4 подхода по 8–10 повторений'] },
+          { exercise_id: 'dumbbell_bench_press', sets: 3, reps_min: 8, reps_max: 10, scheme_ru: ['3 подхода по 8–10 повторений'] },
+          { exercise_id: 'cable_fly', sets: 3, reps_min: 12, reps_max: 15, scheme_ru: ['3 подхода по 12–15 повторений'] },
+          { exercise_id: 'smith_incline_press', sets: 3, reps_min: 8, reps_max: 8, scheme_ru: ['3 подхода по 8 повторений'] }
+        ]
+      }
+    ]
   }
+
 ];
 
 // ==========================================
@@ -843,8 +1582,14 @@ function renderWorkoutListByIds(containerId, exerciseItems, level = 'beginner') 
       levelData.advice,
       override?.tempo ? `Темп ${override.tempo}` : '',
       typeof override?.target_rir === 'number' ? `RIR ${override.target_rir}` : '',
-      override?.notes_ru || ''
+      // notes_ru оставляем для коротких подсказок, а детальную схему выводим списком
+      (Array.isArray(override?.scheme_ru) ? '' : (override?.notes_ru || ''))
     ].filter(Boolean);
+
+    const scheme = Array.isArray(override?.scheme_ru) ? override.scheme_ru : null;
+    const schemeHtml = scheme && scheme.length
+      ? `<ul class="scheme-list">${scheme.map(s => `<li>${__escapeHtml(s)}</li>`).join('')}</ul>`
+      : '';
 
     html += `
       <div class="workout-card" data-exercise-id="${exercise.id}" data-level="${level}" data-override-index="${idx}">
@@ -856,6 +1601,7 @@ function renderWorkoutListByIds(containerId, exerciseItems, level = 'beginner') 
             <span class="tag reps">${sets}x${reps}</span>
           </div>
           <p class="workout-advice">${adviceParts.join(' • ')}</p>
+          ${schemeHtml}
         </div>
         <div class="workout-action"><span>▶</span></div>
       </div>`;
@@ -956,32 +1702,58 @@ function initCourseDetail() {
 }
 
 function startCourseDay(courseId, dayIndex) {
+  // Курсы запускаем через training.html в режиме "course" (этапы: разминка/работа/отдых).
+  // Храним payload в sessionStorage (с fallback в localStorage), чтобы не плодить ID в data/trainings.json.
+  let payload = null;
   try {
-    localStorage.setItem('currentWorkoutSource', 'course');
-    localStorage.setItem('currentWorkoutDayIndex', dayIndex);
-    localStorage.setItem('currentCourseId', courseId);
-
-    // ✅ Сохраняем конкретные назначения (если есть) — это нужно для content pack,
-    // чтобы на workout-process.html показать сеты/повторы/отдых/темп из prescriptions.
     const course = COURSES_DATABASE.find(c => c.id === courseId);
-    const dayData = course?.schedule?.[dayIndex];
-    if (dayData) {
-      localStorage.setItem('currentWorkoutTitle', dayData.name || 'Тренировка');
-      localStorage.setItem('currentWorkoutItems', JSON.stringify(dayData.exercises || []));
+    const dayData = course?.schedule?.[Number(dayIndex) || 0];
+
+    payload = {
+      v: 1,
+      source: 'course',
+      course_id: String(courseId),
+      day_index: Number(dayIndex) || 0,
+      title: `${course?.title || 'Курс'} — ${dayData?.name || 'Тренировка'}`,
+      course_title: course?.title || 'Курс',
+      day_title: dayData?.name || 'Тренировка',
+      level: course?.level || 'beginner',
+      // Важно: оставляем как есть (id или объект назначений) — training.js сам нормализует.
+      items: Array.isArray(dayData?.exercises) ? dayData.exercises : []
+    };
+
+    // контекст: чтобы вернуться/показать прогресс
+    try {
+      localStorage.setItem('currentCourseId', String(courseId));
+      localStorage.setItem('currentWorkoutDayIndex', String(Number(dayIndex) || 0));
+      localStorage.setItem('currentWorkoutSource', 'course');
+    } catch (_) {}
+
+    const raw = JSON.stringify(payload);
+    try { sessionStorage.setItem('courseWorkoutPayload', raw); }
+    catch (_) {
+      try { localStorage.setItem('courseWorkoutPayload', raw); } catch (_) {}
     }
   } catch (e) {
-    console.warn("Не удалось сохранить прогресс в память");
+    console.warn('Не удалось подготовить тренировку курса:', e);
   }
-  window.location.href = 'workout-process.html';
+
+  if (!payload) {
+    try { if (window.Toast) window.Toast.show('Не удалось открыть тренировку.'); } catch (_) {}
+    window.location.href = `course-detail.html?id=${encodeURIComponent(courseId)}`;
+    return;
+  }
+
+  window.location.href = 'training.html?mode=course';
 }
 
 function __escapeHtml(str) {
   return String(str ?? '')
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
-    .replace(/'/g, ',');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function __renderList(items, limit = 6) {
@@ -1110,6 +1882,33 @@ function showExerciseDetail(exerciseId, level, override = null) {
   modal.querySelector('.modal-reps').innerText = repsText;
   modal.querySelector('.modal-advice').innerText = adviceParts.join(' • ');
 
+  // ✅ Схема подходов списком (для курсов/назначений)
+  try {
+    const box = modal.querySelector('.modal-advice-box');
+    if (box) {
+      const prevTitle = box.querySelector('.modal-scheme-title');
+      const prevList = box.querySelector('.scheme-list');
+      if (prevTitle) prevTitle.remove();
+      if (prevList) prevList.remove();
+
+      if (override && Array.isArray(override.scheme_ru) && override.scheme_ru.length) {
+        const t = document.createElement('div');
+        t.className = 'modal-scheme-title';
+        t.textContent = 'Схема подходов';
+
+        const ul = document.createElement('ul');
+        ul.className = 'scheme-list';
+        for (const line of override.scheme_ru) {
+          const li = document.createElement('li');
+          li.textContent = String(line);
+          ul.appendChild(li);
+        }
+        box.appendChild(t);
+        box.appendChild(ul);
+      }
+    }
+  } catch (_) {}
+
   // ✅ Доп. контент из content pack (техника/ошибки/безопасность/замены)
   try { renderExercisePackDetails(modal, exercise, override); } catch (_) { /* no-op */ }
 
@@ -1133,7 +1932,14 @@ function showExerciseDetail(exerciseId, level, override = null) {
 
   setTimerCircleState(timerCircle, 'none');
 
-  modal.classList.add('active');
+  if (window.UIModal && typeof window.UIModal.open === 'function') {
+    window.UIModal.open(modal);
+  } else {
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    document.documentElement.classList.add('modal-open');
+  }
   tgHapticImpact('light');
 }
 
@@ -1298,7 +2104,16 @@ function finishExercise(button, timerBlock) {
 
 function closeExerciseModal() {
   const modal = document.getElementById('exercise-modal');
-  if (modal) modal.classList.remove('active');
+  if (modal) {
+    if (window.UIModal && typeof window.UIModal.close === 'function') {
+      window.UIModal.close(modal);
+    } else {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      document.documentElement.classList.remove('modal-open');
+    }
+  }
 
   if (workoutState.timerInterval) clearInterval(workoutState.timerInterval);
   workoutState.timerInterval = null;

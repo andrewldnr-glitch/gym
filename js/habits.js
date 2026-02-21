@@ -400,14 +400,26 @@
     activeDayKey = dayKey;
     renderDayModal(dayKey);
 
-    dayModal.classList.add('active');
-    dayModal.setAttribute('aria-hidden', 'false');
+    if (window.UIModal && window.UIModal.open) {
+      window.UIModal.open(dayModal);
+    } else {
+      dayModal.classList.add('active');
+      dayModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      document.documentElement.classList.add('modal-open');
+    }
     haptic('select');
   }
 
   function closeDayModal() {
-    dayModal.classList.remove('active');
-    dayModal.setAttribute('aria-hidden', 'true');
+    if (window.UIModal && window.UIModal.close) {
+      window.UIModal.close(dayModal);
+    } else {
+      dayModal.classList.remove('active');
+      dayModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      document.documentElement.classList.remove('modal-open');
+    }
     activeDayKey = null;
   }
 
@@ -472,8 +484,14 @@
     inputHabitName.value = '';
     inputHabitEmoji.value = '';
 
-    habitModal.classList.add('active');
-    habitModal.setAttribute('aria-hidden', 'false');
+    if (window.UIModal && window.UIModal.open) {
+      window.UIModal.open(habitModal, { focus: '#habit-name' });
+    } else {
+      habitModal.classList.add('active');
+      habitModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      document.documentElement.classList.add('modal-open');
+    }
     setTimeout(() => {
       try { inputHabitName.focus(); } catch (_) {}
     }, 50);
@@ -482,8 +500,14 @@
   }
 
   function closeHabitModal() {
-    habitModal.classList.remove('active');
-    habitModal.setAttribute('aria-hidden', 'true');
+    if (window.UIModal && window.UIModal.close) {
+      window.UIModal.close(habitModal);
+    } else {
+      habitModal.classList.remove('active');
+      habitModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      document.documentElement.classList.remove('modal-open');
+    }
   }
 
   function saveHabitFromModal() {
@@ -491,7 +515,7 @@
     const emoji = String(inputHabitEmoji.value || '').trim();
 
     if (!name) {
-      alert('Введите название привычки.');
+      if (window.toast) window.toast('Введите название привычки.'); else alert('Введите название привычки.');
       return;
     }
 

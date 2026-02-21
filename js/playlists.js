@@ -7,7 +7,15 @@
 (function () {
   'use strict';
 
-  const STORAGE_PLAYLISTS = 'user_playlists_v1';
+  
+
+  function toast(msg, opts){
+    try{
+      if (typeof window.uiToast === 'function') return window.uiToast(msg, opts || {});
+    }catch(_){}
+    toast(msg);
+  }
+const STORAGE_PLAYLISTS = 'user_playlists_v1';
   const STORAGE_DEFAULT_ID = 'user_playlist_default_id_v1';
   const STORAGE_CONTEXT_MAP = 'user_playlist_context_map_v1';
   const STORAGE_SEEDED = 'user_playlists_seeded_v1';
@@ -355,7 +363,7 @@
         else setDefaultPlaylistId(obj.id);
         rebuildOptions(obj.id);
       } catch (e) {
-        alert(e && e.message ? e.message : 'Не удалось добавить плейлист');
+        toast(e && e.message ? e.message : 'Не удалось добавить плейлист');
       }
     }
 
@@ -381,12 +389,12 @@
     openBtn.addEventListener('click', () => {
       const v = resolvePlaylistIdForContext(contextKey);
       if (v === '__none__') {
-        alert('Музыка выключена для этой тренировки');
+        toast('Музыка выключена для этой тренировки');
         return;
       }
       const p = findPlaylistById(v);
       if (!p || !p.url) {
-        alert('Выберите плейлист');
+        toast('Выберите плейлист');
         return;
       }
 
@@ -527,7 +535,7 @@
           }
         } catch (_) {}
       } catch (e) {
-        alert(e && e.message ? e.message : 'Не удалось добавить');
+        toast(e && e.message ? e.message : 'Не удалось добавить');
       }
     });
 

@@ -212,7 +212,7 @@ ${badge.desc || ''}${rewardLine}`
           buttons: [{ type: 'ok' }],
         });
       } else {
-        alert(message);
+        if (window.toast) window.toast(message); else alert(message);
       }
       // haptic
       try { window.Telegram.WebApp.HapticFeedback?.notificationOccurred('success'); } catch (_) {}
@@ -445,10 +445,10 @@ function renderAchievementsBoard(opts = {}) {
             buttons: [{ type: 'ok' }],
           });
         } else {
-          alert(msg);
+          if (window.toast) window.toast(msg); else alert(msg);
         }
       } catch (_) {
-        alert(msg);
+        if (window.toast) window.toast(msg); else alert(msg);
       }
     };
 

@@ -75,7 +75,7 @@
         return;
       }
     }catch(e){}
-    alert(msg);
+    toast(msg);
   }
 
   function navigate(courseId, lessonIndex){
