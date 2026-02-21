@@ -6,348 +6,91 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>FitGym</title>
 
+  <!-- Base (legacy) styles -->
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/redesign.css" />
-  <link rel="stylesheet" href="css/premium.css">
+<!-- Monochrome premium layer -->
+  <link rel="stylesheet" href="css/mono.tokens.css" />
+  <link rel="stylesheet" href="css/mono.components.css" />
 
-  <!-- ✅ Единая тема для всего приложения (safe outside Telegram) -->
+  <!-- Theme + Telegram (safe outside TG) -->
   <script src="js/theme.js"></script>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
-<body class="has-tab-bar home">
-  <div class="container">
+<body class="has-tab-bar mono home">
+  <main class="mono-shell" aria-label="Главный экран">
 
-    <!-- Top bar (analytics-style) -->
-    <header class="topbar" aria-label="Главная панель">
-      <div class="brand">
-        <div class="brand__name">FitGym</div>
-        <button class="pill" type="button" aria-label="Период">Today</button>
+    <header class="mono-top" aria-label="Шапка">
+      <div>
+        <div class="mono-brand">FITGYM</div>
       </div>
-
-      <a class="icon-btn" href="profile.html" aria-label="Открыть статистику">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M4 19a8 8 0 0 1 16 0"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </a>
+      <div id="mono-date" class="mono-date">—</div>
     </header>
 
-    <!-- Hero dashboard card -->
-    <section class="card home-hero" aria-label="Сводка недели">
-      <div class="home-orb" aria-hidden="true">
-        <svg class="home-ring" viewBox="0 0 220 220" aria-hidden="true">
-          <defs>
-            <linearGradient id="opalRingGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-              <stop offset="0%"   stop-color="var(--accent-tertiary)"></stop>
-              <stop offset="46%"  stop-color="var(--accent-primary)"></stop>
-              <stop offset="82%"  stop-color="var(--accent-secondary)"></stop>
-              <stop offset="100%" stop-color="var(--accent-tertiary)"></stop>
-            </linearGradient>
-            <linearGradient id="opalRingCoreGrad" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
-              <stop offset="0%"   stop-color="rgba(255,255,255,0.96)"></stop>
-              <stop offset="50%"  stop-color="rgba(255,255,255,0.82)"></stop>
-              <stop offset="100%" stop-color="rgba(255,255,255,0.90)"></stop>
-            </linearGradient>
-          </defs>
+    <h1 class="mono-h1">Привет, <span id="mono-name">друг</span></h1>
+    <p class="mono-sub">Отслеживай активность</p>
 
-          <!-- Track -->
-          <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="10"></circle>
-
-          <!-- Base ring (quiet) -->
-          <circle cx="110" cy="110" r="100" fill="none" stroke="url(#opalRingGrad)" stroke-width="10" stroke-linecap="round" opacity="0.12"></circle>
-
-          <!-- Progress layers (animated by JS) -->
-          <circle id="opal-ring-glow" cx="110" cy="110" r="100" fill="none" stroke="url(#opalRingGrad)" stroke-width="18" stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="628" opacity="0.24"></circle>
-          <circle id="opal-ring-fg"   cx="110" cy="110" r="100" fill="none" stroke="url(#opalRingGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="628" opacity="0.96"></circle>
-          <circle id="opal-ring-core" cx="110" cy="110" r="100" fill="none" stroke="url(#opalRingCoreGrad)" stroke-width="5.5" stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="628" opacity="0.92"></circle>
-        </svg>
-      </div>
-
-      <div class="home-kpi">
-        <div id="opal-active-time" class="value">0m</div>
-        <div class="label-caps">Active time this week</div>
-      </div>
-
-      <div class="home-mini-stats" aria-label="KPI недели">
-        <div class="mini-stat">
-          <div class="k">WORKOUTS</div>
-          <div class="v" id="opal-workouts">0</div>
-        </div>
-        <div class="mini-stat">
-          <div class="k">DAYS</div>
-          <div class="v" id="opal-days">0/7</div>
-        </div>
-        <div class="mini-stat">
-          <div class="k">GOAL</div>
-          <div class="v" id="opal-percent">0%</div>
-        </div>
-      </div>
-
-      <div class="home-bars" aria-label="Интенсивность недели">
-        <div class="home-bars__head">
-          <div class="label-caps">Intensity</div>
-          <div id="opal-week-range" class="muted" style="font-weight:900; font-size:0.85rem;">—</div>
-        </div>
-        <div id="home-week-bars" class="week-bars" aria-hidden="true"></div>
-      </div>
-
-      <div class="home-cta" aria-label="Действия">
-        <button class="btn-main" onclick="window.location.href='trainings.html'">Начать тренировку</button>
-        <button class="btn-ghost" onclick="window.location.href='courses.html'">Курсы тренировок</button>
-      </div>
-    </section>
-
-    <!-- Secondary widget: Weight trend -->
-    <section class="card" aria-label="Тренд веса" style="cursor:default;">
-      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px;">
+    <section class="mono-card" aria-label="Активность недели">
+      <div class="mono-kpi">
         <div>
-          <div class="label-caps">Weight</div>
-          <div style="font-weight:1000; font-size:1.05rem; margin-top:6px;">Тренд</div>
+          <div>
+            <span id="kpi-min" class="value">0</span><span class="unit">мин</span>
+          </div>
+          <div class="label">На этой неделе</div>
         </div>
-        <div id="opal-weight-last" class="muted" style="font-weight:1000;">—</div>
       </div>
 
-      <div style="height:92px; margin-top:12px;">
-        <svg viewBox="0 0 400 92" preserveAspectRatio="none" aria-hidden="true" style="width:100%; height:100%; display:block;">
-          <path id="opal-weight-area" d="" fill="url(#areaGrad)" opacity="0.20"></path>
-          <path id="opal-weight-line" d="" fill="none" stroke="url(#lineGrad)" stroke-width="3" stroke-linecap="round"></path>
-          <defs>
-            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="var(--accent-secondary)" stop-opacity="0.70"></stop>
-              <stop offset="100%" stop-color="var(--accent-secondary)" stop-opacity="0"></stop>
-            </linearGradient>
-            <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="var(--accent-tertiary)"></stop>
-              <stop offset="55%" stop-color="var(--accent-primary)"></stop>
-              <stop offset="100%" stop-color="var(--accent-secondary)"></stop>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+      <div class="mono-grid" aria-label="Показатели">
+        <div class="mono-tile" role="group" aria-label="Тренировки">
+          <div id="tile-workouts" class="n">0</div>
+          <div class="u">Тренировок</div>
+        </div>
 
-      <p class="muted" style="margin-top:10px; font-weight:800; font-size:0.92rem;">
-        Добавляй вес — и увидишь тренд.
-      </p>
+        <div class="mono-tile" role="group" aria-label="Калории">
+          <div id="tile-kcal" class="n">0</div>
+          <div class="u">Ккал</div>
+        </div>
+
+        <div class="mono-tile" role="group" aria-label="Вес">
+          <div><span id="tile-weight" class="n">—</span><span class="unit">кг</span></div>
+          <div class="u">Вес</div>
+        </div>
+
+        <div class="mono-tile" role="group" aria-label="Серия дней">
+          <div id="tile-streak" class="n">0</div>
+          <div class="u">Серия</div>
+        </div>
+      </div>
     </section>
 
-  </div>
-
-  <!-- Tab Bar -->
-
-<script>
-    // Helpers
-    function startOfWeek(d) {
-      const x = new Date(d);
-      const day = (x.getDay() + 6) % 7; // Mon=0
-      x.setHours(0,0,0,0);
-      x.setDate(x.getDate() - day);
-      return x;
-    }
-
-    function fmtRange(weekStart) {
-      const end = new Date(weekStart);
-      end.setDate(end.getDate() + 6);
-      const opts = { day: 'numeric', month: 'short' };
-      return `${weekStart.toLocaleDateString('ru-RU', opts)} – ${end.toLocaleDateString('ru-RU', opts)}`;
-    }
-
-    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-
-    function loadTrainingHistory() {
-      try { return JSON.parse(localStorage.getItem('trainingHistory') || '[]'); }
-      catch(_) { return []; }
-    }
-
-    function loadWeightHistory() {
-      try { return JSON.parse(localStorage.getItem('weightHistory') || '[]'); }
-      catch(_) { return []; }
-    }
-
-    function setProgressLayersVisible(isVisible){
-      const glow = document.getElementById('opal-ring-glow');
-      const fg = document.getElementById('opal-ring-fg');
-      const core = document.getElementById('opal-ring-core');
-
-      const v = isVisible ? '1' : '0';
-      if (glow) glow.style.opacity = v;
-      if (fg) fg.style.opacity = v;
-      if (core) core.style.opacity = v;
-    }
-
-    function updateRing(percent) {
-      const glow = document.getElementById('opal-ring-glow');
-      const fg = document.getElementById('opal-ring-fg');
-      const core = document.getElementById('opal-ring-core');
-      const label = document.getElementById('opal-percent');
-
-      const r = 100;
-      const c = 2 * Math.PI * r;
-
-      const raw = Number(percent) || 0;
-
-      if (raw <= 0) {
-        setProgressLayersVisible(false);
-        if (label) label.textContent = `0%`;
-        return;
-      }
-
-      setProgressLayersVisible(true);
-
-      const pct = clamp(raw, 0, 100);
-      const dash = c * (1 - pct/100);
-
-      if (glow) glow.style.strokeDashoffset = String(dash);
-      if (fg) fg.style.strokeDashoffset = String(dash);
-      if (core) core.style.strokeDashoffset = String(dash);
-
-      if (label) label.textContent = `${Math.round(pct)}%`;
-    }
-
-    function buildMiniChart(weights){
-      const line = document.getElementById('opal-weight-line');
-      const area = document.getElementById('opal-weight-area');
-      if (!line || !area) return;
-
-      if (!Array.isArray(weights) || weights.length < 2){
-        line.setAttribute('d', '');
-        area.setAttribute('d', '');
-        return;
-      }
-
-      const vals = weights.map(x => Number(x.weight)).filter(n => Number.isFinite(n));
-      if (vals.length < 2){
-        line.setAttribute('d', '');
-        area.setAttribute('d', '');
-        return;
-      }
-
-      const w = 400;
-      const h = 92;
-      const padX = 10;
-      const padY = 10;
-
-      const min = Math.min(...vals);
-      const max = Math.max(...vals);
-      const span = Math.max(1e-6, max - min);
-
-      const coords = vals.map((v, i) => {
-        const x = padX + (i/(vals.length-1)) * (w - padX*2);
-        const norm = (v - min) / span;
-        const y = (h - padY) - norm * (h - padY*2);
-        return { x, y };
-      });
-
-      const d = coords.map((p,i) => `${i===0?'M':'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-      line.setAttribute('d', d);
-
-      const dA = `${d} L ${coords[coords.length-1].x.toFixed(1)} ${(h-padY).toFixed(1)} L ${coords[0].x.toFixed(1)} ${(h-padY).toFixed(1)} Z`;
-      area.setAttribute('d', dA);
-    }
-
-    function buildWeekBars(weekItems){
-      const root = document.getElementById('home-week-bars');
-      if (!root) return;
-
-      const counts = new Array(7).fill(0);
-      for (const it of (weekItems || [])){
-        const dt = new Date(it.date || it.finished_at || Date.now());
-        const day = (dt.getDay() + 6) % 7; // Mon=0
-        counts[day] += 1;
-      }
-
-      const max = Math.max(1, ...counts);
-      root.innerHTML = '';
-
-      for (let i = 0; i < 7; i++){
-        const v = counts[i];
-        const bar = document.createElement('div');
-        bar.className = 'week-bar' + (max === 1 && v === 0 ? ' is-muted' : '');
-        bar.style.setProperty('--v', String(v / max));
-        bar.title = `День ${i+1}: ${v}`;
-        root.appendChild(bar);
-      }
-    }
-
-    function initHome() {
-      const now = new Date();
-      const ws = startOfWeek(now);
-
-      const rangeEl = document.getElementById('opal-week-range');
-      if (rangeEl) rangeEl.textContent = fmtRange(ws);
-
-      const hist = loadTrainingHistory();
-      const weekItems = hist.filter(x => {
-        const dt = new Date(x.date || x.finished_at || Date.now());
-        return dt >= ws && dt < new Date(ws.getTime() + 7*24*3600*1000);
-      });
-
-      const daysSet = new Set(
-        weekItems.map(x => {
-          const dt = new Date(x.date || x.finished_at || Date.now());
-          return dt.toISOString().slice(0,10);
-        })
-      );
-
-      const workouts = weekItems.length;
-      const days = daysSet.size;
-
-      // Estimation (until we store real duration)
-      const activeMinutes = workouts * 45;
-      const hours = Math.floor(activeMinutes / 60);
-      const mins = activeMinutes % 60;
-
-      const activeEl = document.getElementById('opal-active-time');
-      const workoutsEl = document.getElementById('opal-workouts');
-      const daysEl = document.getElementById('opal-days');
-
-      if (activeEl) activeEl.textContent = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
-      if (workoutsEl) workoutsEl.textContent = String(workouts);
-      if (daysEl) daysEl.textContent = `${days}/7`;
-
-      const WEEK_GOAL = 5;
-      const pct = workouts > 0 ? (workouts / WEEK_GOAL) * 100 : 0;
-      updateRing(pct);
-      buildWeekBars(weekItems);
-
-      const weights = loadWeightHistory();
-      const last = weights.length ? weights[weights.length-1] : null;
-      const wLastEl = document.getElementById('opal-weight-last');
-      if (wLastEl) wLastEl.textContent = last ? `${last.weight} кг` : 'Нет данных';
-
-      buildMiniChart(weights);
-    }
-
-    document.addEventListener('DOMContentLoaded', initHome);
-  </script>
-
-
-
-  <nav class="tab-bar" aria-label="Навигация">
-      <a class="tab-item active" href="index.html" aria-current="page">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5z"/>
+    <nav class="mono-rows" aria-label="Разделы">
+      <a class="mono-row" href="trainings.html" aria-label="Перейти в тренировки">
+        <span class="t">Тренировки</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 18l6-6-6-6"/>
         </svg>
-        <span class="tab-label">Главная</span>
       </a>
-      <a class="tab-item" href="profile.html">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M4 19V5"/>
-          <path d="M4 19H20"/>
-          <path d="M8 19v-8"/>
-          <path d="M12 19v-12"/>
-          <path d="M16 19v-4"/>
-        </svg>
-        <span class="tab-label">Статистика</span>
-      </a>
-      <a class="tab-item" href="info.html">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-          <circle cx="12" cy="12" r="4"/>
-        </svg>
-        <span class="tab-label">Инструменты</span>
-      </a>
-  </nav>
 
+      <a class="mono-row" href="courses.html" aria-label="Перейти в курсы">
+        <span class="t">Курсы</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </a>
+
+      <a class="mono-row" href="profile.html" aria-label="Перейти в профиль">
+        <span class="t">Профиль</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </a>
+    </nav>
+
+  </main>
+
+  <script src="js/ui/home-mono.js"></script>
+  <script src="js/ui/modal.js"></script>
+  <script src="js/ui/bottom-nav.js"></script>
+  <script src="js/ui/toast.js"></script>
 </body>
 </html>

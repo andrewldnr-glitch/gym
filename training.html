@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/playlists.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="css/redesign.css">
-  <link rel="stylesheet" href="css/premium.css">
+<!-- Monochrome premium layer -->
+  <link rel="stylesheet" href="css/mono.tokens.css" />
+  <link rel="stylesheet" href="css/mono.components.css" />
 </head>
-<body>
+<body class="mono">
   <div class="container">
     
     <button id="btn-back-main" class="btn-back" onclick="window.location.href='index.html'" style="display:none;">
@@ -47,18 +48,9 @@
       <div id="timer-container" class="timer-circle-container">
         <svg class="timer-svg" viewBox="0 0 200 200">
           <defs>
-            <linearGradient id="timerGradExercise" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="var(--accent-cyan)"></stop>
-              <stop offset="52%" stop-color="var(--accent-primary)"></stop>
-              <stop offset="100%" stop-color="var(--accent-secondary)"></stop>
-            </linearGradient>
-            <linearGradient id="timerGradReady" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="var(--accent-cyan)"></stop>
-              <stop offset="100%" stop-color="var(--accent-tertiary)"></stop>
-            </linearGradient>
-            <linearGradient id="timerGradRest" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="var(--accent-secondary)"></stop>
-              <stop offset="100%" stop-color="var(--accent-pink)"></stop>
+            <linearGradient id="timerGradMono" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"></stop>
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.45"></stop>
             </linearGradient>
           </defs>
           <circle class="timer-bg" cx="100" cy="100" r="90"></circle>
@@ -93,5 +85,9 @@
   <!-- Подключаем достижения, чтобы проверить их после тренировки -->
   <script src="js/achievements.js"></script>
   <script src="js/training.js"></script>
+
+  <script src="js/ui/modal.js"></script>
+  <script src="js/ui/bottom-nav.js"></script>
+  <script src="js/ui/toast.js"></script>
 </body>
 </html>

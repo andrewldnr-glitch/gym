@@ -16,11 +16,12 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="css/redesign.css">
-  <link rel="stylesheet" href="css/premium.css">
+<!-- Monochrome premium layer -->
+  <link rel="stylesheet" href="css/mono.tokens.css" />
+  <link rel="stylesheet" href="css/mono.components.css" />
 </head>
 
-<body class="has-tab-bar">
+<body class="has-tab-bar mono">
   <div class="container">
 
     <a href="profile.html" class="btn-back">
@@ -150,6 +151,7 @@
     </div>
   </div>
 
+<script src="js/ui/toast.js"></script>
 <script src="js/habits.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -157,33 +159,7 @@
     });
   </script>
 
-
-
-  <nav class="tab-bar" aria-label="Навигация">
-      <a class="tab-item" href="index.html">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5z"/>
-        </svg>
-        <span class="tab-label">Главная</span>
-      </a>
-      <a class="tab-item active" href="profile.html">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M4 19V5"/>
-          <path d="M4 19H20"/>
-          <path d="M8 19v-8"/>
-          <path d="M12 19v-12"/>
-          <path d="M16 19v-4"/>
-        </svg>
-        <span class="tab-label">Статистика</span>
-      </a>
-      <a class="tab-item" href="info.html">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-          <circle cx="12" cy="12" r="4"/>
-        </svg>
-        <span class="tab-label">Инструменты</span>
-      </a>
-  </nav>
-
+  <script src="js/ui/modal.js"></script>
+  <script src="js/ui/bottom-nav.js"></script>
 </body>
 </html>
